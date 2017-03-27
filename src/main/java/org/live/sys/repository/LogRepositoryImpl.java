@@ -2,7 +2,7 @@ package org.live.sys.repository;
 
 
 import org.live.common.base.BaseRepositoryImpl;
-import org.live.common.constants.Constants;
+import org.live.sys.entity.Log;
 import org.live.sys.vo.LogVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,21 +12,18 @@ import java.util.Map;
 
 public class LogRepositoryImpl extends BaseRepositoryImpl {
 	
-	public Page<LogVo> findLogInfoAll(Pageable pageable, LogVo logVo){
-		final String xsql="select l.id as id,l.ip as ip,l.name as name,l.username as username,l.handle_time as handleTime,"
-				+ "l.description as description,l.log_level as logLevel,l.operate_type as operateType "
-				+ "from sys_log l "
-				+ "where 1=?0 "
+	public Page<Log> findLogInfoAll(Pageable pageable, LogVo logVo){
+		final String xsql="select l from Log l "
+				+ "where 1=1 "
 				+ "/~ and l.ip like '%[ip]%' ~/"
 				+ "/~ and l.name like '%[name]%' ~/"
 				+ "/~ and l.username like '%[username]%'~/"
-				+ "/~ and l.handle_time >= '[beginTime]'~/"
+				+ "/~ and l.handleTime >= '[beginTime]'~/"
 				+ "/~ and l.handle_time <= '[endTime]'~/"
-				//+ "/~ and l.handle_time between '[beginTime]' and '[endTime]'~/"
 				+ "/~ and l.description like '%[description]%'~/"
-				+ "/~ and l.log_level like '%[logLevel]%'~/"
-				+ "/~ and l.operate_type like '%[operateType]%'~/"
-				+ "order by l.handle_time desc";
+				+ "/~ and l.logLevel like '%[logLevel]%'~/"
+				+ "/~ and l.operateType like '%[operateType]%'~/"
+				+ "order by l.handleTime desc";
 		
 		Map<String, Object> filter = new HashMap<String, Object>();
 		if(logVo != null){
@@ -40,8 +37,8 @@ public class LogRepositoryImpl extends BaseRepositoryImpl {
 			filter.put("logLevel", logVo.getLogLevel());
 			filter.put("operateType", logVo.getOperateType());
 		}
-		String sql = this.xsqlConvertSql(xsql, filter);
-		return this.findBySql(pageable,sql, new Object[] { Constants.DIC_YES }, LogVo.class);
+		String hql = this.xsqlConvertSql(xsql, filter);
+		return this.find(pageable,hql, null) ;
 	}
 
 }

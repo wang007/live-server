@@ -19,7 +19,7 @@ public interface LogService extends BaseService<Log, String> {
 	 * @param log
 	 * @return
 	 */
-	public Page<LogVo> findLogs(Pageable pageable, LogVo logVo) ;
+	public Page<Log> findLogs(Pageable pageable, LogVo log) ;
 	
 	/**
 	 * 删除一组日志信息

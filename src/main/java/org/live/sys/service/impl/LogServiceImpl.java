@@ -31,7 +31,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, String> implements LogS
      * 分页查询
      */
 	@Override
-	public Page<LogVo> findLogs(Pageable pageable, LogVo logVo) {
+	public Page<Log> findLogs(Pageable pageable, LogVo logVo) {
 		// TODO Auto-generated method stub
 		return this.logRepo.findLogInfoAll(pageable, logVo);
 	}

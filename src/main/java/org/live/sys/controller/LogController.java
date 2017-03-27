@@ -8,6 +8,7 @@ import org.live.common.response.SimpleResponseModel;
 import org.live.common.systemlog.LogLevel;
 import org.live.common.systemlog.OperateType;
 import org.live.common.systemlog.SystemLog;
+import org.live.sys.entity.Log;
 import org.live.sys.service.LogService;
 import org.live.sys.vo.LogVo;
 import org.slf4j.Logger;
@@ -54,11 +55,11 @@ public class LogController {
 	//@SystemLog(description = "查询日志信息", logLevel = LogLevel.INFO, operateType = OperateType.QUERY)
 	@RequestMapping(value="/log", method= RequestMethod.GET)
 	@ResponseBody
-	public JqGridModel<LogVo> findLogInfoAll(HttpServletRequest request, LogVo logVo){
+	public JqGridModel<Log> findLogInfoAll(HttpServletRequest request, LogVo logVo){
 
 			PageRequest pageRequest = PageUtils.getPage4JqGrid(request) ;
-			Page<LogVo> page=this.logService.findLogs(pageRequest, logVo);
-			JqGridModel<LogVo> model=PageUtils.pageConvertJqGrid(page);
+			Page<Log> page = this.logService.findLogs(pageRequest, logVo);
+			JqGridModel<Log> model=PageUtils.pageConvertJqGrid(page);
 		return model;
 	}
 	

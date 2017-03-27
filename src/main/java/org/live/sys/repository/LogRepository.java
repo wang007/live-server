@@ -18,5 +18,5 @@ public interface LogRepository extends BaseRepository<Log, String> {
 	 * @param log
 	 * @return
 	 */
-	public Page<LogVo> findLogInfoAll(Pageable pageable, LogVo log);
+	public Page<Log> findLogInfoAll(Pageable pageable, LogVo log);
 }
