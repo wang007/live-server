@@ -41,11 +41,11 @@
                 <div class="login-container">
                     <div class="center">
                         <h1>
-                            <i class="ace-icon fa fa-leaf green"></i>
-                            <span class="red">高校直播</span>
-                            <span class="white" id="id-text2">后台管理</span>
+                            <i class="ace-icon fa fa-video-camera green"></i>
+                            <span class="green">高校直播应用</span>
+                            <!--<span class="white" id="id-text2">应用</span>-->
                         </h1>
-                        <h4 class="blue" id="id-company-text" th:text="|&copy; ${application.systemTitle} |"></h4>
+                        <h4 class="green" id="id-company-text" th:text="|&copy; ${application.systemTitle} |"></h4>
                     </div>
 
                     <div class="space-6"></div>
@@ -55,7 +55,7 @@
                             <div class="widget-body">
                                 <div class="widget-main">
                                     <h4 class="header blue lighter bigger">
-                                        <i class="ace-icon fa fa-coffee green"></i>
+                                        <i class="ace-icon fa fa-users green"></i>
                                         快速登录
                                     </h4>
                                     <div class="space-6"></div>
@@ -85,15 +85,14 @@
                                             <div class="space"></div>
 
                                             <div class="clearfix">
-                                                <label class="inline">
+                                                <button type="button" class="width-35 pull-right btn btn-sm btn-primary" id="saveBtn">
+                                                    <!--<i class="ace-icon fa fa-key"></i>-->
+                                                    <span class="bigger-110">登录</span>
+                                                </button>
+                                                <label class="inline ">
                                                     <input type="checkbox" class="ace" />
                                                     <span class="lbl"> 记住我</span>
                                                 </label>
-
-                                                <button type="button" class="width-35 pull-right btn btn-sm btn-primary" id="saveBtn">
-                                                    <i class="ace-icon fa fa-key"></i>
-                                                    <span class="bigger-110">登录</span>
-                                                </button>
                                             </div>
 
                                             <div class="space-4"></div>

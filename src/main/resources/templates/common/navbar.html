@@ -25,7 +25,7 @@
                 <!-- #section:basics/navbar.layout.brand -->
                 <a href="#" class="navbar-brand">
                     <small>
-                        <i class="fa fa-leaf"></i>
+                        <i class="fa fa-video-camera"></i>
                         <span th:text="${application.systemTitle}"></span>
                     </small>
                 </a>
@@ -61,12 +61,12 @@
                     <!-- #section:basics/navbar.user_menu -->
                     <li class="light-blue">
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-                            <img class="nav-user-photo" th:src="@{/static/ace/dist/avatars/user.jpg}"
+                            <img class="nav-user-photo" th:src="@{/static/ace/dist/avatars/avatar4.png}"
                                  alt="user's Photo"/>
                             <span class="user-info">
-									<small>欢迎您</small>
+								<small>Hello,</small>
                                 <span th:text="${session.loginUser.name}"></span>
-								</span>
+                            </span>
                             <i class="ace-icon fa fa-caret-down"></i>
                         </a>
 

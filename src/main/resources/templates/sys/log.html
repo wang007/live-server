@@ -181,13 +181,9 @@
                             sortable : false,
                             formatter : function alamFormatter(cellvalue, options,row) {
                                 /*<![CDATA[*/
-                                var map = /*[[${@dictService.dictMap('logLevel')}]]*/ null;
+                                var map = /*[[#{@dictService.dictMap('logLevel')}]]*/ null;
                                 return map[row.logLevel] ;
-
-
 								/*]]>*/
-
-
                             }
                         },
                         {
