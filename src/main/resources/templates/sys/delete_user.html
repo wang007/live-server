@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+<title>被删除用户管理</title>
+
+<div class="page-header">
+    <h1>用户管理
+        <small style="margin-right:0px;">
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            被临时删除的用户、
+            <a href="javascript:;" data-rel="tooltip" data-placement="bottom" title="返回到用户管理"
+               onClick="toMain('/sys/user/page')">
+                <i class="ace-icon fa fa-reply"></i>
+                <strong>返回</strong>
+            </a>
+        </small>
+    </h1>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <button class="btn btn-success no-border" id="recover-user-btn">
+            <i class="ace-icon fa fa-wrench bigger-120" />恢复
+        </button>
+
+        <button class="btn btn-danger no-border" id="delete-user-btn">
+            <i class="ace-icon fa fa-trash-o bigger-120" />删除
+        </button>
+
+        <div class="btn-group">
+            <button class="btn btn-info no-border" id="search-user-btn" style="height:42px">
+                <i class="ace-icon fa fa-search bigger-120" />搜索
+            </button>
+            <button class="btn btn-info dropdown-toggle" id="toggle-search-id" style="height:42px">
+                <span class="ace-icon fa fa-caret-down icon-only bigger-120"></span>
+            </button>
+        </div>
+        <!-- /.btn-group -->
+    </div>
+
+    <div class="col-xs-12" style="display:none;" id="show-search-user-div">
+        <div class="space-2"></div>
+        <form class="form-inline" role="form" id="search-user-form">
+            <div class="form-group">
+                <label for="search-username">账号:</label>
+                <input type="text" class="form-control input-sm" id="search-username" name="username" placeholder="如：201501">
+            </div>
+            <div class="form-group">
+                <label for="search-name">用户名:</label>
+                <input type="text" class="form-control input-sm" id="search-name" name="name" placeholder="如：张三">
+            </div>
+            <div class="form-group">
+                <label for="search-usergroup">所属用户组:</label>
+                <select class="select2" id="search-usergroup" name="groupId" data-placeholder="请选择...">
+                    <option>&nbsp;</option>
+                    <option th:each="row: ${rows}" th:value="${row.id}" th:text="${row.groupName}"></option>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-xs-12">
+        <!-- jqGrid表格和分页 -->
+        <table id="grid-table"></table>
+        <div id="grid-pager"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $.ace_ajax_finish(function() {
+        jQuery(function($) {
+
+            //鼠标悬停提示信息
+            $('[data-rel=tooltip]').tooltip();
+            $('[data-rel=popover]').popover({html:true});
+
+            //鼠标悬停提示信息
+            $('[data-rel=tooltip]').tooltip();
+            $('[data-rel=popover]').popover({html:true});
+
+            var grid_selector = "#grid-table"; //jqGrid表格
+            var pager_selector = "#grid-pager"; //
+            //resize to fit page size
+            $(window).on('resize.jqGrid',function() {
+                $(grid_selector).jqGrid('setGridWidth',$(".page-content").width());
+            })
+
+            $(grid_selector).jqGrid({
+                url : "/sys/user/deletionUser",//获取数据的url地址
+                datatype : "json", //获取数据的格式
+                mtype : "get", //请求数据的方式
+                colNames : [ 'id', '账号',
+                    '用户名', '用户类型', '注册时间',
+                    '最后登录时间', '最后登录ip', '所属用户组',
+                    '是否锁定' ],//表头
+                colModel : [
+                    {
+                        name : 'id',
+                        index : 'id',
+                        hidden : true
+                    },
+                    {
+                        name : 'username',
+                        index : 'username',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+                    {
+                        name : 'name',
+                        index : 'name',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+                    {
+                        name : 'userType',
+                        index : 'userType',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                        formatter : function alamFormatter(cellvalue, options,row) {
+                            if (row.userType == 'superAdmin') {
+                                return '超级管理员'
+                            } else if (row.userType == 'admin') {
+                                return '管理员'
+                            } else {
+                                return '普通用户'
+                            }
+                        }
+                    },
+                    {
+                        name : 'registerTime',
+                        index : 'registerTime',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                    },
+                    {
+                        name : 'lastLoginTime',
+                        index : 'lastLoginTime',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                    },
+                    {
+                        name : 'lastLoginIp',
+                        index : 'lastLoginIp',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                    },
+                    {
+                        name : 'userGroupName',
+                        index : 'userGroupName',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                    },
+                    {
+                        name : 'isLock',
+                        index : 'isLock',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                        selectable:false,
+                        formatter : function alamFormatter(cellvalue, options,row) {
+                            if (row.isLock == '0') { //未锁
+                                return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeUserLock('"
+                                    + row.id
+                                    + "') /><span class='lbl'></span></label>"
+                            } else {
+                                return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeUserLock('"
+                                    + row.id
+                                    + "') checked/><span class='lbl'></span></label>"
+                            }
+                        }
+                    } ], //后端的数据
+                rowNum : 10,
+                rowList : [ 10, 20, 50 ],
+                pager : pager_selector,
+                sortname : 'registerTime',
+                viewrecords : true,
+                altRows : true, //设置隔行用不同的背景色区分开
+                sortorder : "desc",
+                width : "auto",
+                height : "auto",
+                //multiboxonly : true,
+                multiselect : true,
+                rownumbers : false,
+                caption : "暂存用户列表",
+                loadComplete : function() {
+                    var table = this;
+                    setTimeout(function() {
+                        //styleCheckbox(table);
+                        //updateActionIcons(table);
+                        updatePagerIcons(table);
+                        //enableTooltips(table);
+                    }, 0);
+                },
+            }) //jqGrid
+            $(window).triggerHandler('resize.jqGrid'); //初始化jqGrid大小
+
+            //搜索右边下拉按钮
+            $('#toggle-search-id').click(function() {
+                $('#show-search-user-div').toggle() //显示或隐藏搜索user的div
+            })
+
+            //重新加载jqgrid数据，根据输入项
+            function reloadData() {
+                $(grid_selector).jqGrid('setGridParam', {
+                    dataType : 'json',
+                    postData : $('#search-user-form').serializeObject(),	//postData.接收的是一个对象
+                    page : 1
+                }).trigger("reloadGrid"); //重新载入#
+            }
+
+            //搜索
+            $('#search-user-btn').click(function() {
+                reloadData() ;
+            })
+
+            //美化下拉框
+            $(".select2").css('width', '170px').select2({placeholder:"请选择",allowClear : true}) ;
+
+            $('#recover-user-btn').click(function(){
+                var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                if (selectedIds.length <= 0) {
+                    showInfoMsg("请选择数据");
+                    return false;
+                }
+                bootbox.confirm("您确定要恢复所选的用户数据吗？",function(result){
+                    if(result) {
+                        showLoading() ;
+                        var idsParam = "ids="+selectedIds.join('&ids=') ;
+                        $.ajax({
+                            url: "/sys/user",
+                            type: "POST",
+                            dataType: "JSON",
+                            data: idsParam+"&_method=PATCH",
+                            success: function(data) {
+                                showMsg4model(data,true) ;
+                                reloadData() ;
+                            }
+                        })
+                        hideLoading();
+                    }
+                })
+            })
+
+
+            $('#delete-user-btn').click(function(){
+                var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                if (selectedIds.length != 1) {
+                    showInfoMsg("请选择一条数据");
+                    return false;
+                }
+                var rowData =  $(grid_selector).jqGrid('getRowData',selectedIds[0]) ;
+                bootbox.confirm("您确定要删除所选的用户数据吗？~删除之后将无法恢复.",function(result){
+                    if(result) {
+                        showLoading() ;
+                        $.ajax({
+                            url: "/sys/user/"+rowData.id,
+                            type: "POST",
+                            dataType: "JSON",
+                            data: {"_method":"DELETE"},
+                            success: function(data) {
+                                showMsg4model(data,true) ;
+                                reloadData() ;
+                            }
+                        })
+                        hideLoading();
+                    }
+                })
+            })
+
+
+        })	//jQuery
+    })
+
+</script>
+
+</html>

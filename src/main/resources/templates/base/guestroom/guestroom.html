@@ -1,0 +1,827 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+<title>客房管理</title>
+
+<div class="page-header">
+	<h1>
+		客房管理 <small> <i class="ace-icon fa fa-angle-double-right"></i>
+			客房管理<a href="javascript:;" data-rel="tooltip" data-placement="bottom"
+			title="进入用户回收站" onClick="toMain('/base/guestroom/deletepage')"> <strong>客房回收站</strong>
+				<i class="ace-icon fa fa-external-link"></i>
+		</a>
+		</small>
+	</h1>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<button class="btn btn-primary" id="find-guestroom-btn">
+			<i class="ace-icon fa fa-eye bigger-120" />查看
+		</button>
+
+		<button class="btn btn-primary no-border" id="add-guestroom-btn">
+			<i class="ace-icon fa fa-plus bigger-120" />新建
+		</button>
+		<button class="btn btn-warning no-border" id="update-guestroom-btn">
+			<i class="ace-icon fa fa-pencil bigger-120" />修改
+		</button>
+		<button class="btn btn-danger no-border" id="delete-guestroom-btn">
+			<i class="ace-icon fa fa-trash-o bigger-120" />删除
+		</button>
+
+		<div class="btn-group">
+			<button class="btn btn-info no-border" id="search-guestroom-btn"
+				style="height: 42px">
+				<i class="ace-icon fa fa-search bigger-120" />搜索
+			</button>
+			<button class="btn btn-info dropdown-toggle" id="toggle-search-id"
+				style="height: 42px">
+				<span class="ace-icon fa fa-caret-down icon-only bigger-120"></span>
+			</button>
+		</div>
+		<!-- /.btn-group -->
+	</div>
+	<!-- 搜索局栏 -->
+	<div class="col-xs-12" style="display: none;"
+		id="show-search-guestroom-div">
+		<div class="space-2"></div>
+		<form class="form-inline" role="form" id="search-guestroom-form">
+		    <div class="form-group">
+				<label for="search-floorId">楼层:</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;	&nbsp;
+				<select class="select2" name="floorId" id="search-floorId"
+								data-placeholder="请选择..." style="padding: 0px; width: 160px;">
+								<option value="">请选择</option>
+								<option th:each="floor : ${floors}" th:value="${floor.id}"
+									th:text="${floor.name}"></option>
+							</select>
+			</div>
+			&nbsp;&nbsp;
+			<div class="form-group">
+				<label for="search-serialNo">客房编号:</label> <input type="text"
+					class="form-control input-sm" id="search-serialNo" name="serialNo"
+					placeholder="如：201501" />
+			</div>
+				</p>
+			<div class="form-group">
+				<label for="search-name">客房类型:</label> 
+	
+				<select class="select2" name="roomTypeId" id="search-roomTypeId"
+								data-placeholder="请选择..." style="padding: 0px; width: 160px;">
+								<option value="">请选择</option>
+								<option th:each="roomType : ${roomTypes}" th:value="${roomType.id}"
+									th:text="${roomType.typeName}"></option>
+				</select>
+			</div>
+		&nbsp;&nbsp;
+			<div class="form-group">
+				<label for="search-name">客房状态:</label> <select class="select2"
+					name="status" id="search-status" data-placeholder="请选择..."
+					style="padding: 0px;">
+					<option value="">请选择</option>
+					<option th:each="dict : ${@dictService.dictList('roomStatus')}" th:value="${dict.dictMark}" th:text="${dict.dictValue}">空房</option>
+
+				</select>
+			</div>
+			</p>
+			<div class="form-group">
+				<label for="search-name">客房价格区间: </label> <input type="text"
+					class="form-control input-sm" id="search-minPrice" name="minPrice"
+					placeholder="如：1" /> <label for="search-name">~</label> <input
+					type="text" class="form-control input-sm" id="search-maxPrice"
+					name="maxPrice" placeholder="如：1" />
+			</div>
+
+
+
+		</form>
+	</div>
+
+	<div class="col-xs-12">
+		<!-- jqGrid表格和分页 -->
+		<table id="grid-table"></table>
+		<div id="grid-pager"></div>
+	</div>
+</div>
+
+<!-- 查看用户的modal -->
+<div class="modal fade" id="show-guestroom-modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header table-header" style="padding: 8px">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true" class="white">&times;</span>
+				</button>
+				<h5 class="modal-title">客房信息</h5>
+			</div>
+			<div class="modal-body no-padding">
+				<!-- 用户信息 -->
+				<!-- 			<div class="profile-user-info profile-user-info-striped"
+					style="width: 100%">
+ -->
+				<form class="form" id="show-guestroom-form">
+					<div class="profile-info-row">
+						<div class="profile-info-name">客房编号</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="serialNo" id="serialNo" disabled="true" />
+						</div>
+						<div class="profile-info-name">客房类型</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="typeName" id="roomType" disabled="true" />
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name">客房状态</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="status" id="status" disabled="true" />
+						</div>
+						<div class="profile-info-name">所属楼层</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="name" id="name" disabled="true" />
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name">客房价格</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="price" id="price" disabled="true" />
+						</div>
+						<div class="profile-info-name">折后价</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="discountPrice" id="discountPrice"
+								disabled="true" />
+
+
+
+						</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name">普通会员价格</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="generalMemberPrice"
+								id="generalMemberPrice" disabled="true" />
+						</div>
+						<div class="profile-info-name">vip会员价</div>
+
+						<div class="profile-info-value">
+							<input type="text" name="vipMemberPrice" id="vipMemberPrice"
+								disabled="true" />
+						</div>
+					</div>
+					<div class="">
+						<div class="profile-info-name" id="profile-info-textAreaName">备注</div>
+
+						<div class="profile-info-value" >
+						<textarea class="" name="remarks" id="remarks"  style="resize:none;padding-left: 0px;" disabled="true"  ></textarea>
+						
+						</div>
+
+					</div>
+				</form>
+				<!-- 			</div> -->
+			</div>
+			<div class="modal-footer" style="padding: 8px">
+				<button type="button" class="btn btn-white btn-default btn-round"
+					data-dismiss="modal">
+					<i class="ace-icon fa fa-times red2"></i> 关闭
+				</button>
+				<button type="button" class="btn btn-white btn-info btn-bold"
+					data-dismiss="modal">
+					<i class="ace-icon fa fa-check"></i> 确定
+				</button>
+			</div>
+			<!--     modal-footer -->
+		</div>
+	</div>
+</div>
+<!-- /.modal -->
+
+<!-- 编辑用户信息的modal -->
+<div class="modal fade" id="edit-user-modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header table-header" style="padding: 8px">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true" class="white">&times;</span>
+				</button>
+				<h5 class="modal-title">客房信息</h5>
+			</div>
+			<div class="modal-body no-padding-bottom">
+				<!-- 用户信息 -->
+				<form class="form" id="edit-guestroom-form">
+					<input type="hidden" name="id" id="hidden-guestroom-id" />
+
+					<!-- 修改表单提交的时候，需要用到这个input，添加的时候，需要去掉 -->
+					<input type="hidden" name="_method" value="PUT" />
+					<div class="row form-group">
+						<label class="control-label col-xs-2 no-padding-right"
+							for="edit-serialNo">客房编号:</label>
+						<div class="col-xs-4">
+							<input type="text" class="input-sm" name="serialNo"
+								id="edit-serialNo" />
+						</div>
+						<label class="control-label col-xs-2" for="edit-roomType">客房类型:</label>
+						<div class="col-xs-4">
+							<select class="select2" name="roomTypeId" id="edit-roomTypeId"
+								data-placeholder="请选择..." style="padding: 0px; width: 160px;">
+								
+								<option th:each="roomType : ${roomTypes}" th:value="${roomType.id}"
+									th:text="${roomType.typeName}"></option>
+							</select>
+							
+						</div>
+					</div>
+
+					<div class="row form-group">
+						<label class="control-label col-xs-2 no-padding-right"
+							for="edit-status">客房状态:</label>
+						<div class="col-xs-4">
+
+							<select class="form-control" name="status" id="edit-status"
+								data-placeholder="请选择...">
+								<option th:each="dict : ${@dictService.dictList('roomStatus')}" th:value="${dict.dictMark}" th:text="${dict.dictValue}">空房</option>
+							</select>
+						</div>
+						<label class="control-label col-xs-2" for="edit-name">所属楼层:</label>
+						<div class="col-xs-4">
+							<select class="select2" name="floorId" id="edit-floorId"
+								data-placeholder="请选择..." style="padding: 0px; width: 160px;">
+								<option th:each="floor : ${floors}" th:value="${floor.id}"
+									th:text="${floor.name}"></option>
+							</select>
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="control-label col-xs-2 no-padding-right"
+							for="edit-price">客房的价格:</label>
+						<div class="col-xs-4">
+							<input type="text" class="input-sm" name="price" id="edit-price" />
+						</div>
+						<label class="control-label col-xs-2" for="edit-discountPrice">折后价:</label>
+						<div class="col-xs-4">
+
+							<select class="select2"  id="edit-discount"
+								data-placeholder="请选择..." style="padding: 0px; width: 160px;">
+								<option value="1.0">原价</option>
+								<option value="0.9">9折</option>
+								<option value="0.8">8折</option>
+								<option value="0.7">7折</option>
+								<option value="0.6">6折</option>
+								<option value="0.5">5折</option>
+							</select>
+							 <input type="text" class="input-sm" name="discountPrice"
+								id="edit-discountPrice" readonly="readonly"/>
+						</div>
+
+
+
+					</div>
+
+					<div class="row form-group">
+						<label class="control-label col-xs-2 no-padding-right"
+							for="edit-generalMemberPrice">普通会员价:</label>
+						<div class="col-xs-4">
+							<input type="text" class="input-sm" name="generalMemberPrice"
+								id="edit-generalMemberPrice" readonly="readonly" />
+						</div>
+						<label class="control-label col-xs-2" for="edit-vipMemberPrice">vip会员价:</label>
+						<div class="col-xs-4">
+							<input type="text" class="input-sm" name="vipMemberPrice"
+								id="edit-vipMemberPrice" readonly="readonly" />
+						</div>
+					</div>
+					<div class="row form-group">
+						<label class="control-label col-xs-2 no-padding-right"
+							for="edit-remarks">备注:</label>
+						<div class="col-xs-10">
+					
+								<textarea  class="form-control"  name="remarks" id="edit-remarks"  style="resize:none;padding:0;"  ></textarea>
+								
+						</div>
+
+					</div>
+
+				</form>
+			</div>
+			<div class="modal-footer" style="padding: 8px">
+				<button type="button" class="btn btn-white btn-default btn-round"
+					data-dismiss="modal">
+					<i class="ace-icon fa fa-times red2"></i> 关闭
+				</button>
+				<button type="button" class="btn btn-white btn-info btn-bold"
+					id="save-for-update-btn">
+					<i class="ace-icon fa fa-floppy-o bigger-120 blue"></i> 保存
+				</button>
+				<button type="button" class="btn btn-white btn-info btn-bold"
+					id="save-for-add-btn">
+					<i class="ace-icon fa fa-plus bigger-120 blue"></i> 新建
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.modal -->
+
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+        $.ace_ajax_finish(function() {
+            jQuery(function ($) {
+
+
+            	
+            	//打折事件
+                $('#edit-discount').change(function() {
+                	var discountPrice=($("#edit-discount option:selected").val())*($("#edit-price").val());               	
+                	$('#edit-discountPrice').val(discountPrice.toFixed(2));           
+                })
+
+                //显示普通会员价格和vip价格
+            	  $('#edit-price').change(function() {
+            		 
+            		var discountPrice=($("#edit-price").val())*( $("#edit-discount").val());
+                	var generalMemberPrice=($("#edit-price").val())*0.9;  
+                	var vipMemberPrice=($("#edit-price").val())*0.8;
+                	if (!isNaN(discountPrice)) {                		
+                		$('#edit-discountPrice').val(discountPrice.toFixed(2));　　　
+                	}else{
+                		　　　　$('#edit-generalMemberPrice').val('');
+                		}	
+                	if (!isNaN(generalMemberPrice)) {                		
+                		$('#edit-generalMemberPrice').val(generalMemberPrice.toFixed(2));　　　
+                	}else{
+                		　　　　$('#edit-generalMemberPrice').val('');
+                		}			                   	
+                   	if (!isNaN(vipMemberPrice)){
+                   		$('#edit-vipMemberPrice').val(vipMemberPrice.toFixed(2));
+                   	　}else{
+                   		$('#edit-vipMemberPrice').val('');
+                   	　}                   
+                })
+                      
+               
+
+                //鼠标悬停提示信息
+                $('[data-rel=tooltip]').tooltip();
+                $('[data-rel=popover]').popover({html:true});
+
+                var grid_selector = "#grid-table"; //jqGrid表格
+                var pager_selector = "#grid-pager"; //
+                //resize to fit page size
+                $(window).on('resize.jqGrid',function() {
+                    $(grid_selector).jqGrid('setGridWidth',$(".page-content").width());
+                })
+
+                $(grid_selector).jqGrid({
+                    url : "/base/guestroom",//获取数据的url地址
+                    datatype : "json", //获取数据的格式
+                    mtype : "get", //请求数据的方式
+                    colNames : [ 'id', '客房编号',
+                        '客房类型', '客房状态', '所属楼层',
+                        '客房价格', '折后价', '普通会员价',
+                        'vip会员价','备注' ],//表头
+                    colModel : [
+                                {
+                                    name : 'id',
+                                    index : 'id',
+                                    key: true,
+                                    hidden : true
+                                },
+                        {
+                            name : 'serialNo',
+                            index : 'serialNo',
+                            hidden : false
+                        },
+                        {
+                            name : 'typeName',
+                            index : 'typeName',
+                            hidden : false,
+                            sortable : false,
+       
+                        },
+                        {
+                            name : 'status',
+                            index : 'status',           
+                            sortable : false,
+                            formatter : function alamFormatter(cellvalue, options,row) {
+                            	var array = /*[[${@dictService.dictMap('roomStatus')}]]*/ null;  // json格式的数组
+                            	return(array[row.status]);
+                            }
+                        
+                        },
+                        {
+                            name : 'name',
+                            index : 'name',
+                            align : 'center',                            
+                            sortable : false
+                        },
+                        {
+                            name : 'price',
+                            index : 'price',
+                            align : 'center',                           
+                            sortable : false
+                        },
+                        {
+                            name : 'discountPrice',
+                            index : 'discountPrice',
+                            align : 'center',
+                         
+                            hidden : true,
+                            sortable : false
+                        },
+                        {
+                            name : 'generalMemberPrice',
+                            index : 'generalMemberPrice',
+                            align : 'center',
+                           
+                            hidden : true,
+                            sortable : false
+                        },
+                        {
+                            name : 'vipMemberPrice',
+                            index : 'vipMemberPrice',
+                            align : 'center',
+                            
+                            hidden : true,
+                            sortable : false
+                        },                   
+                        {
+                            name : 'remarks',
+                            index : 'remarks',
+                            align : 'center',
+                            hidden : true,
+                            sortable : false,
+                        }], //后端的数据
+                    rowNum : 10,
+                    rowList : [ 10, 20, 50 ],
+                    pager : pager_selector,
+                    sortname : 'serialNo',
+                    viewrecords : true,
+                    altRows : true, //设置隔行用不同的背景色区分开
+                    sortorder : "desc",
+                    width : "auto",
+                    height : "auto",
+                    //multiboxonly : true,
+                    multiselect : true,
+                    rownumbers : false,
+                    caption : "客房列表",
+                    loadComplete : function() {
+                        var table = this;
+                        setTimeout(function() {
+                            //styleCheckbox(table);
+                            //updateActionIcons(table);
+                            updatePagerIcons(table);
+                            //enableTooltips(table);
+                        }, 0);
+                    },
+                }) //jqGrid
+                $(window).triggerHandler('resize.jqGrid'); //初始化jqGrid大小
+
+                //搜索右边下拉按钮
+                $('#toggle-search-id').click(function() {
+                    $('#show-search-guestroom-div').toggle() //显示或隐藏搜索user的div
+                })
+
+                //重新加载jqgrid数据，根据输入项
+                function reloadData() {
+                    $(grid_selector).jqGrid('setGridParam', {
+                        dataType : 'json',
+                        postData : $('#search-guestroom-form').serializeObject(),	//postData.接收的是一个对象
+                        page : 1
+                    }).trigger("reloadGrid"); //重新载入#
+                }
+
+
+                //搜索
+                $('#search-guestroom-btn').click(function() {
+                    if(!$('#search-guestroom-form').valid()) {
+                        return false ;
+                    }
+                    reloadData() ;
+               
+                })
+                 //根据不同浏览器设置下拉框大小
+                 var select2Width = judgeBrower(false) == 'chrome' ? '160px':'170px' ;
+                 var selectWidth=  judgeBrower(false) == 'chrome' ? '160px':'170px' ;
+                 //根据不同浏览器设置textarea大小
+                 var textAreCols = judgeBrower(false) == 'chrome' ? '55':'60' ;
+                 var editTextWidth = judgeBrower(false) == 'chrome' ? '455px':'468px' ;
+                 var textWidth = judgeBrower(false) == 'chrome' ? '438px':'445px' ;
+                 var padding=judgeBrower(false) == 'chrome' ? '10px':'20px' ;
+                 
+                 
+                 //美化下拉框
+                $(".select2").css('width', select2Width).select2({placeholder:"请选择",allowClear : true}) ;
+                $(".form-control").css('width',selectWidth);
+                //美化编辑表单的textarea
+                $("#edit-remarks").attr("cols",textAreCols);
+                $("#edit-remarks").attr("rows",'6');
+                $("#edit-remarks").css('width', editTextWidth);
+            
+                //美化查看表单的textarea
+                $("#profile-info-textAreaName").css('padding-right', padding);
+                $("#remarks").attr("cols",textAreCols);
+                $("#remarks").attr("rows",'6');
+                $("#remarks").css('width', textWidth);
+                
+                
+                //查看客房信息
+                $('#find-guestroom-btn').click(function() {
+                    var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                    if (selectedIds.length !== 1) {
+                        showInfoMsg("请选择一条数据");
+                        return false;
+                    }
+                    var id=$(grid_selector).jqGrid('getGridParam','selrow')	; //得到被选择行
+                    var rowData = $(grid_selector).jqGrid('getRowData',id);
+                    
+                    $('#show-guestroom-modal').modal()
+                
+                   fillform($('#show-guestroom-form'),rowData) 
+                })
+
+
+                //新建客房信息modal 显示
+                $('#add-guestroom-btn').click(function(){
+                    //清除错误验证
+                    $('#edit-guestroom-form .form-group').removeClass('has-error');
+                    $('#edit-guestroom-form').validate().resetForm() ;
+                    
+                    $('#edit-guestroom-form')[0].reset() ;	//重置表单
+                    $('#edit-serialNo').rules('add',validate_serialNo_rule) ;	//开启serialNo的校验
+                    $('#edit-serialNo').attr('disabled',false) ;
+
+                    $('.select2',$('#edit-guestroom-form')).trigger("change") //select2下拉框数据显示
+                   
+                    $("select[id='edit-status']").val("empty");
+                    
+                    $('#save-for-add-btn').show() ;	//显示新建按钮
+                    $('#save-for-update-btn').hide() ;	//隐藏保存按钮
+                    
+                  
+                    $('#edit-user-modal').modal();
+                })
+
+                //修改客房信息modal 显示
+                $('#update-guestroom-btn').click(function(){
+                    var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                    if (selectedIds.length !== 1) {
+                        showInfoMsg("请选择一条数据");
+                        return false;
+                    }
+                    //清除错误验证
+                    $('#edit-guestroom-form .form-group').removeClass('has-error');
+                    $('#edit-guestroom-form').validate().resetForm() ;
+
+                    $('#edit-guestroom-form')[0].reset() ;	//重置表单
+                    $('#edit-serialNo').rules('remove') ;	//关闭serialNo的校验
+                    $('#edit-serialNo').attr('disabled',true) ;
+
+                    //var id=$(grid_selector).jqGrid('getGridParam','selrow')	; //得到被选择行
+                    //var rowData = $(grid_selector).jqGrid('getRowData',id);	//得到被选择行的数据
+                    var rowData =  $(grid_selector).jqGrid('getRowData',selectedIds[0]) ;
+                
+                    $.ajax({
+                        url:"/base/guestroom/"+rowData.id,
+                        type : 'GET',
+                        dataType : 'json',
+                        success:function(data) {
+                        
+                            $('#edit-guestroom-form')[0].reset() ;	//重置表单
+                            showMsg4model(data)
+                            fillform($('#edit-guestroom-form'),data.data) //填充表单
+                         
+                            $('.select2',$('#edit-guestroom-form')).trigger("change") //select2下拉框数据显示                           
+                         
+                            var floorId=data.data.floor.id;
+                            var typeId=data.data.roomType.id;
+                            var discount=((data.data.discountPrice)/(data.data.price));
+                     
+                            $("#edit-roomTypeId").select2().select2("val",typeId);//设置下拉框客房类型
+                            $("#edit-floorId").select2().select2("val", floorId);//设置下拉框楼层
+                            $("#edit-discount").select2().select2("val", discount.toFixed(1));//下拉框数据设置
+                            $("#edit-discountPrice").val(data.data.discountPrice);    
+                            
+                        }
+                    })
+                    $('#save-for-add-btn').hide() ;	//隐藏保存按钮
+                    $('#save-for-update-btn').show() ; //显示新建按钮
+                   
+                
+                    $('#edit-user-modal').modal();
+                })
+
+
+                //新建用户保存按钮
+                $('#save-for-add-btn').click(function(){
+                    if(!$('#edit-guestroom-form').valid()) {
+                        return false ;
+                    }
+                    showLoading("正在提交数据，请稍后...") ;
+                    
+                    $.ajax({
+                        url:'/base/guestroom',
+                        type:'POST',
+                        dataType:'json',
+                        data: $.param($('#edit-guestroom-form').serializeObject(['id','_method'])),
+                        success:function(data) {
+                    
+                            showMsg4model(data,true) ;
+                            $('#edit-user-modal').modal('hide') ;
+                            reloadData();
+                        }
+                    })
+                    hideLoading() ;
+                })
+
+                //保存修改用户按钮
+                $('#save-for-update-btn').click(function(){
+                    if(!$('#edit-guestroom-form').valid()) {
+                        return false ;
+                    }
+                    showLoading("正在提交数据，请稍后...") ;
+                    $.ajax({
+                        url: '/base/guestroom',
+                        type: 'POST',
+                        dataType:'json',
+                        data: $.param($('#edit-guestroom-form').serializeObject()),
+                        success:function(data){
+                            showMsg4model(data,true);
+                            $('#edit-user-modal').modal('hide') ;
+                            reloadData();
+                        }
+                    })
+                    hideLoading() ;
+                })
+
+                
+                
+                
+
+
+                
+                //点击删除按钮
+                $('#delete-guestroom-btn').click(function(){
+                    var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                    
+                    if (selectedIds.length <= 0) {
+                        showInfoMsg("请选择数据");
+                        return false;
+                    }
+                    bootbox.confirm("您确定要删除所选的用户数据吗？",function(result){
+                        if(result) {
+                        	
+                        	
+                            showLoading() ;
+                            
+                            var idsParam = "ids="+selectedIds.join('&ids=') ;
+                            $.ajax({
+                                url: "/base/guestroom",
+                                type: "POST",
+                                dataType: "JSON",
+                                data: idsParam+"&_method=PATCH",
+                                success: function(data) {
+                                    showMsg4model(data,true) ;
+                                    reloadData() ;
+                                }
+                            })
+                            hideLoading();
+                        }
+                    })
+                })
+
+
+
+
+
+                //校验账号的规则
+                var validate_serialNo_rule = {
+                    required: true ,
+                    alphabetAndNum: true,	//只能数字或字母
+                    rangelength: [4,8],
+                    remote: function() {
+                        return '/base/guestroom/validation/'+$('#edit-serialNo').val()
+                    }
+                } ;
+                
+                
+                
+                //校验用户
+                $('#edit-guestroom-form').validate({
+                    errorElement: 'div',
+                    errorClass: 'help-block',
+                    focusInvalid: false,
+                    ignore: "",
+                    rules: {
+                    	serialNo: validate_serialNo_rule,
+                    	roomType:{
+                            required: true,                       
+                      
+                            
+                        },
+                        status: {
+                            required: true,
+                           
+                        },
+                        price: {
+                            required: true,
+                            number: true,  ////只能数字
+                        },
+                        discountPrice: {
+                            required: true,
+                            number: true,  ////只能数字
+                        },
+                        generalMemberPrice: {
+                            required: true,
+                            number: true,  ////只能数字
+                        },
+                        vipMemberPrice: {
+                            required: true,
+                            number: true,  ////只能数字
+                        }
+                    },
+
+                    messages: {
+                    	serialNo: {
+                            required:'请输入客房编号',
+                            alphabetAndNum:'请输入输入数字或字母',
+                            remote:'客房已存在'
+                        },
+                        roomType: {
+                            required:'请输入客房类型',
+                           
+                        },
+                        status: {
+                            required: '请输入状态'
+                        },
+                        price: {
+                            required:'请输入价格',
+                            number:'请输入数字',                           
+                        },
+                        discountPrice: {
+                            required: "请输入折后价",
+                            number: '请输入数字', 
+                        },
+                        generalMemberPrice: {
+                            required: "请输入普通会员价",
+                            number: '请输入数字', 
+                        },
+                        vipMemberPrice: {
+                            required: "请输入vip会员价",
+                            number: '请输入数字', 
+                        }
+                    },
+
+                    highlight: function (e) {
+                        $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                    },
+
+                    success: function (e) {
+                        $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                    },
+                }) ;
+                
+                $('#search-guestroom-form').validate({
+
+                    rules:{
+                    	minPrice:{
+                    		number:true,
+                    	},
+             	       maxPrice:{
+            					number:true,
+                        	},
+                    },
+                    message:{
+                    	minPrice:{
+                    		number:"请输入数字",
+                    	},
+                     	maxPrice:{
+                    		number:"请输入数字",
+                    	},
+                    	
+                    },
+                    highlight: function (e) {
+                    	$('.has-error').css('color','red');
+                    	$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                        
+                    },
+
+                    success: function (e) {
+                    	
+                    	$('.has-error').css('color','black');
+                        $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                    },
+                    
+                });
+            })
+        })
+        /*]]>*/
+    </script>
+
+</html>

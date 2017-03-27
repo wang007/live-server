@@ -1,0 +1,652 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+<title>用户组与角色管理</title>
+<link rel="stylesheet" href="/static/ace/dist/css/bootstrap-multiselect.min.css" />
+<div class="page-header">
+    <h1>用户组与角色
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            用户组管理,角色管理
+        </small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="tabbable">
+            <ul class="nav nav-tabs" id="myTab">
+                <li class="active">
+                    <a data-toggle="tab" href="#group">
+                        <i class="blue ace-icon fa fa-group bigger-120"></i>
+                        用户组管理
+                    </a>
+                </li>
+
+                <li>
+                    <a data-toggle="tab" href="#role">
+                        <i class="blue ace-icon fa fa-user bigger-120"></i>
+                        角色管理
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="group" class="tab-pane fade in active">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button class="btn btn-primary" id="add-group-btn">
+                                <i class="ace-icon fa fa-plus bigger-120" />新建
+                            </button>
+                            <button class="btn btn-warning" id="update-group-btn">
+                                <i class="ace-icon fa fa-pencil bigger-120" />修改
+                            </button>
+                            <button class="btn btn-danger" id="delete-group-btn">
+                                <i class="ace-icon fa fa-trash-o bigger-120" />删除
+                            </button>
+<!--                            <button class="btn btn-info" id="look-group-btn">
+                                <i class="ace-icon fa fa-search-plus bigger-120" />查看
+                            </button>-->
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="space-2"></div>
+                            <div class="table-header">用户组信息列表</div>
+                            <div>
+                                <table id="group-table" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th class="center">
+                                            <label class="position-relative">
+                                                <input type="checkbox" class="ace" />
+                                                <span class="lbl"></span>
+                                            </label>
+                                        </th>
+                                        <th class="center">序号</th>
+                                        <th class="center">用户组名称</th>
+                                        <th class="center">用户组描述</th>
+                                        <th class="center">已分配的角色</th>
+                                        <th class="center">是否启用</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr th:each="groupInfo:${groupInfos}">
+                                        <td class="center">
+                                            <label class="position-relative">
+                                                <input type="checkbox" class="ace select-group" />
+                                                <span class="lbl"></span>
+                                            </label>
+                                        </td>
+                                        <input type="hidden" th:value="${groupInfo.group.id}" name="hidden-group-id"/>
+                                        <td class="center" th:text="${groupInfo.group.serialNo}"></td>
+                                        <td class="center" th:text="${groupInfo.group.groupName}"></td>
+                                        <td class="center" th:text="${groupInfo.group.description}"></td>
+
+                                            <!--
+                                            用户组中分配的角色展示：小于等于4个，全部展示出来。   大于4个，只展示出前4个。其他省略
+                                            -->
+                                        <td>
+                                            <span class="label label-lg label-primary" th:each="role:${groupInfo.roles}" th:text="${role.roleName}" style="margin-left:2px;"></span>
+                                        </td>
+
+                                        <td class="center">
+                                            <label>
+                                                <input name='group-isEnable' class='ace ace-switch ace-switch-3'  th:onclick="|changeGroupIsEnable('${groupInfo.group.id}')|" type='checkbox' th:checked="${groupInfo.group.isEnable ==1}" />
+                                                <span class='lbl'></span>
+                                            </label>
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div><!-- /.row -->
+                </div>
+
+                <div id="role" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button class="btn btn-primary" id="add-role-btn">
+                                <i class="ace-icon fa fa-plus bigger-120" />新建
+                            </button>
+                            <button class="btn btn-warning" id="update-role-btn">
+                                <i class="ace-icon fa fa-pencil bigger-120" />修改
+                            </button>
+                            <button class="btn btn-danger" id="delete-role-btn">
+                                <i class="ace-icon fa fa-trash-o bigger-120" />删除
+                            </button>
+                            <!--                            <button class="btn btn-info" id="look-group-btn">
+                                                            <i class="ace-icon fa fa-search-plus bigger-120" />查看
+                                                        </button>-->
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="space-2"></div>
+                            <div class="table-header">角色信息列表</div>
+                            <div>
+                                <table id="role-table" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th class="center">
+                                            <label class="position-relative">
+                                                <input type="checkbox" class="ace" />
+                                                <span class="lbl"></span>
+                                            </label>
+                                        </th>
+                                        <th class="center">序号</th>
+                                        <th class="center">角色名称</th>
+                                        <th class="center">角色值</th>
+                                        <th class="center">角色描述</th>
+                                        <th class="center">是否启用</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    <tr th:each="role:${roles}">
+                                        <td class="center">
+                                            <label class="position-relative">
+                                                <input type="checkbox" class="ace select-role" />
+                                                <span class="lbl"></span>
+                                            </label>
+                                        </td>
+                                        <input type="hidden" th:value="${role.id}" name="hidden-role"/>
+                                        <td class="center" th:text="${role.serialNo}"></td>
+                                        <td class="center" th:text="${role.roleName}"></td>
+                                        <td class="center" th:text="${role.roleValue}"></td>
+                                        <td class="center" th:text="${role.description}"></td>
+                                        <td class="center">
+                                            <label>
+                                                <input name='role-isEnable' class='ace ace-switch ace-switch-3'  th:onclick="|changeRoleIsEnable('${role.id}')|" type='checkbox' th:checked="${role.isEnable ==1}" />
+                                                <span class='lbl'></span>
+                                            </label>
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div><!-- /.row -->
+                </div>
+            </div> <!-- /.tab-content -->
+        </div>
+    </div>
+</div>
+
+<!-- group-modal -->
+<div class="modal fade" id="edit-group-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header table-header" style="padding: 8px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white">&times;</span>
+                </button>
+                <h5 class="modal-title">编辑用户组信息</h5>
+            </div>
+            <div class="modal-body no-padding-bottom">
+                <!-- 用户组信息 -->
+                <form class="form" id="edit-group-form">
+                    <input type="hidden" name="id" id="hidden-group-id"/>
+                    <input type="hidden" name="_method" value="PUT" />
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-serialNo">序号:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="serialNo" id="edit-serialNo" placeholder="如：1" />
+                        </div>
+                        <label class="control-label col-xs-2" for="edit-groupName">用户组名:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="groupName" id="edit-groupName" placeholder="如：管理员组"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-isEnable">是否启用:</label>
+                        <div class="col-xs-4">
+                            <label>
+                                <input name='isEnable' class='ace ace-switch ace-switch-3' type='checkbox' value="1" id="edit-isEnable" checked/>
+                                <span class='lbl'></span>
+                            </label>
+                        </div>
+
+                        <label class="control-label col-xs-2 no-padding-right" for="select-roles">分配角色:</label>
+                        <div class="col-xs-4">
+                            <select class="multiselect" multiple="" name="roleIds" id="select-roles">
+                                <option th:value="${role.id}" th:text="${role.roleName}" th:each="role:${roles}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-description">用户组描述:</label>
+                        <div class="col-xs-6">
+                            <textarea class="form-control" rows="3" id="edit-description" name="description" placeholder="说点什么吧..."></textarea>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer" style="padding: 8px">
+                <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times red2"></i>
+                    关闭
+                </button>
+                <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-update-btn">
+                    <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                    保存
+                </button>
+
+                <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-add-btn">
+                    <i class="ace-icon fa fa-plus bigger-120 blue"></i>
+                    新建
+                </button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+<!-- group-modal -->
+<div class="modal fade" id="edit-role-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header table-header" style="padding: 8px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white">&times;</span>
+                </button>
+                <h5 class="modal-title">编辑角色信息</h5>
+            </div>
+            <div class="modal-body no-padding-bottom">
+                <!-- 角色信息 -->
+                <form class="form" id="edit-role-form">
+                    <input type="hidden" name="id" id="hidden-role-id"/>
+                    <input type="hidden" name="_method" value="PUT" />
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-serialNo">序号:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="serialNo" id="edit-serialNo" placeholder="如：1" />
+                        </div>
+                        <label class="control-label col-xs-2" for="edit-roleName">角色名:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="roleName" id="edit-roleName" placeholder="如：管理员"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-isEnable">是否启用:</label>
+                        <div class="col-xs-4">
+                            <label>
+                                <input name='isEnable' class='ace ace-switch ace-switch-3' type='checkbox' value="1" id="edit-isEnable" checked/>
+                                <span class='lbl'></span>
+                            </label>
+                        </div>
+
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-roleValue">角色值:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="roleValue" id="edit-roleValue" placeholder="如：admin"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-description">用户组描述:</label>
+                        <div class="col-xs-6">
+                            <textarea class="form-control" rows="3" id="edit-description" name="description" placeholder="说点什么吧..."></textarea>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer" style="padding: 8px">
+                <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times red2"></i>
+                    关闭
+                </button>
+                <button type="button" class="btn btn-white btn-info btn-bold" id="save-role-update-btn">
+                    <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                    保存
+                </button>
+
+                <button type="button" class="btn btn-white btn-info btn-bold" id="save-role-add-btn">
+                    <i class="ace-icon fa fa-plus bigger-120 blue"></i>
+                    新建
+                </button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+
+
+<script type="text/javascript">
+
+    //更改用户组的是否启用
+    function changeGroupIsEnable(groupId) {
+        $.ajax({
+            url: "/sys/group/"+groupId,
+            type: "POST",
+            dateType: "JSON",
+            data: {_method:"PATCH"} ,
+            success:function(data){
+                showMsg4model(data,true) ;
+            }
+        })
+    }
+
+    function changeRoleIsEnable(roleId) {
+        $.ajax({
+            url: "/sys/role/"+roleId,
+            type: "POST",
+            dateType: "JSON",
+            data: {_method:"PATCH"} ,
+            success:function(data){
+                showMsg4model(data,true) ;
+            }
+        })
+    }
+
+    var scripts = [null,"/static/ace/dist/js/bootstrap-multiselect.min.js",null] ;
+    $.ace_ajax_finish(scripts,function(){
+        jQuery(function($){
+            var groupTable =
+                $('#group-table')
+                //.wrap("<div class='dataTables_borderWrap' />")   //if you are applying horizontal scrolling (sScrollX)
+                    .dataTable( {
+                        //"processing":true,
+                        bAutoWidth: false,
+                        "aoColumns": [
+                            { "bSortable": false },
+                            null, null,{"bSortable":false}, {"bSortable":false},
+                            { "bSortable": false }
+                        ],
+                        "aaSorting": [],
+
+                        //,
+                        //"sScrollY": "200px",
+                        //"bPaginate": false,
+
+                        //"sScrollX": "100%",
+                        //"sScrollXInner": "120%",
+                        //"bScrollCollapse": true,
+                        //Note: if you are applying horizontal scrolling (sScrollX) on a ".table-bordered"
+                        //you may want to wrap the table inside a "div.dataTables_borderWrap" element
+
+                        //"iDisplayLength": 50
+                    });
+            //使点击全选
+            $(document).on('click', 'th input:checkbox' , function(){
+                var that = this;
+                $(this).closest('table').find('tr > td:first-child input:checkbox')
+                    .each(function(){
+                        this.checked = that.checked;
+                        $(this).closest('tr').toggleClass('selected');
+                    });
+            });
+
+
+
+
+            //下拉多选
+            $('.multiselect').multiselect({
+                enableFiltering: true,
+                buttonClass: 'btn btn-white btn-primary',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown" id="selectBtn"></button>',
+                    ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                    filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                    filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+                    li: '<li><a href="javascript:void(0);"><label></label></a></li>',
+                    divider: '<li class="multiselect-item divider"></li>',
+                    liGroup: '<li class="multiselect-item group"><label class="multiselect-group"></label></li>'
+                }
+            });
+
+            //设置选择角色的多选框
+            var selectWidth = judgeBrower(false) == 'chrome' ? '160px':'170px' ;
+            $("#selectBtn").css("width",selectWidth) ;
+
+            //点击用户组新建按钮
+            $('#add-group-btn').click(function(){
+                $("#edit-group-form")[0].reset() ;
+                $("#select-roles").multiselect('rebuild');
+
+                $('#save-for-add-btn').show() ;
+                $('#save-for-update-btn').hide() ;
+
+                $('#edit-group-modal').modal() ;
+            })
+
+            //点击新建保存组信息
+            $("#save-for-add-btn").click(function(){
+
+                var selectRoleIds = null ;  //得到选择的角色
+                if($("#select-roles").val() != null) {
+                    var selectRoleIds = "&roleIds="+$("#select-roles").val().join("&roleIds=")
+                }
+                showLoading("正在保存信息,请稍后...") ;
+                $.ajax({
+                    url: "/sys/group",
+                    type: "POST",
+                    dateType: "JSON",
+                    data: $.param($("#edit-group-form").serializeObject(['id','_method','roles']))+ selectRoleIds ,
+                    success:function(data){
+                        showMsg4model(data,true) ;
+                        $('#edit-group-modal').modal("hide") ;
+                        toMain("/sys/groupRole") ;
+                    }
+                })
+                hideLoading() ;
+            })
+
+            //点击修改按钮
+            $("#update-group-btn").click(function(){
+                var $selectGroups = $("#group-table .select-group:checked") ;
+                if($selectGroups.length != 1) {
+                    showInfoMsg("请选择一条数据修改！") ;
+                    return ;
+                }
+                $("#edit-group-form")[0].reset() ;
+                $("#select-roles").multiselect('rebuild');
+                $('#save-for-add-btn').hide() ;
+                $('#save-for-update-btn').show() ;
+
+                var groupId = $($selectGroups).closest("tr").children("input:hidden").val() ;
+                $.ajax({
+                    url: "/sys/group/"+groupId,
+                    type:"GET",
+                    dateType: "JSON",
+                    success:function (data) {
+                       console.info(data)
+                        fillform($("#edit-group-form"),data.data) ;
+                        $("#select-roles").multiselect("refresh");  //刷新下拉框的选择情况
+
+                        $('#edit-group-modal').modal() ;
+                    }
+                })
+            })
+
+            //点击保存修改用户组
+            $("#save-for-update-btn").click(function(){
+                var selectRoleIds = null ;  //得到选择的角色
+                if($("#select-roles").val() != null) {
+                    var selectRoleIds = "&roleIds="+$("#select-roles").val().join("&roleIds=")
+                }
+                showLoading("正在保存信息,请稍后...") ;
+                $.ajax({
+                    url: "/sys/group",
+                    type: "POST",
+                    dateType: "JSON",
+                    data: $.param($("#edit-group-form").serializeObject([,'roles']))+ selectRoleIds ,
+                    success:function(data){
+                        showMsg4model(data,true) ;
+                        $('#edit-group-modal').modal("hide") ;
+                        toMain("/sys/groupRole") ;
+                    }
+                })
+                hideLoading() ;
+            })
+
+            //点击删除
+            $("#delete-group-btn").click(function(){
+                var $selectGroups = $("#group-table .select-group:checked") ;
+                if($selectGroups.length != 1) {
+                    showInfoMsg("请选择一条数据删除！") ;
+                    return ;
+                }
+                bootbox.confirm("您确定要删除吗？~删除后将无法恢复",function(result){
+                    if(result) {
+                        showLoading("正在删除，请稍后...") ;
+                        var groupId = $($selectGroups).closest("tr").children("input:hidden").val() ;
+                        $.ajax({
+                            url: "/sys/group/"+groupId,
+                            type: "POST",
+                            dataType: "JSON",
+                            data:{"_method":"DELETE"},
+                            success:function(data){
+                                showMsg4model(data,true) ;
+                            }
+                        })
+                        hideLoading() ;
+                    }
+                })
+            })
+
+
+            //角色列表
+            var roleTable =
+                $('#role-table')
+                //.wrap("<div class='dataTables_borderWrap' />")   //if you are applying horizontal scrolling (sScrollX)
+                    .dataTable( {
+                        //"processing":true,
+                        bAutoWidth: false,
+                        "aoColumns": [
+                            { "bSortable": false },
+                            null, null,{"bSortable":false}, {"bSortable":false},
+                            { "bSortable": false }
+                        ],
+                        "aaSorting": [],
+
+                        //,
+                        //"sScrollY": "200px",
+                        //"bPaginate": false,
+
+                        //"sScrollX": "100%",
+                        //"sScrollXInner": "120%",
+                        //"bScrollCollapse": true,
+                        //Note: if you are applying horizontal scrolling (sScrollX) on a ".table-bordered"
+                        //you may want to wrap the table inside a "div.dataTables_borderWrap" element
+
+                        //"iDisplayLength": 50
+                    });
+            //使点击全选
+            $(document).on('click', 'th input:checkbox' , function(){
+                var that = this;
+                $(this).closest('table').find('tr > td:first-child input:checkbox')
+                    .each(function(){
+                        this.checked = that.checked;
+                        $(this).closest('tr').toggleClass('selected');
+                    });
+            });
+
+
+            //点击角色新建
+            $("#add-role-btn").click(function(){
+
+                $("#edit-role-form")[0].reset() ;
+                $('#save-role-add-btn').show() ;
+                $('#save-role-update-btn').hide() ;
+                $("#edit-role-modal").modal() ;
+            })
+
+
+            //点击保存角色信息
+            $("#save-role-add-btn").click(function(){
+                showLoading("正在保存，请稍后...") ;
+                $.ajax({
+                    url: "/sys/role",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#edit-role-form").serializeObject(["id","_method"]),
+                    success: function(data){
+                        $("#edit-role-modal").modal("hide") ;
+                        showMsg4model(data,true) ;
+                        toMain("/sys/groupRole",function(){
+                            $('#myTab > .active').next().find('> a').trigger('click');
+                        }) ;
+                    }
+                })
+                hideLoading() ;
+            })
+
+            //点击角色修改
+            $("#update-role-btn").click(function(){
+                var $selectRoles = $("#role-table .select-role:checked") ;
+                if($selectRoles.length != 1) {
+                    showInfoMsg("请选择一条数据修改！") ;
+                    return ;
+                }
+                var roleId = $($selectRoles).closest("tr").children("input:hidden").val() ;
+                $.ajax({
+                    url: "/sys/role/"+roleId,
+                    type:"GET",
+                    dataType:"JSON",
+                    success:function(data){
+                       fillform($("#edit-role-form"),data.data) ;
+                    }
+                })
+                $("#edit-role-form")[0].reset() ;
+                $('#save-role-add-btn').hide() ;
+                $('#save-role-update-btn').show() ;
+                $("#edit-role-modal").modal() ;
+            })
+
+
+            //点击保存修改角色信息
+            $("#save-role-update-btn").click(function(){
+                showLoading() ;
+                $.ajax({
+                    url: "/sys/role",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#edit-role-form").serializeObject(),
+                    success: function(data){
+                        showMsg4model(data,true) ;
+                        $("#edit-role-modal").modal("hide") ;
+                        toMain("/sys/groupRole",function(){
+                            $('#myTab > .active').next().find('> a').trigger('click');
+                        }) ;
+                    }
+                })
+                hideLoading() ;
+            })
+
+            //删除角色
+            $("#delete-role-btn").click(function(){
+                var $selectRoles = $("#role-table .select-role:checked") ;
+                if($selectRoles.length != 1) {
+                    showInfoMsg("请选择一条数据修改！") ;
+                    return ;
+                }
+                var roleId = $($selectRoles).closest("tr").children("input:hidden").val() ;
+                bootbox.confirm("您确定要删除吗？~删除后将无法恢复",function(result){
+                    if(result) {
+                        $.ajax({
+                            url: "/sys/role/" + roleId,
+                            type: "POST",
+                            dataType: "JSON",
+                            data: {"_method": "DELETE"},
+                            success: function (data) {
+                                showMsg4model(data, true);
+                                toMain("/sys/groupRole", function () {
+                                    $('#myTab > .active').next().find('> a').trigger('click');
+                                });
+                            }
+                        })
+                    }
+                })
+            })
+
+
+        })
+    })
+</script>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta charset="UTF-8"/>
+    <title th:text="${application.systemTitle}">Title</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <!--/* 引入全局的css文件  */-->
+    <div th:replace="common/common_style :: #common_style_section"></div>
+</head>
+<body class="no-skin">
+<!--/* 引入顶部导航栏 */-->
+<div th:replace="common/navbar :: #navbar_section"></div>
+
+<div class="main-container" id="main-container">
+    <script type="text/javascript">
+        try {
+            ace.settings.check('main-container', 'fixed')
+        } catch (e) {
+        }
+    </script>
+    <!--/* 引入左侧菜单栏 */-->
+    <div th:replace="common/sidebar :: #sidebar_section"></div>
+
+    <div class="main-content">
+        <div class="main-content-inner">
+            <!--/* 引入菜单显示栏 */-->
+            <div th:replace="common/showmenubar :: #showmenubar_section"></div>
+
+            <div class="page-content">
+                <!--/* 引入右侧的设置面板 */-->
+                <div th:replace="common/settingpanel :: #settingpanel_section"></div>
+
+                <div id="auto_page_content" data-ajax-content="true">
+                    <!-- 点击菜单加载页面的内容到这里 -->
+                </div>
+            </div><!-- /.page-content -->
+        </div>  <!--/.main-content-inner-->
+    </div>    <!-- /.main-content -->
+
+    <!--/* 引入页脚文件 */-->
+    <div th:replace="common/footer :: #footer_section"></div>
+</div>    <!-- /.main-container -->
+
+<!--/* 引入全局js文件 */-->
+<div th:replace="common/common_js :: #common_js_section"></div>
+</body>
+</html>

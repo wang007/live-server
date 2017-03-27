@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8"></meta>
+<title>room_type</title>
+<div class="page-header">
+	<h1>
+		字典管理 <small> 》字典信息管理 </small>
+	</h1>
+</div>
+
+<!-- 按钮组 -->
+<div class="row">
+	<div class="col-xs-12">
+		<button class="btn btn-info no-border" data-toggle="modal"
+			data-target="#editModal" id="create-dict-btn">
+			<i class="ace-icon fa fa-plus bigger-120" />新建
+		</button>
+		<button class="btn btn-danger no-border" id="deleteAll-dict-btn">
+			<i class="ace-icon fa fa-trash-o bigger-120" />删除
+		</button>
+		<button class="btn btn-grey no-border" id="refresh-dict-btn">
+			<i class="ace-icon fa fa-refresh bigger-120" />刷新缓存
+		</button>
+		<!-- /.btn-group -->
+	</div>
+</div>
+<!-- [End].row -->
+
+<!-- 列表主题内容 -->
+<div class="row">
+	<div class="col-xs-12">
+		<div class="table-header">字典列表</div>
+		<!-- <div class="table-responsive"> -->
+
+		<!-- <div class="dataTables_borderWrap"> -->
+		<div>
+			<table id="sample-table"
+				class="table table-striped table-bordered table-hover">
+				<thead>
+					<tr>
+						<th class="center"><label class="position-relative">
+								<input type="checkbox" class="ace" /> <span class="lbl"></span>
+						</label></th>
+					<!-- 	<th>字典编号</th> -->
+						<th>字典类型</th>
+						<th class="hidden-480">字典标识</th>
+						<th>
+							<!-- <i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> -->
+							字典值
+						</th>
+						<th>备注</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="dict : ${dicts}">
+						<td class="center"><label class="position-relative">
+								<input type="checkbox" class="ace" th:id="${dict.id}"
+								name="del-dict-checkbox" /> <span class="lbl"></span>
+						</label></td>
+					<!-- 	<td><a href="#" th:text="${dict.serialNo}">dict.serialNo</a></td> -->
+						<td th:text="${dict.dictType.typeName}">dict.typeName</td>
+						<td class="hidden-480" th:text="${dict.dictMark}">dict.maxPeople</td>
+						<td th:text="${dict.dictValue}">dict.dictValue</td>
+						<td th:text="${dict.remarks}">dict.remarks</td>
+						<td>
+							<div class="hidden-sm hidden-xs action-buttons">
+								<a class="green" href="#" name="update-dict-btn"
+									th:id="${dict.id}" data-toggle="modal" data-target="#editModal">
+									<i class="ace-icon fa fa-pencil bigger-130"></i>
+								</a> <a class="red" href="#" th:id="${dict.id}"
+									name="delete-dict-btn"> <i
+									class="ace-icon fa fa-trash-o bigger-130"></i>
+								</a>
+							</div>
+
+							<div class="hidden-md hidden-lg">
+								<div class="inline position-relative">
+									<button class="btn btn-minier btn-yellow dropdown-toggle"
+										data-toggle="dropdown" data-position="auto">
+										<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
+									</button>
+
+									<ul
+										class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
+
+										<li><a href="#" class="tooltip-success"
+											data-rel="tooltip" title="Edit" name="update-dict-btn"
+											th:id="${dict.id}"> <span class="green"> <i
+													class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+											</span>
+										</a></li>
+
+										<li><a href="#" class="tooltip-error" data-rel="tooltip"
+											title="Delete" th:id="${dict.id}" name="delete-dict-btn">
+												<span class="red"> <i
+													class="ace-icon fa fa-trash-o bigger-120"></i>
+											</span>
+										</a></li>
+									</ul>
+								</div>
+							</div>
+						</td>
+					</tr>
+
+					<tr th:remove="all">
+						<td class="center"><label class="position-relative">
+								<input type="checkbox" class="ace" /> <span class="lbl"></span>
+						</label></td>
+
+						<td><a href="#">best.com</a></td>
+						<td>$75</td>
+						<td class="hidden-480">6,500</td>
+						<td>Apr 03</td>
+						<td>
+							<div class="hidden-sm hidden-xs action-buttons">
+								<a class="blue" href="#"> <i
+									class="ace-icon fa fa-search-plus bigger-130"></i>
+								</a> <a class="green" href="#"> <i
+									class="ace-icon fa fa-pencil bigger-130"></i>
+								</a> <a class="red" href="#"> <i
+									class="ace-icon fa fa-trash-o bigger-130"></i>
+								</a>
+							</div>
+
+							<div class="hidden-md hidden-lg">
+								<div class="inline position-relative">
+									<button class="btn btn-minier btn-yellow dropdown-toggle"
+										data-toggle="dropdown" data-position="auto">
+										<i class="ace-icon fa fa-caret-down icon-only bigger-120"></i>
+									</button>
+
+									<ul
+										class="dropdown-menu dropdown-only-icon dropdown-yellow dropdown-menu-right dropdown-caret dropdown-close">
+										<!-- <li><a href="#" class="tooltip-info" data-rel="tooltip"
+											title="View"> <span class="blue"> <i
+													class="ace-icon fa fa-plus bigger-120"></i>
+											</span>
+										</a></li> -->
+
+										<li><a href="#" class="tooltip-success"
+											data-rel="tooltip" title="Edit"> <span class="green">
+													<i class="ace-icon fa fa-pencil-square-o bigger-120"></i>
+											</span>
+										</a></li>
+
+										<li><a href="#" class="tooltip-error" data-rel="tooltip"
+											title="Delete"> <span class="red"> <i
+													class="ace-icon fa fa-trash-o bigger-120"></i>
+											</span>
+										</a></li>
+									</ul>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- sample-table -->
+		</div>
+	</div>
+</div>
+
+<!-- 信息编辑模态框 -->
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">字典信息编辑</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-xs-12">
+						<!-- 表单主体 -->
+						<form class="form-horizontal" role="form">
+							<input type="hidden" name="id" />
+							<!-- #section:elements.form -->
+							<div class="form-group">
+								<label class="col-sm-3 control-label no-padding-right"
+									for="form-field-1">字典类型：</label>
+								<div class="col-xs-4">
+									<select class="form-control" name="dictType.id">
+										<option th:each="dictType : ${dictTypes}"
+											th:value="${dictType.id}" th:text="${dictType.typeName}">全部</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label no-padding-right"
+									for="form-field-1"> 字典标识： </label>
+								<div class="col-sm-8">
+									<input type="text" id="form-field-1" placeholder="字典标识"
+										class="col-xs-10 col-sm-5" name="dictMark" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label no-padding-right"
+									for="form-field-1"> 字典值： </label>
+								<div class="col-sm-8">
+									<input type="text" id="form-field-1" placeholder="字典值"
+										class="col-xs-10 col-sm-5" name="dictValue" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label no-padding-right"
+									for="form-field-1"> 备注： </label>
+								<div class="col-sm-8">
+									<textarea class="form-control" id="form-field-8"
+										placeholder="备注" name="remarks"></textarea>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" id="dict-btn" name="save"
+					class="btn btn-primary" data-dismiss="modal">
+					<i class="ace-icon fa fa-floppy-o bigger-120"></i>保存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.modal -->
+
+<script type="text/javascript" th:inline="javascript">
+	/*<![CDATA[*/
+	var script = [ null, "/static/custom/common/simple-table.js", null ]
+	$.ace_ajax_finish(script, function() {
+		jQuery(function($) {
+
+			/** 初始化数据 **/
+			var data = /*[[${dicts}]]*/null;
+			var jsonData = {};
+			for ( var index in data) {
+				var id = data[index].id;
+				jsonData[id] = data[index];
+			}
+
+			var table = new SimpleTable();
+			table.init("/dict/dictionary", jsonData, "/dict/dictionary/page/",
+					4); // 初始化表格
+
+			table.addSaveMethod("create-dict-btn", "dict-btn", {
+				"id" : "input",
+				"dictType.id" : "select",
+				"dictMark" : "input",
+				"dictValue" : "input",
+				"remarks" : "textarea"
+			}); // 添加保存操作
+
+			table.addDelMethod("delete-dict-btn", "del-dict-checkbox",
+					"deleteAll-dict-btn"); // 添加删除操作
+
+			table.addUpdateMethod("update-dict-btn", "dict-btn", {
+				"id" : "input",
+				"dictType.id" : "select",
+				"dictMark" : "input",
+				"dictValue" : "input",
+				"remarks" : "textarea"
+			});// 添加修改操作
+
+			/** 绑定刷新按钮 **/
+			$("#refresh-dict-btn").click(
+					function() {
+						ajaxAction("/dict/dictionary/cache", "GET", {},
+								"/dict/dictionary/page"); // 访问缓存刷新方法
+					});
+		})
+	});
+	/*]]>*/
+</script>

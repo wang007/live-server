@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+<title>菜单列表管理</title>
+
+<div class="page-header">
+    <h1>菜单管理
+        <small style="margin-right:0px;">
+            <i class="ace-icon fa fa-angle-double-right"></i>
+                      点击菜单进行添加、修改、查看、删除,
+            <a href="javascript:;" data-rel="tooltip" data-placement="bottom" title="返回到菜单管理"
+               onClick="toMain('/sys//menu/page')">
+                <i class="ace-icon fa fa-reply"></i>
+                <strong>返回</strong>
+            </a>
+        </small>
+    </h1>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <button class="btn btn-primary no-border" id="add-menu-btn">
+            <i class="ace-icon fa fa-plus bigger-120" />新建
+        </button>
+        <button class="btn btn-warning no-border" id="update-menu-btn">
+            <i class="ace-icon fa fa-pencil bigger-120" />修改
+        </button>
+        <button class="btn btn-danger no-border" id="delete-menu-btn">
+            <i class="ace-icon fa fa-trash-o bigger-120" />删除
+        </button>
+
+        <!-- /.btn-group -->
+    </div>
+
+
+
+    <div class="col-xs-12">
+        <!-- jqGrid表格和分页 -->
+        <table id="grid-table"></table>
+        <div id="grid-pager"></div>
+    </div>
+</div>
+
+
+<!-- 编辑菜单信息的modal -->
+    <div class="modal fade" id="edit-menu-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header table-header" style="padding: 8px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="white">&times;</span>
+                    </button>
+                    <h5 class="modal-title">添加菜单信息</h5>
+                </div>
+                <div class="modal-body no-padding-bottom">
+                    <input type="hidden" id="hidden-menu-id" name="referenceId" value=""/>
+                    <!-- 菜单信息 -->
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="select-menu-name">所选菜单:</label>
+                        <div class="col-xs-4">
+                            <input type="text" id="select-menu-name" value="" disabled="true"/>
+                        </div>
+                    </div>
+
+                    <form class="form" id="edit-menu-form">
+                        <input type="hidden" name="id" id="hidden-menu-id"/>
+                        <!-- 修改表单提交的时候，需要用到这个input，添加的时候，需要去掉 -->
+                        <input type="hidden" name="_method" value="PUT"/>
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right" for="edit-serialNo">序号:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="serialNo" id="edit-serialNo"/>
+                            </div>
+                            <label class="control-label col-xs-2" for="edit-menuName">菜单名:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="menuName" id="edit-menuName"/>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right" for="edit-menuUrl">菜单url:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="menuUrl" id="edit-menuUrl"/>
+                            </div>
+                            <label class="control-label col-xs-2" for="edit-permissionValue">权限值:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="permissionValue" id="edit-permissionValue"/>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right" for="edit-isEnable">启用状态:</label>
+                            <div class="col-xs-4">
+                                <label>
+                                    <input name='isEnable' class='ace ace-switch ace-switch-3' type='checkbox' value="1"
+                                           id="edit-isEnable" checked/>
+                                    <span class='lbl'></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right">菜单图标:</label>
+                            <div class="col-xs-10">
+                                <input type="radio" name="menuIcon" value="" checked/>无图标 <span
+                                    style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-cog"/><i class="ace-icon fa fa-cog"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-list"/><i class="ace-icon fa fa-list"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-pencil-square-o"/><i
+                                    class="ace-icon fa fa-pencil-square-o"></i> <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-desktop"/><i
+                                    class="ace-icon fa fa-desktop"></i> <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-tag"/><i class="ace-icon fa fa-tag"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-eye"/><i class="ace-icon fa fa-eye"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-bookmark"/><i
+                                    class="ace-icon fa fa-bookmark"></i> <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-tachometer"/><i
+                                    class="ace-icon fa fa-tachometer"></i> <span style="margin-left: 20px;"></span>
+
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer" style="padding: 8px">
+                    <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times red2"></i>
+                        关闭
+                    </button>
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-update-btn">
+                        <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                        保存
+                    </button>
+
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-add-btn1">
+                        <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                        保存为同级菜单
+                    </button>
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-add-btn2">
+                        <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                        保存为子级菜单
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+
+
+
+<script type="text/javascript">
+//是否启用
+function changeMenuEnable(menuId) {
+    $.ajax({
+        url: "/sys/menu/"+menuId,
+        type: "POST",
+        dateType: "JSON",
+        data: {_method:"PATCH"} ,
+        success:function(data){
+            showMsg4model(data,true) ;
+        }
+    })
+}
+    $.ace_ajax_finish(function() {
+        jQuery(function($) {
+
+        	
+
+
+            //鼠标悬停提示信息
+            $('[data-rel=tooltip]').tooltip();
+            $('[data-rel=popover]').popover({html:true});
+
+            //鼠标悬停提示信息
+            $('[data-rel=tooltip]').tooltip();
+            $('[data-rel=popover]').popover({html:true});
+
+            var grid_selector = "#grid-table"; //jqGrid表格
+            var pager_selector = "#grid-pager"; //
+            //resize to fit page size
+            $(window).on('resize.jqGrid',function() {
+                $(grid_selector).jqGrid('setGridWidth',$(".page-content").width());
+            })
+
+            $(grid_selector).jqGrid({
+                url : "/sys/menu",//获取数据的url地址
+                datatype : "json", //获取数据的格式
+                mtype : "get", //请求数据的方式
+                colNames : [ 'id', '序号',
+                    '菜单名', '菜单url', '菜单图标',
+                    '权限值', '启用状态'],//表头
+                colModel : [
+                    {
+                        name : 'id',
+                        index : 'id',
+                        hidden : true
+                    },
+                    {
+                        name : 'serialNo',
+                        index : 'serialNo',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+                    {
+                        name : 'menuName',
+                        index : 'menuName',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+                    {
+                        name : 'menuUrl',
+                        index : 'menuUrl',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+             
+                    },
+                    {
+                        name : 'menuIcon',
+                        index : 'menuIcon',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                        formatter:function alamFormatter(cellvalue, options,row) {
+                        	return"<i class='ace-icon fa "+cellvalue+"'></i>";
+                        }
+                        	
+             
+                    },
+                    {
+                        name : 'permission.permissionValue',
+                        index : 'permission.permissionValue',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                    },
+                    {
+                        name : 'permission.isEnable',
+                        index : 'isEnable',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                        selectable:false,
+                        formatter : function alamFormatter(cellvalue, options,row) {
+                        	
+                            if (cellvalue == null||row.permission.isEnable == '1') { //启用
+                                return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeMenuEnable('"
+                                    + row.id
+                                    + "') checked/><span class='lbl'></span></label>"
+                            } else {
+                                return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeMenuEnable('"
+                                    + row.id
+                                    + "') /><span class='lbl'></span></label>"
+                            }
+                        }
+                    } ], //后端的数据
+                rowNum : 10,
+                rowList : [ 10, 20, 50 ],
+                pager : pager_selector,
+                sortname : 'serialNo',
+                viewrecords : true,
+                altRows : true, //设置隔行用不同的背景色区分开
+                sortorder : "desc",
+                width : "auto",
+                height : "auto",
+                //multiboxonly : true,
+                multiselect : true,
+                rownumbers : false,
+                caption : "暂存用户列表",
+                loadComplete : function() {
+                    var table = this;
+                    setTimeout(function() {
+                        //styleCheckbox(table);
+                        //updateActionIcons(table);
+                        updatePagerIcons(table);
+                        //enableTooltips(table);
+                    }, 0);
+                },
+            }) //jqGrid
+            $(window).triggerHandler('resize.jqGrid'); //初始化jqGrid大小
+
+
+            //重新加载jqgrid数据，根据输入项
+            function reloadData() {
+                $(grid_selector).jqGrid('setGridParam', {
+                    dataType : 'json',
+                    postData : $('#search-user-form').serializeObject(),	//postData.接收的是一个对象
+                    page : 1
+                }).trigger("reloadGrid"); //重新载入#
+            }
+
+            //美化下拉框
+            $(".select2").css('width', '170px').select2({placeholder:"请选择",allowClear : true}) ;
+
+            
+            
+          //获取菜单信息
+            function getMenuInfo(menuId,callback) {
+
+                $.ajax({
+                    url: "/sys/menu/"+menuId,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function (data) {
+                        callback(data.data) ;
+                    }
+                })
+            }
+          
+          
+            
+            //点击新建按钮
+            $("#add-menu-btn").click(function(){
+                
+                var menuId=$(grid_selector).jqGrid('getGridParam','selrow')	; //得到被选择行
+                var rowData = $(grid_selector).jqGrid('getRowData',menuId);
+                $("#hidden-menu-id").val(rowData.id) ; //菜单id
+                $("#select-menu-name").val(rowData.menuName) ; //菜单id
+                
+                $("#save-for-update-btn").hide() ;
+                $("#save-for-add-btn1").show() ;    //同级
+                $("#save-for-add-btn2").show() ;    //子级
+                if(menuId == null || menuId == "") {    //当没有选择任何菜单时的情况
+                    $("#hidden-menu-id").val("root") ;
+                    $("#select-menu-name").val("根菜单") ;
+                    $("#save-for-add-btn1").hide() ;    //同级
+                }
+
+
+                $("#edit-menu-form")[0].reset() ;   //重置表单
+                $("#edit-menu-modal").modal() ;
+                
+                
+            })
+            
+                       function saveMenuInfo(saveType) {
+                showLoading("正在保存中,请稍后...")
+                $.ajax({
+                    url: "/sys/menu",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $.param($("#edit-menu-form").serializeObject(['id','_method']))+"&saveType="+saveType+"&referenceId="+$("#hidden-menu-id").val(),
+                    success: function (data) {
+                        showMsg4model(data,true)
+                        toMain("/sys/menu/list")
+                        $("#edit-menu-modal").modal("hide") ;
+                    }
+                })
+                hideLoading() ;
+                reloadData();
+            }
+
+            //保存为同级菜单
+            $("#save-for-add-btn1").click(function(){
+                saveMenuInfo(1) ;
+            })
+
+            //保存为子级菜单
+            $("#save-for-add-btn2").click(function(){
+                saveMenuInfo(2) ;
+            })
+
+ 
+
+               //点击修改按钮
+            $("#update-menu-btn").click(function(){
+            	var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+               var menuId=$(grid_selector).jqGrid('getGridParam','selrow')	; //得到被选择行
+               var rowData = $(grid_selector).jqGrid('getRowData',menuId);
+               if(menuId == null || selectedIds.length !== 1) {
+                   showInfoMsg("请选择一条数据！") ;
+                   return ;
+               }
+                $("#save-for-update-btn").show() ;
+                $("#save-for-add-btn1").hide() ;    //同级
+                $("#save-for-add-btn2").hide() ;    //子级
+
+                $("#edit-menu-form")[0].reset() ;   //重置表单
+                $("#edit-menu-modal").modal() ;
+                
+                $("#hidden-menu-id").val(rowData.id) ; //菜单id
+                $("#select-menu-name").val(rowData.menuName) ; //菜单id
+                getMenuInfo(menuId, function(rowData){
+                    fillform($("#edit-menu-form"),rowData) ;
+                    $("#edit-permissionValue").val(rowData.permission.permissionValue) ;   //权限值
+                    if(rowData.permission.isEnable ==1) {
+                        $("#edit-isEnable").prop("checked",true) ;
+                    } else {
+                        $("#edit-isEnable").prop("checked",false) ;
+                    }
+                })
+            })
+
+
+            //保存更新菜单
+            $("#save-for-update-btn").click(function(){
+                showLoading() ;
+                $.ajax({
+                    url: "/sys/menu",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#edit-menu-form").serialize(),
+                    success: function(data){
+                        $("#edit-menu-modal").modal("hide") ;
+                        showMsg4model(data,true) ;
+                        toMain("/sys/menu/list") ;
+                    },
+                })
+                hideLoading() ;
+            })
+            
+            //删除菜单
+            $("#delete-menu-btn").click(function(){
+              
+            	var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                var menuId=$(grid_selector).jqGrid('getGridParam','selrow')	; //得到被选择行
+                var rowData = $(grid_selector).jqGrid('getRowData',menuId);
+             
+                if(menuId == null || selectedIds.length !== 1) {
+                    showInfoMsg("请选择一条数据！") ;
+                    return ;
+                }
+                $("#hidden-menu-id").val(rowData.id) ; //菜单id
+                $("#select-menu-name").val(rowData.menuName) ; //菜单id
+               var menuName = $("#select-menu-name").val() ;
+                bootbox.confirm("请确定要删除“"+menuName+"”吗？~删除之后将无法恢复",function (result) {
+                    if(result) {
+                        showLoading() ;
+                        $.ajax({
+                            url: "/sys/menu/"+menuId,
+                            type: "POST",
+                            dataType: "JSON",
+                            data:{"_method": "DELETE"},
+                            success: function(data) {
+                                showMsg4model(data, true) ;
+                                toMain("/sys/menu/list")
+                            }
+                        })
+                        hideLoading() ;
+                    }
+
+                })
+
+            })
+
+
+        })	//jQuery
+    })
+
+</script>
+
+</html>

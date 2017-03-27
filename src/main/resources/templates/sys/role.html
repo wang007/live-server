@@ -1,0 +1,506 @@
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+<title>角色管理</title>
+
+<link rel="stylesheet" th:href="@{/static/plugins/zTree/css/zTreeStyle/zTreeStyle.css}" />
+<div class="page-header">
+    <h1>角色
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+           角色管理
+        </small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <button class="btn btn-primary" id="add-role-btn">
+            <i class="ace-icon fa fa-plus bigger-120">新建</i>
+        </button>
+        <button class="btn btn-warning" id="update-role-btn">
+            <i class="ace-icon fa fa-pencil bigger-120">修改</i>
+        </button>
+        <button class="btn btn-danger" id="delete-role-btn">
+            <i class="ace-icon fa fa-trash-o bigger-120">删除</i>
+        </button>
+        <button class="btn btn-info" id="allocate-menu-btn">
+            <i class="ace-icon fa fa-cog bigger-120">分配菜单</i>
+        </button>
+
+        <div class="btn-group">
+            <button class="btn btn-info no-border" id="search-role-btn" style="height:42px">
+                <i class="ace-icon fa fa-search bigger-120" >搜索</i>
+            </button>
+            <button class="btn btn-info dropdown-toggle" id="toggle-search-id" style="height:42px">
+                <span class="ace-icon fa fa-caret-down icon-only bigger-120"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-xs-12" style="display:none;" id="show-search-role-div">
+        <div class="space-2"></div>
+        <form class="form-inline" role="form" id="search-role-form">
+            <div class="form-group">
+                <label for="search-serialNo">序号:</label>
+                <input type="text" class="form-control input-sm" id="search-serialNo" name="serialNo" placeholder="如：1"/>
+            </div>
+            <div class="form-group">
+                <label for="search-roleName">角色:</label>
+                <input type="text" class="form-control input-sm" id="search-roleName" name="roleName" placeholder="如：管理员"/>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-xs-12">
+        <!-- jqGrid表格和分页 -->
+        <table id="grid-table"></table>
+        <div id="grid-pager"></div>
+    </div>
+
+</div><!-- /.row -->
+
+
+
+
+<!-- group-modal -->
+<div class="modal fade" id="edit-role-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header table-header" style="padding: 8px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white">&times;</span>
+                </button>
+                <h5 class="modal-title">编辑角色信息</h5>
+            </div>
+            <div class="modal-body no-padding-bottom">
+                <!-- 角色信息 -->
+                <form class="form" id="edit-role-form">
+                    <input type="hidden" name="id" id="hidden-role-id"/>
+                    <input type="hidden" name="_method" value="PUT" />
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-serialNo">序号:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="serialNo" id="edit-serialNo" placeholder="如：1" />
+                        </div>
+                        <label class="control-label col-xs-2" for="edit-roleName">角色名:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="roleName" id="edit-roleName" placeholder="如：管理员"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-isEnable">是否启用:</label>
+                        <div class="col-xs-4">
+                            <label>
+                                <input name='isEnable' class='ace ace-switch ace-switch-3' type='checkbox' value="1" id="edit-isEnable" checked/>
+                                <span class='lbl'></span>
+                            </label>
+                        </div>
+
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-roleValue">角色值:</label>
+                        <div class="col-xs-4">
+                            <input type="text" class="input-sm" name="roleValue" id="edit-roleValue" placeholder="如：admin"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="edit-description">用户组描述:</label>
+                        <div class="col-xs-6">
+                            <textarea class="form-control" rows="3" id="edit-description" name="description" placeholder="说点什么吧..."></textarea>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer" style="padding: 8px">
+                <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times red2"></i>
+                    关闭
+                </button>
+                <button type="button" class="btn btn-white btn-info btn-bold" id="save-role-update-btn">
+                    <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                    保存
+                </button>
+
+                <button type="button" class="btn btn-white btn-info btn-bold" id="save-role-add-btn">
+                    <i class="ace-icon fa fa-plus bigger-120 blue"></i>
+                    新建
+                </button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+
+<div id="right-menu" class="modal aside" data-body-scroll="true" data-offset="true" data-placement="right" data-fixed="true" data-backdrop="invisible" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header no-padding">
+                <div class="table-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <span class="white">&times;</span>
+                    </button>
+                    菜单树
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <ul id="tree" class="ztree col-xs-11">
+                </ul>
+            </div>
+
+
+            <button type="button" class="btn btn-white btn-info btn-bold" id="save-role-menu-btn" style="margin-left: 20px;margin-top: 20px;">
+                <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                保存
+            </button>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+
+<script type="text/javascript">
+
+    function changeRoleIsEnable(roleId) {
+        $.ajax({
+            url: "/sys/role/"+roleId,
+            type: "POST",
+            dateType: "JSON",
+            data: {_method:"PATCH"} ,
+            success:function(data){
+                showMsg4model(data,true) ;
+            }
+        })
+    }
+
+    var scripts = [null, "/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.excheck.min.js" ,null] ;
+    $.ace_ajax_finish(scripts,function(){
+        jQuery(function($){
+
+            var grid_selector = "#grid-table"; //jqGrid表格
+            var pager_selector = "#grid-pager"; //
+            //resize to fit page size
+            $(window).on('resize.jqGrid',function() {
+                $(grid_selector).jqGrid('setGridWidth',$(".page-content").width());
+            })
+
+            $(grid_selector).jqGrid({
+                url : "/sys/role",//获取数据的url地址
+                datatype : "json", //获取数据的格式
+                mtype : "get", //请求数据的方式
+                colNames : [ 'id', '序号', '角色名', '角色值' , '描述', '启用状态'],//表头
+                colModel : [
+                    {
+                        name : 'id',
+                        index : 'id',
+                        hidden : true
+                    },
+                    {
+                        name : 'serialNo',
+                        index : 'serialNo',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+                    {
+                        name : 'roleName',
+                        index : 'roleName',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+                    {
+                        name : 'roleValue',
+                        index : 'roleValue',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+                    {
+                        name : 'description',
+                        index : 'description',
+                        align : 'center',
+                        width : 80,
+                        sortable : false
+                    },
+
+                    {
+                        name : 'isEnable',
+                        index : 'isEnable',
+                        align : 'center',
+                        width : 80,
+                        sortable : false,
+                        selectable:false,
+                        formatter : function alamFormatter(cellvalue, options,row) {
+                            if (row.isEnable == 0) { //未锁
+                                return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeRoleIsEnable('"
+                                    + row.id
+                                    + "') /><span class='lbl'></span></label>"
+                            } else {
+                                return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeRoleIsEnable('"
+                                    + row.id
+                                    + "') checked/><span class='lbl'></span></label>"
+                            }
+                        }
+                    }], //后端的数据
+                rowNum : 10,
+                rowList : [ 10, 20, 50 ],
+                pager : pager_selector,
+                sortname : 'serialNo',
+                viewrecords : true,
+                altRows : true, //设置隔行用不同的背景色区分开
+                sortorder : "desc",
+                width : "auto",
+                height : "auto",
+                //multiboxonly : true,
+                multiselect : true,
+                rownumbers : false,
+                caption : "角色列表",
+                loadComplete : function() {
+                    var table = this;
+                    setTimeout(function() {
+                        //styleCheckbox(table);
+                        //updateActionIcons(table);
+                        updatePagerIcons(table);
+                        //enableTooltips(table);
+                    }, 0);
+                },
+            }) //jqGrid
+            $(window).triggerHandler('resize.jqGrid'); //初始化jqGrid大小
+
+            //重新加载jqgrid数据，根据输入项
+            function reloadData() {
+                $(grid_selector).jqGrid('setGridParam', {
+                    dataType : 'json',
+                    postData : $('#search-role-form').serializeObject(),	//postData.接收的是一个对象
+                    page : 1
+                }).trigger("reloadGrid"); //重新载入#
+            }
+
+
+            $("#toggle-search-id").click(function(){
+                $("#show-search-role-div").toggle() ;
+
+            })
+
+            //点击搜索
+            $("#search-role-btn").click(function () {
+                reloadData() ;
+            })
+
+            //点击角色新建
+            $("#add-role-btn").click(function(){
+            	//清除错误验证
+                $('#edit-role-form .form-group').removeClass('has-error');
+                $('#edit-role-form').validate().resetForm() ;
+
+                $("#edit-role-form")[0].reset() ;
+                
+                $.ajax({
+					url: "/sys/role/getSerialNo",
+					type:'GET',
+					dateType:'json',
+					success:function(data){
+						$('#edit-serialNo').val(data);
+					}
+				})
+                
+				$('#edit-serialNo').rules('add',validate_serialNo_rule) ;	//开启serialNo序号的校验
+				
+                $('#save-role-add-btn').show() ;
+                $('#save-role-update-btn').hide() ;
+                $("#edit-role-modal").modal() ;
+            })
+
+
+            //点击保存角色信息
+            $("#save-role-add-btn").click(function(){
+            	if(!$('#edit-role-form').valid()) {
+                    return false ;
+                }
+            	
+                showLoading("正在保存，请稍后...") ;
+                $.ajax({
+                    url: "/sys/role",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#edit-role-form").serializeObject(["id","_method"]),
+                    success: function(data){
+                        $("#edit-role-modal").modal("hide") ;
+                        showMsg4model(data,true) ;
+                        reloadData() ;
+
+                    }
+                })
+                hideLoading() ;
+            })
+
+            //点击角色修改
+            $("#update-role-btn").click(function(){
+                var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                if(selectedIds.length != 1) {
+                    showInfoMsg("请选择一条数据修改！") ;
+                    return ;
+                }
+                var rowData =  $(grid_selector).jqGrid('getRowData',selectedIds[0]) ;
+                $.ajax({
+                    url: "/sys/role/"+rowData.id,
+                    type:"GET",
+                    dataType:"JSON",
+                    success:function(data){
+                       fillform($("#edit-role-form"),data.data) ;
+                    }
+                })
+                $("#edit-role-form")[0].reset() ;
+                $('#save-role-add-btn').hide() ;
+                $('#save-role-update-btn').show() ;
+                $("#edit-role-modal").modal() ;
+            })
+
+
+            //点击保存修改角色信息
+            $("#save-role-update-btn").click(function(){
+                showLoading() ;
+                $.ajax({
+                    url: "/sys/role",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#edit-role-form").serializeObject(),
+                    success: function(data){
+                        showMsg4model(data,true) ;
+                        $("#edit-role-modal").modal("hide") ;
+                        reloadData() ;
+                    }
+                })
+                hideLoading() ;
+            })
+
+            //删除角色
+            $("#delete-role-btn").click(function(){
+                var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                if(selectedIds.length != 1) {
+                    showInfoMsg("请选择一条数据修改！") ;
+                    return ;
+                }
+                var rowData =  $(grid_selector).jqGrid('getRowData',selectedIds[0]) ;
+                bootbox.confirm("您确定要删除吗？~删除后将无法恢复",function(result){
+                    if(result) {
+                        $.ajax({
+                            url: "/sys/role/" + rowData.id,
+                            type: "POST",
+                            dataType: "JSON",
+                            data: {"_method": "DELETE"},
+                            success: function (data) {
+                                showMsg4model(data, true);
+                                reloadData() ;
+                            }
+                        })
+                    }
+                })
+            })
+
+
+            var zTreeObj;
+            var setting = {
+                check: {
+                    enable: true
+                },
+                data: {
+                    simpleData: {
+                        enable: true
+                    }
+                }
+            };
+            //分配菜单
+            $("#allocate-menu-btn").click(function(){
+                var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                if(selectedIds.length != 1) {
+                    showInfoMsg("请选择一个角色进行菜单分配！") ;
+                    return ;
+                }
+                var rowData =  $(grid_selector).jqGrid('getRowData',selectedIds[0]) ;
+                $.ajax({
+                    url: "/sys/ztree/role/"+rowData.id,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(data) {
+                        zTreeObj = $.fn.zTree.init($("#tree"), setting, data.data) ;
+                    }
+                })
+                $("#right-menu").modal() ;
+            })
+
+            //保存角色与菜单的关联关系
+            $("#save-role-menu-btn").click(function(){
+                var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                if(selectedIds.length != 1) {
+                    showInfoMsg("请选择一个角色进行菜单分配！") ;
+                    return ;
+                }
+                var rowData =  $(grid_selector).jqGrid('getRowData',selectedIds[0]) ;
+                var menuIdsStr = "";
+                var nodes = zTreeObj.getCheckedNodes(true) ;
+                for(var i = 0,length=nodes.length;i<length;i++) {
+                    menuIdsStr += "menuIds="+nodes[i].id+"&";
+                }
+                $.ajax({
+                    url: "/sys/ztree/role/"+rowData.id,
+                    type: "POST",
+                    dataType: "JSON",
+                    data: menuIdsStr,
+                    success: function(data) {
+                        showMsg4model(data, true) ;
+                    }
+                })
+
+            })
+
+            
+          //校验序号的规则
+            var validate_serialNo_rule = {
+                required: true ,
+                digits: true,
+                //alphabetAndNum: true,	//只能数字或字母
+                rangelength: [1,10],
+                remote: function() {
+                    return '/sys/role/validation/'+$('#edit-serialNo').val()
+                }
+            } ;
+            
+          //校验序号
+            $('#edit-role-form').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                focusInvalid: false,
+                ignore: "",
+                rules: {
+                	serialNo: validate_serialNo_rule,               	
+                },
+
+                messages: {
+                	serialNo: {
+                        required:'请输入序号',
+                        //alphabetAndNum:'请输入输入数字或字母',
+                        rangelength: '请输入一个长度介于 1 和 10 之间的数字',
+                        remote:'序号已存在',
+                    },                  
+                },
+
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                },
+            }) ;
+
+
+        })
+    })
+</script>
+
+</html>

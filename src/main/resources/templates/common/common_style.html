@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <!--/*
+        引入页面头部的style样式文件，兼容性文件，和一些必要的js文件
+        这里引入常用的ace插件的css文件，其他不常用的插的css文件在各自的页面中引用即可
+    */-->
+    <div id="common_style_section" th:remove="tag">
+		
+        <!-- bootstrap & fontawesome -->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/bootstrap.min.css}" />
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/font-awesome.min.css}" />
+
+        <!--/*ace自带插件的css文件 start */-->
+        <!-- bootstrap日期插件 -->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/datepicker.min.css}" />
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/bootstrap-datetimepicker.min.css}" />
+        
+        <!--/*下拉框单选带搜索的插件  */-->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/select2.min.css}" />
+        <!--/*jqgrid表格 */-->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/ui.jqgrid.min.css}" />
+        <!--/*消息提示插件 */-->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/jquery.gritter.min.css}" />
+		 <link rel="stylesheet" th:href="@{/static/ace/assets/css/chosen.css}" />
+        <!--/*ace自带插件的css文件 end */-->
+        <!--/*外置必要插件的css文件 start */-->
+
+
+        <!--/*外置必要插件的css文件 end */-->
+        <!--/*引入自定义的css文件 start */-->
+
+
+        <!--/*引入自定义的css文件 end */-->
+
+        <!-- text fonts -->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/ace-fonts.min.css}" />
+
+        <!-- ace styles -->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/ace.min.css}" class="ace-main-stylesheet" id="main-ace-style" />
+        <!--/* <link rel="stylesheet" th:href="@{/static/ace/dist/css/ace-skins.min.css" /> */-->
+
+        <!--[if lte IE 9]-->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/ace-part2.min.css}" class="ace-main-stylesheet" />
+        <!-- <![endif]-->
+
+        <!--[if lte IE 9]-->
+        <link rel="stylesheet" th:href="@{/static/ace/dist/css/ace-ie.min.css}" />
+        <!-- <![endif]-->
+
+        <!-- ace settings handler -->
+        <script th:src="@{/static/ace/dist/js/ace-extra.min.js}"></script>
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+        <!--[if lte IE 8]-->
+        <script th:src="@{/static/ace/dist/js/html5shiv.min.js}"></script>
+        <script th:src="@{/static/ace/dist/js/respond.min.js}"></script>
+        <!-- <![endif]-->
+
+        <!-- 头部预先加载jquery文件 -->
+        <!--[if !IE]> -->
+            <script th:src="@{/static/ace/dist/js/jquery.min.js}"></script>
+        <!-- <![endif]-->
+
+        <!--[if IE]-->
+        <script th:src="@{/static/ace/dist/js/jquery1x.min.js}"></script>
+        <!-- <![endif]-->
+    </div>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>系统参数设置</title>
+
+<!--这里引入这个页面中需要的style文件-->
+
+
+<div class="page-header">
+    <h1>系统参数设置
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            更改系统参数设置，
+            <a href="javascript:;" data-rel="tooltip" data-placement="bottom" title="进入用户回收站"
+                   onClick="show()">
+                    <strong>参数说明</strong>
+                    <i class="ace-icon fa fa-external-link"></i>
+            </a>
+        </small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+
+        <form class="form-horizontal" role="form" id="formId">
+            <!-- #section:elements.form -->
+            <div class="form-group">
+                <label class="col-xs-3 control-label no-padding-right" for="edit-system-title"> 系统标题 </label>
+                <div class="col-xs-3">
+                    <input type="text" id="edit-system-title" name="systemTitle" placeholder="系统标题" class="col-xs-10" th:value="${systemTitle}" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="spinner3"> 密码重试限制 </label>
+                <div class="col-sm-9">
+                    <input type="text" class="input-mini" id="spinner3" name="passwordRetryCount" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-3 control-label no-padding-right" for="edit-logLevel"> 日志级别 </label>
+                <div class="col-xs-3">
+                    <select class="select2" id="edit-logLevel" name="logLevel" data-placeholder="请选择...">
+                        <option value="3" th:selected="${logLevel == 3}">高级</option>
+                        <option value="2" th:selected="${logLevel == 2}">中级</option>
+                        <option value="1" th:selected="${logLevel == 1}">低级</option>
+                        <option value="4" th:selected="${logLevel == 4}">关闭日志</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="clearfix form-actions">
+            <div class="col-md-offset-3 col-xs-20">
+                <button class="btn btn-info" type="button" id="saveBtn">
+                    <i class="ace-icon fa fa-check bigger-110"></i>
+                    提交
+                </button>
+            </div>
+        </div>
+
+        </form>
+
+    </div>
+</div>
+
+<div class="modal fade" id="description-modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header table-header" style="padding: 8px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="white">&times;</span>
+                    </button>
+                    <h5 class="modal-title">参数说明</h5>
+            </div>
+            <div class="modal-body no-padding-bottom">
+            	 <div class="row form-group">
+            	 	<label class="control-label col-xs-8 no-padding-right red" >系统标题: </label>
+            	 	<label class="control-label col-xs-8 no-padding-right" >可自由修改页面标题</label>
+            	 </div>
+            	 <div class="row form-group">
+            	 	<label class="control-label col-xs-8 no-padding-right red" >密码重试限制: </label>
+            	 	<label class="control-label col-xs-10 no-padding-right" >代表用户登录时密码可输入次数,范围为0~20。0代表关闭次数限制。</label>
+            	 </div>
+            	 <div class="row form-group">
+            	 	<label class="control-label col-xs-8 no-padding-right red" >日志级别:</label>
+            	 	<label class="control-label col-xs-8 no-padding-right" >分为高、中、低、关闭四个级别。</label>
+            	 	<label class="control-label col-xs-8 no-padding-right" >高级：仅显示高级日志</label>
+            	 	<label class="control-label col-xs-8 no-padding-right" >中级：仅显示高、中级日志</label>
+            	 	<label class="control-label col-xs-8 no-padding-right" >低级：显示高、中、低级日志</label>
+            	 	<label class="control-label col-xs-8 no-padding-right" >关闭日志：将日志功能关闭。</label>
+            	 </div>
+            </div>
+            <div class="modal-footer" style="padding: 8px">
+            	<button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times red2"></i>
+                       		 关闭
+                    </button>
+            </div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+
+    var scripts = [null, "/static/ace/dist/js/fuelux/fuelux.spinner.min.js",null] ;
+    $.ace_ajax_finish(function() {
+        jQuery(function ($) {
+
+            /*<![CDATA[*/
+            var value = /*[[${passwordRetryCount}]]*/ 0 ;
+            /*]]>*/
+
+            $('#spinner3').ace_spinner(
+                {
+                    value:value,
+                    min:0,
+                    max:20,
+                    step:1,
+                    on_sides: true,
+                    icon_up:'ace-icon fa fa-plus smaller-75',
+                    icon_down:'ace-icon fa fa-minus smaller-75',
+                    btn_up_class:'btn-success' ,
+                    btn_down_class:'btn-danger'});
+
+
+            var select2Width = judgeBrower(false) == 'chrome' ? '160px':'170px' ;
+
+            //美化下拉框
+            $(".select2").css('width', select2Width).select2({placeholder:"请选择",allowClear : true}) ;
+
+            //点击保存
+            $("#saveBtn").click(function(){
+                showLoading() ;
+                $.ajax({
+                    url: "/sys/config",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#formId").serialize(),
+                    success: function (data) {
+                        showMsg4model(data, true) ;
+                        hideLoading() ;
+                    },
+                    error: function(){
+                        hideLoading() ;
+                    }
+                })
+
+
+            })
+	
+            
+        })
+
+    })
+    		//参数说明显示
+			function show(){
+            	$('#description-modal').modal();
+            }
+</script>

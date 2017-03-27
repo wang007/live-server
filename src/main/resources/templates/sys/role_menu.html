@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>菜单分配</title>
+
+<!--<link rel="stylesheet" th:href="@{/static/plugins/zTree/css/metroStyle/metroStyle.css}" />-->
+<link rel="stylesheet" th:href="@{/static/plugins/zTree/css/zTreeStyle/zTreeStyle.css}" />
+<!--<link rel="stylesheet" th:href="@{/static/plugins/zTree/css/demo.css}" />-->
+<div class="page-header">
+    <h1>菜单分配
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            给角色分配菜单
+        </small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <label for="select-role">选择角色:</label>
+        <select class="select2" id="select-role" name="roleId" data-placeholder="请选择..." style="margin-left: 20px;">
+            <option>&nbsp;</option>
+            <option th:each="row: ${rows}" th:value="${row.id}" th:text="${row.roleName}" th:checked="${row.id == selectRoleId}"></option>
+        </select>
+        <button type="button" class="btn btn-white btn-info btn-bold" id="saveBtn">
+            <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+            保存
+        </button>
+    </div>
+
+    <!--<div class="hr hr-dotted hr-16"></div>-->
+    <div class="hr hr-24"></div>
+    <div class="col-xs-12">
+        <!-- ztree -->
+        <label for="tree" class="col-xs-1">菜单树:</label>
+        <ul id="tree" class="ztree col-xs-11">
+        </ul>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var scripts = [null, "/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.excheck.min.js" ,null] ;
+    $.ace_ajax_finish(scripts,function() {
+        jQuery(function ($) {
+            //美化下拉框
+            $(".select2").css('width', '200px').select2({placeholder:"请选择",allowClear : true}) ;
+
+            var zTreeObj;
+            var setting = {
+                check: {
+                    enable: true
+                },
+                data: {
+                    simpleData: {
+                        enable: true
+                    }
+                }
+            };
+
+            //初始化显示菜单树
+            $.ajax({
+                url: "/sys/ztree",
+                type: "GET",
+                dataType : "JSON",
+                success: function (data) {
+                    zTreeObj = $.fn.zTree.init($("#tree"), setting, data.data) ;
+                }
+            }) ;
+
+
+            function initialZtree(ztreeNodes) {
+                $.fn.zTree.init($("#tree"), setting, ztreeNodes) ;
+            }
+
+            //更改角色
+            $("#select-role").change(function(){
+                var roleId = $(this).val() ;
+                if(roleId == null || roleId == "") {
+                    console.warn("roleId为空！") ;
+                    return ;
+                }
+                $.ajax({
+                    url: "/sys/ztree/role/"+roleId,
+                    type: "GET",
+                    dataType: "JSON",
+                    success:function (data) {
+                        showMsg4model(data) ;
+                        initialZtree(data.data) ;
+                    }
+                })
+            })
+
+            //点击保存
+            $("#saveBtn").click(function(){
+                var roleId = $("#select-role").val() ;
+                if(roleId == null || roleId == "") {
+                    showInfoMsg("请先选择进行分配菜单！") ;
+                    return ;
+                }
+                var menuIdsStr = "";
+                var nodes = zTreeObj.getCheckedNodes(true) ;
+                for(var i = 0,length=nodes.length;i<length;i++) {
+                     menuIdsStr += "menuIds="+nodes[i].id+"&";
+                }
+                $.ajax({
+                    url: "/sys/ztree/role/"+roleId,
+                    type: "POST",
+                    dataType: "JSON",
+                    data: menuIdsStr,
+                    success: function(data) {
+                        showMsg4model(data, true) ;
+                    }
+                })
+                
+            })
+
+
+
+
+        })
+    })
+
+
+
+</script>

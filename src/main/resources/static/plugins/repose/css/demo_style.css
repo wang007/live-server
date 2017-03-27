@@ -1,0 +1,170 @@
+@charset "utf-8";
+
+/*********************/
+/* Demo Page Styling */
+/*********************/
+p, h2 {
+	text-shadow: 0px 0px 1px #DDD;
+}
+
+.title_cover {
+	display: block;
+	border-bottom: 1px solid #eee;
+	box-shadow: 0px 10px 18px -12px #aaa;
+	-moz-box-shadow: 0px 10px 18px -12px #aaa;
+	-webkit-box-shadow: 0px 10px 18px -12px #aaa;
+	padding-bottom: 10px;
+	margin-bottom: 40px;
+	padding-top: 10px;
+	position: relative;
+	height: 100px;
+	margin-left: 220px;
+}
+
+.title_cover h1 {
+	text-shadow: 0px 0px 1px #CCC;
+	font-weight: 300;
+	text-align: right;
+	font-size: 60px;
+	line-height: 120%;
+	position: absolute;
+	left: 20px;
+	width: 235px;
+	border-right: 1px solid #30BBE9;
+	top: 10%;
+	bottom: 8%;
+	padding-right: 10px;
+	color: #30BBE9;
+}
+
+.title_cover .h1_sub {
+	font-family: 'Droid Sans', Arial, Helvetica, sans-serif;
+	font-size: 17px;
+	text-shadow: 0px 0px 1px #e2e2e2;
+	font-weight: normal;
+	text-align: left;
+	display: block;
+	left: 275px;
+	position: absolute;
+	top: 40%;
+	color: #30BBE9;
+}
+
+h2 {
+	font-family: 'Droid Sans', Arial, Helvetica, sans-serif;
+	font-weight: 300;
+	font-size: 30px;
+	text-shadow: 0px 0px 1px #EEE;
+	font-weight: normal;
+	display: block;
+	padding-left: 4px;
+	border-bottom: 1px solid #EEE;
+	border-top: 1px solid #EEE;
+	color: #1499C5;
+	padding-top: 12px;
+	padding-bottom: 7px;
+	margin-top: 60px;
+	margin-bottom: 15px;
+}
+
+h3 {
+	text-shadow: 0px 0px 1px #DDD;
+	font-weight: normal;
+	font-family: 'Droid Sans', Arial, Helvetica, sans-serif;
+	padding-left: 7px;
+	color: #777;
+	text-align: left;
+	margin-top: 20px;
+	background-color: #f3f3f3;
+	border: 1px solid #ededed;
+	padding: 5px;
+	margin-bottom: 20px;
+}
+
+#one {
+	margin-top: 0px;
+}
+
+.answer p {
+	font-family: 'Droid Sans', Arial, Helvetica, sans-serif;
+	color: #333;
+	font-size: 16px;
+	text-shadow: 0px 0px 1px #EEE;
+	line-height: 150%;
+	width: 80%;
+}
+
+.code {
+	display: block;
+	background-color: #f8f8f8;
+	border: 1px solid #f0f0f0;
+	padding: 5px;
+	font-family: Consolas;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	width: 90%;
+	font-family: Consolas, Arial, Helvetica, sans-serif;
+}
+
+.code:before {
+	content: 'code';
+	margin-bottom: 0px;
+	padding: 2px;
+	padding-left: 8px;
+	padding-right: 8px;
+	background-color: #DDD;
+	font-size: 14px;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.sidebar_new li a {
+	font-size: 16px;
+	padding: 12px;
+}
+
+.sidebar_new {
+	left: 0%;
+	top: 0%;
+	bottom: 0%;
+	background-image: url('../images/debut_dark.png');
+	text-shadow: none;
+	-webkit-box-shadow: -5px 0px 15px #111 inset;
+	box-shadow: -5px 0px 15px #111 inset;
+	padding-top: 140px;
+}
+
+.sidebar_new li {
+	top: auto;
+	bottom: auto;
+}
+
+.nav-list>li>a {
+	text-shadow: none;
+	color: #BBB;
+/* 	border-bottom: 1px solid #666; */
+}
+
+.nav-list>li:nth-child(2) a {
+/* 	border-top: 1px solid #666; */
+}
+
+.nav-list>li>a:hover {
+	text-shadow: none;
+	color: #e4e4e4;
+	background: inherit;
+}
+
+#navig {
+	font-family: 'Bad Script', Arial, Helvetica, sans-serif;
+	color: #999;
+	font-size: 22px;
+	line-height: 130%;
+	margin-bottom: 20px;
+}
+
+.right-bar {
+	position: absolute;
+	left: 240px;
+	display: block;
+}

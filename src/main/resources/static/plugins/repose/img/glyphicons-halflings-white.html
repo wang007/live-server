@@ -1,0 +1,357 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><!-- InstanceBegin template="/Templates/Temp2.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<meta content="TaxFile.in Copyright (c) 2012" name="copyright" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+<meta property="og:image" content="http://taxfile.in/logo.png" />
+
+<link href="../loginpanels.css" rel="stylesheet" type="text/css" />
+<link href="../style.css" rel="stylesheet" type="text/css" />
+<link href="../forms.css" rel="stylesheet" type="text/css" />
+<link href="../common_styles.css" rel="stylesheet" type="text/css" />
+
+
+<!--[if gt IE 6]>
+<link href="../ie_8.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+
+<script src=" https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+var $jc = jQuery.noConflict();
+</script>
+<!--[if lt IE 7]>
+ <script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE7.js" 
+ type="text/javascript">
+ </script>
+ <script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE7-squish.js" 
+ type="text/javascript">
+ </script>
+<![endif]-->
+<script language="javascript" type="text/javascript">
+function setupLabel() {
+        if ($jc('.label_check input').length) {
+            $jc('.label_check').each(function(){ 
+                $jc(this).removeClass('c_on');
+            });
+            $jc('.label_check input:checked').each(function(){ 
+                $jc(this).parent('label').addClass('c_on');
+            });                
+        };
+        if ($jc('.label_radio input').length) {
+            $jc('.label_radio').each(function(){ 
+                $jc(this).removeClass('r_on');
+            });
+            $jc('.label_radio input:checked').each(function(){ 
+                $jc(this).parent('label').addClass('r_on');
+            });
+        };
+    };
+	
+function login() {
+ $jc('#login_response').html("<img src='../ajax-loader.gif' alt='' />")  
+ $jc.ajax({  
+  type: "POST", 
+  cache: false, 
+  url: "../users/loginscript.php",  
+  data: $jc('#login_form').serialize(),  
+  success: function(responseText) {  
+    $jc('#login_response').html(responseText) ;
+	if (responseText == "Logged in") 
+	{window.location = "../tax_return/";};
+  }  
+});  
+  };  
+
+</script>
+<script type="text/javascript">
+$jc(document).ready(function(){
+	
+  $jc('body').addClass('has-js');
+  $jc('.label_check, .label_radio').click(function(){
+   setupLabel();
+   });
+   setupLabel(); 
+      
+   $jc(".Acc_tab").on('click', function () {
+	   $jc(this).parent().children('.Acc_content').slideToggle();
+   });
+});	
+	
+</script>
+
+<script type="text/javascript">
+$jc(document).ready(function(){
+	
+   $jc("#slide_trigger_1").click(function(){
+		$jc("#panel_cover_2").slideUp(400, function () {
+		$jc("#panel_cover_1").slideToggle(400);
+		$jc("#slide_trigger_1").toggleClass("active_slide_trigger");
+		$jc("#slide_trigger_2").removeClass("active_slide_trigger");
+		});
+	});
+	
+	$jc("#slide_trigger_2").click(function(){
+		$jc("#panel_cover_1").slideUp(400, function () {
+		$jc("#panel_cover_2").slideToggle(400);
+		$jc("#slide_trigger_1").removeClass("active_slide_trigger");
+		$jc("#slide_trigger_2").toggleClass("active_slide_trigger");
+		});
+	});
+	
+	$jc("#panel_cover_up_1").click(function () {
+		$jc("#slide_trigger_1").trigger('click');
+	});
+	$jc("#panel_cover_up_2").click(function () {
+		$jc("#slide_trigger_2").trigger('click');
+	});
+   
+});	
+	
+</script>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>404 - Page not Found</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<meta name="Keywords" content="income tax efiling, tax filing, income tax return, income tax return online india
+income tax india. tax planning india, tax return, service tax return filing, tds return filing, income tax return professional, tax consultant" />
+<meta name="Description" content="TaxFile provides income tax return preparation and efiling services. We also offer tax planning services, service tax return filing, payroll processing, and TDS return filing service." />
+<style type='text/css'>
+#ind{
+	font-size: 24px;
+	color: #555;
+	display:block;
+	padding: 5px;
+	width: 200px;
+}
+#ind:hover {
+	background-color:#E5E5E5;
+}
+</style>
+<!-- InstanceEndEditable -->
+<script type="text/javascript">
+var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28175783-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+</script>
+</head>
+<body onload="MM_preloadImages('../images/facebook_hover.png','../images/twitter_hover.png')">
+
+<div class="topwrap">
+  <div style="margin: 0px auto 0px auto; width: 930px;">
+  <div style="float:right">
+            <a class="slide_trigger" id='slide_trigger_1'>LOGIN</a>
+      <a class="slide_trigger" id='slide_trigger_2'>SIGN UP</a>
+        <div class="panel_cover" id="panel_cover_1">
+          <div>
+<div id="panel_cover_up_1" class="panel_cover_up">x</div>
+<form id="login_form" name="login_form" method="post" action="javascript:login()" style="padding: 10px 10px 10px 10px; display: block;">
+  <table border="0" align="center" cellpadding="0" cellspacing="5">
+      <tr>
+        <td><label for="email"><span class ="signlabel">E-mail</span></label>
+
+        <input name="email" type="text" class="login-field" id="email" size="20"/></td>
+      </tr>
+      <tr>
+        <td><label for="password"><span class ="signlabel">Password</span></label>
+<input name="password" type="password" class="login-field" id="password" size="20"/></td>
+      </tr>
+      <tr><td align="center"><label class="label_radio" for="auto2">
+            <input id="auto2" name="auto" type="checkbox" value="1" class='label_radio'/>
+      Keep me logged in</label></td></tr>
+      <tr>
+        <td align="center">
+          <input name="login" type="submit" class="login" id="login" value="Login"/>
+                 <span class ="a" style="font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif; color: #039; font-weight: normal; font-size: 12px; line-height: 19px;"><a href="../users/forgotpassword.php" style='display:block'>
+                 forgot password</a></span></td>
+      </tr>
+      
+    </table>
+</form>
+<div id="login_response" style="font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif; font-size: 13px; color: #444; text-align:center; padding: 0; margin: 0; width: 100%; margin-bottom: 7px;"></div>
+</div>
+        </div>
+        <div class="panel_cover" id="panel_cover_2">
+          <script language="javascript" type="text/javascript">
+
+	/* this is just a simple reload; you can safely remove it; remember to remove it from the image too */
+	function reloadCaptcha()
+	{
+		document.getElementById('captcha').src = document.getElementById('captcha').src+ '?' +new Date();
+	}
+</script>
+
+<script type="text/javascript">
+	
+function signup(){
+	if(!($jc("#i_agree :checked"))) {alert("To use TaxFile you need to agree to the terms and conditions")} else {
+$jc('#signup_response').html("<img src='../ajax-loader.gif' />")  
+ 
+ $jc.ajax({  
+  type: "POST", 
+  cache: false, 
+  url: "../users/signupscript.php",  
+  data: $jc('#signup_form').serialize(),  
+  success: function(Text) {
+	  if (Text=='Check your inbox for the confirmation email.')
+	  {
+	$jc('#signup_form').html('<span style="font-size: 15px; color: #666;  display: block; text-align: center; padding-top: 101px;">'+Text+'</span>').show(400);
+   setTimeout(function () {
+   jQuery('#slide_trigger_2').trigger('click');
+}, 3800);
+	 ;}
+	 else 
+	 {
+    $jc('#signup_response').html(Text) ;
+	 }
+  }  
+});  
+}
+}
+
+
+$jc(document).ready(function () {
+	
+	$jc("#c_im").click(function () {
+		reload();
+
+});
+
+function reload()
+    {
+        var img = new Image();
+        img.src = '../users/image.php?'+(new Date()).getTime();
+        var x = document.getElementById('captcha');
+        x.src = img.src;
+    }
+
+	
+});
+
+</script>
+<div id="panel_cover_up_2" class="panel_cover_up">x</div>
+<div id="sign-f">
+<form name="signup_form" id="signup_form" method="post" action="javascript:signup()" style="width: 220px; margin: 10px; min-height: 291px;">
+<table width="210" border="0" align="center" cellpadding="0" cellspacing="5">
+<tr>
+</tr>
+<tr>
+  <td colspan="3"><label for="emailsign"><span class ="signlabel">E-mail</span></label>
+    <input name="emailsign" type="text" class="login-field" id="emailsign" size="20"/></td>
+</tr>
+<tr>
+<td colspan="3"><label for="passwordsign"><span class ="signlabel">Password</span></label>
+  <input name="passwordsign" type="password" class="login-field" id="passwordsign" size="20"/></td>
+</tr>
+<tr>
+  <td height="71" align="center" valign="middle"><a id="c_im"><img src="../users/image.php" alt="Captcha Image" name="captcha" width="120" height="50" id="captcha" style="cursor: pointer" title="Reload"/></a>
+</td>
+  <td align="center" valign="middle" style="font-size: 18px; color: #666; font-family: 'Century Gothic'; font-weight: bold;">=</td>
+  <td align="center" valign="middle"><input name="secure" type="text" class="homeloginp" id="secure" maxlength="3" /></td>
+</tr>
+<tr>
+<td colspan="3" align="center"><label class="label_radio" for="i_agree">
+<input id="i_agree" name="i_agree" type="checkbox" value="Yes" class='label_radio'/>I agree to the </label><a href="../terms-of-use.php" rel='external' style="font-size: 13px; margin-left: -8px; font-family:'Trebuchet MS', Arial, Helvetica, sans-serif">terms and <br />
+conditions</a></td>
+</tr>
+<tr>
+  <td height="30" colspan="3" align="center"><input id='submit' name="Submit" type="submit" class="login" value="Sign Up"/><div id="signup_response" style="font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif; font-size: 14px; color: red; width: 200px; text-align: center; margin-top: 13px;"></div>
+</td>
+</tr>
+</table>
+</form>
+</div>
+        </div>
+                  </div>
+    </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <span style='display:inline-block; float:left;'><a href="../index.php"><img src="../TaxFile.png" alt="Tax File Logo" name="TaxFile" width="200" height="84" hspace="0" vspace="0" id="TaxFile"/></a></span>
+<div class='menu_cover' style="float:right; padding-top: 24px;">
+<ul class="menu">
+<li><a  class="first" href="../blog/">More About Taxes</a></li>
+<li><a class="first" href="../faqs-incometax.php">FAQs</a></li>
+<li >
+<a href="../Resources/income_tax_calculator_all_years_2012.php" class="MenuBarItemSubmenu">Tax Resources</a>
+<ul class="menu2">
+<li><a href="../Resources/income_tax_calculator_all_years_2012.php"  class="MenuBarItemSubmenu">Tax Calculator</a></li>
+<li><a href="../Resources/due-dates.php"  class="MenuBarItemSubmenu">Income Tax Due Dates</a></li>
+</ul>
+</li>
+<li><a href="../Tax_Planning/planning-index.php" class="MenuBarHorizontal first">Tax Planning</a>
+</li>
+<li><a href="../Income-tax-efiling.php" class="MenuBarHorizontal MenuBarItemSubmenu first">Income Tax eFiling</a>
+<ul class="menu2">
+    <li><a href="../Income-tax-efiling.php" class="MenuBarHorizontal MenuBarItemSubmenu">Steps - Income Tax eFiling</a></li>
+<li><a href="../about_income_tax_and_income_tax_efiling.php" class="MenuBarItemSubmenu">About Income Tax</a></li>
+    <li><a href="../faqs-incometax.php" class="MenuBarItemSubmenu">Frequently Asked Questions</a></li>
+    </ul></li>
+</ul></div>
+    
+    </div>
+  <!-- InstanceBeginEditable name="EditRegion3" -->
+  <div style="height: 260px; padding-top: 50px; padding-left: 50px;"> <span style="font-size: 60px; color: #444; display:block; border-bottom: 1px solid #D5D5D5; width: 500px; font-family:Arial, Helvetica, sans-serif">404 <span style="font-size: 30px;">Error</span></span> <span style="display: block; font-size: 20px; color: #555; width: 500px;">The page you are trying to access does not exist.<br />
+    <a href="../index.php" id="ind">Go back to Index</a> </span> </div>
+  <!-- InstanceEndEditable -->
+
+<!-- end .container -->
+</div>
+   <div class="footer">
+   <div class='footer_2'>
+   <ul style="width: 200px;"><h5>Income Tax Help</h5>
+   <li><a href="../about_income_tax_and_income_tax_efiling.php">About Income Tax</a></li>
+   <li><a href="../Income-tax-efiling.php">How Income Tax eFiling Works</a></li>
+   <li><a href="../faqs-incometax.php">FAQs</a></li>
+   </ul>
+   <ul><h5>Legal</h5>
+   <li><a href='../terms-of-use.php'>Terms and Conditions</a></li>
+   <li><a href='../privacy-policy.php'>Privacy Policy</a></li>
+   </ul>
+   <ul><h5>Other Stuff</h5>
+   <li><a href='../contact-us.php'>Contact Us</a></li>
+   <li><a href='../blog/'>Blog</a></li>
+   </ul>
+   
+   <ul><h5></h5>
+   <li><a href="http://www.facebook.com/Taxfile.in" target="_blank" onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('facebook_taxfile','','../images/facebook_hover.png',1)"><img src="../images/facebook.png" alt="TaxFile.in on Facebook" name="facebook_taxfile" width="32" height="32" border="0" id="facebook_taxfile" title="Like us on Facebook"/></a><a href="https://twitter.com/taxfile_india" target="_blank" onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('twitter_taxfile','','../images/twitter_hover.png',1)"><img src="../images/twitter.png" alt="TaxFile on Twitter" name="twitter_taxfile" width="32" height="32" border="0" id="twitter_taxfile" style="margin-left: 8px;" title="Follow us on Twitter"/></a></li>
+   </ul>
+   </div>
+   </div>
+<div class="preload">
+<img src="../images/checks.gif" width="15" height="15" alt="check" />
+<img src="../images/ref.gif" width="15" height="15"  alt="check"/></div>
+</body>
+<!-- InstanceEnd --></html>

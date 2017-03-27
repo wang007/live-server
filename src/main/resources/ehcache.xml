@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd">
+
+   <diskStore path="java.io.tmpdir"/>
+	<!-- 
+		name:指定缓存的名称，并唯一。
+		maxElementsInMemory: 缓存最大数量的对象
+		eternal: 对象是否永久有效. 如果true的话，关于时间的设置都将失效.
+		timeToIdleSeconds:设置对象在失效前的允许闲置时间（单位：秒）。
+		timeToLiveSeconds：设置对象在失效前允许存活时间（单位：秒）。timeToLiveSeconds>timeToIdleSeconds 才有意义。
+		overflowToDisk：当内存中对象数量达到maxElementsInMemory时，Ehcache将会对象写到磁盘中。 
+	 -->
+	
+   <defaultCache
+        maxElementsInMemory="10000"
+        eternal="false"
+        timeToIdleSeconds="1200"
+        timeToLiveSeconds="3000"
+        overflowToDisk="true"
+     />
+     
+   <!-- 系统运行时参数保存在这个cache中，参数不清理 -->  
+    <Cache
+     	name="config-cache"
+        maxElementsInMemory="200"
+        eternal="true"
+        overflowToDisk="true"
+     />
+     
+    <Cache
+     	name="sys-cache"
+        maxElementsInMemory="10000"
+        eternal="false"
+        timeToIdleSeconds="1200"
+        timeToLiveSeconds="3000"
+        overflowToDisk="true"
+     />
+     
+     
+   
+    <!-- 登录记录缓存 锁定1小时 -->
+   <cache name="passwordRetryCache"
+           maxElementsInMemory="2000"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+    
+   <!-- shiro的授权缓存 -->  
+   <cache name="authorizationCache"
+           maxElementsInMemory="2000"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+	<!-- shiro的认证缓存 -->
+    <cache name="authenticationCache"
+           maxElementsInMemory="2000"
+           eternal="false"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+    
+    <!-- shiro的session缓存 
+    	eternal为true，让shiro的缓存管理器自己清除
+    -->
+    <cache name="shiro-activeSessionCache"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+</ehcache>

@@ -1,0 +1,602 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+    <title>用户管理</title>
+
+    <div class="page-header">
+        <h1>用户管理
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                用户管理、
+                <a href="javascript:;" data-rel="tooltip" data-placement="bottom" title="进入用户回收站"
+                   onClick="toMain('/sys/user/deletePage')">
+                    <strong>用户回收站</strong>
+                    <i class="ace-icon fa fa-external-link"></i>
+                </a>
+            </small>
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- <button class="btn btn-primary" id="find-user-btn">
+                <i class="ace-icon fa fa-eye bigger-120" />查看
+            </button> -->
+
+            <button class="btn btn-primary no-border" id="add-user-btn">
+                <i class="ace-icon fa fa-plus bigger-120" />新建
+            </button>
+            <button class="btn btn-warning no-border" id="update-user-btn">
+                <i class="ace-icon fa fa-pencil bigger-120" />修改
+            </button>
+            <button class="btn btn-danger no-border" id="delete-user-btn">
+                <i class="ace-icon fa fa-trash-o bigger-120" />删除
+            </button>
+
+            <div class="btn-group">
+                <button class="btn btn-info no-border" id="search-user-btn" style="height:42px">
+                    <i class="ace-icon fa fa-search bigger-120" />搜索
+                </button>
+                <button class="btn btn-info dropdown-toggle" id="toggle-search-id" style="height:42px">
+                    <span class="ace-icon fa fa-caret-down icon-only bigger-120"></span>
+                </button>
+            </div>
+            <!-- /.btn-group -->
+        </div>
+
+        <div class="col-xs-12" style="display:none;" id="show-search-user-div">
+            <div class="space-2"></div>
+            <form class="form-inline" role="form" id="search-user-form">
+                <div class="form-group">
+                    <label for="search-username">账号:</label>
+                    <input type="text" class="form-control input-sm" id="search-username" name="username" placeholder="如：201501"/>
+                </div>
+                <div class="form-group">
+                    <label for="search-name">用户名:</label>
+                    <input type="text" class="form-control input-sm" id="search-name" name="name" placeholder="如：张三"/>
+                </div>
+                <div class="form-group">
+                    <label for="search-usergroup">所属用户组:</label>
+                    <select class="select2" id="search-usergroup" name="groupId" data-placeholder="请选择...">
+                        <option>&nbsp;</option>
+                        <option th:each="row: ${rows}" th:value="${row.id}" th:text="${row.groupName}"></option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-xs-12">
+            <!-- jqGrid表格和分页 -->
+            <table id="grid-table"></table>
+            <div id="grid-pager"></div>
+        </div>
+    </div>
+
+    <!-- 查看用户的modal -->
+    <div class="modal fade" id="show-user-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header table-header" style="padding: 8px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="white">&times;</span>
+                    </button>
+                    <h5 class="modal-title">用户信息</h5>
+                </div>
+                <div class="modal-body no-padding">
+                    <!-- 用户信息 -->
+                    <div class="profile-user-info profile-user-info-striped" style="width:100%">
+                        <div class="profile-info-row">
+                            <div class="profile-info-name">账号</div>
+
+                            <div class="profile-info-value">
+                                <span id="username"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding: 8px">
+                    <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times red2"></i>
+                        关闭
+                    </button>
+                    <button type="button" class="btn btn-white btn-info btn-bold" data-dismiss="modal">
+                        <i class="ace-icon fa fa-check"></i>
+                        确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+
+    <!-- 编辑用户信息的modal -->
+    <div class="modal fade" id="edit-user-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header table-header" style="padding: 8px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="white">&times;</span>
+                    </button>
+                    <h5 class="modal-title">用户信息</h5>
+                </div>
+                <div class="modal-body no-padding-bottom">
+                    <!-- 用户信息 -->
+                    <form class="form" id="edit-user-form">
+                        <input type="hidden" name="id" id="hidden-user-id"/>
+                        <!-- 修改表单提交的时候，需要用到这个input，添加的时候，需要去掉 -->
+                        <input type="hidden" name="_method" value="PUT" />
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right" for="edit-username">账号:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="username" id="edit-username" />
+                            </div>
+                            <label class="control-label col-xs-2" for="edit-name">用户名:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="name" id="edit-name" />
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2" for="edit-userType">用户类型:</label>
+                            <div class="col-xs-4">
+                                <select class="select2 input-sm" name="userType" id="edit-userType" data-placeholder="请选择..." style="padding:0px;">
+                                    <option>&nbsp;</option>
+                                    <option value="ordinaryUser">普通用户</option>
+                                    <option value="admin">管理员</option>
+                                    <option value="superAdmin">超级管理员</option>
+                                </select>
+                            </div>
+
+                            <label class="control-label col-xs-2" for="edit-groupId">所属用户组:</label>
+                            <div class="col-xs-4">
+                                <select class="select2 input-sm" name="groupId" id="edit-groupId" data-placeholder="请选择..." style="padding:0px;">
+                                        <option>&nbsp;</option>
+                                        <option th:each="row: ${rows}" th:value="${row.id}" th:text="${row.groupName}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <div id="input-password-group">
+                                <label class="control-label col-xs-2" for="edit-password">密码:</label>
+                                <div class="col-xs-4">
+                                    <input type="password" class="input-sm" name="password" id="edit-password" value="123456"/>
+                                </div>
+                            </div>
+
+                            <div id="reset-password-group">
+                                <label class="control-label col-xs-2" for="reset-password-btn">重置密码:</label>
+                                <div class="col-xs-4">
+                                    <button type="button" class="btn btn-sm btn-danger" id="reset-password-btn"><i class="ace-icon fa fa-refresh bigger-130"></i>重置</button>
+                                </div>
+                            </div>
+
+
+                            <label class="control-label col-xs-2" for="edit-isLock">是否锁定:</label>
+                            <div class="col-xs-4">
+                                <label>
+                                    <input class='ace ace-switch ace-switch-3' id="edit-isLock" type='checkbox' name="isLock" value="1"/>
+                                    <span class='lbl'></span>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="padding: 8px">
+                    <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times red2"></i>
+                        关闭
+                    </button>
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-update-btn">
+                        <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                        保存
+                    </button>
+
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-add-btn">
+                        <i class="ace-icon fa fa-plus bigger-120 blue"></i>
+                        新建
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+
+    <script type="text/javascript">
+
+
+        function changeUserLock(userId) {
+            if (userId == null) {
+                showErrorMsg("用户不存在");
+            } else {
+                $.ajax({
+                    url : '/sys/user/lock/' + userId,
+                    type : 'POST',
+                    data : {
+                        _method : 'PATCH'
+                    },
+                    dataType : 'json',
+                    success : function(data) {
+                        showMsg4model(data,true)
+                    },
+                    error : function() {
+                        showErrorMsg('网络连接异常')
+                    }
+
+                })
+            }
+        }
+
+        $.ace_ajax_finish(function() {
+            jQuery(function ($) {
+
+                //鼠标悬停提示信息
+                $('[data-rel=tooltip]').tooltip();
+                $('[data-rel=popover]').popover({html:true});
+
+                var grid_selector = "#grid-table"; //jqGrid表格
+                var pager_selector = "#grid-pager"; //
+                //resize to fit page size
+                $(window).on('resize.jqGrid',function() {
+                    $(grid_selector).jqGrid('setGridWidth',$(".page-content").width());
+                })
+
+                $(grid_selector).jqGrid({
+                    url : "/sys/user",//获取数据的url地址
+                    datatype : "json", //获取数据的格式
+                    mtype : "get", //请求数据的方式
+                    colNames : [ 'id', '账号',
+                        '用户名', '用户类型', '注册时间',
+                        '最后登录时间', '最后登录ip', '所属用户组',
+                        '是否锁定' ],//表头
+                    colModel : [
+                        {
+                            name : 'id',
+                            index : 'id',
+                            hidden : true
+                        },
+                        {
+                            name : 'username',
+                            index : 'username',
+                            align : 'center',
+                            width : 80,
+                            sortable : false
+                        },
+                        {
+                            name : 'name',
+                            index : 'name',
+                            align : 'center',
+                            width : 80,
+                            sortable : false
+                        },
+                        {
+                            name : 'userType',
+                            index : 'userType',
+                            align : 'center',
+                            width : 80,
+                            sortable : false,
+                            formatter : function alamFormatter(cellvalue, options,row) {
+                                if (row.userType == 'superAdmin') {
+                                    return '超级管理员'
+                                } else if (row.userType == 'admin') {
+                                    return '管理员'
+                                } else {
+                                    return '普通用户'
+                                }
+                            }
+                        },
+                        {
+                            name : 'registerTime',
+                            index : 'registerTime',
+                            align : 'center',
+                            width : 80,
+                            sortable : false,
+                        },
+                        {
+                            name : 'lastLoginTime',
+                            index : 'lastLoginTime',
+                            align : 'center',
+                            width : 80,
+                            sortable : false,
+                        },
+                        {
+                            name : 'lastLoginIp',
+                            index : 'lastLoginIp',
+                            align : 'center',
+                            width : 80,
+                            sortable : false,
+                        },
+                        {
+                            name : 'userGroupName',
+                            index : 'userGroupName',
+                            align : 'center',
+                            width : 80,
+                            sortable : false,
+                        },
+                        {
+                            name : 'isLock',
+                            index : 'isLock',
+                            align : 'center',
+                            width : 80,
+                            sortable : false,
+                            selectable:false,
+                            formatter : function alamFormatter(cellvalue, options,row) {
+                                if (row.isLock == 0) { //未锁
+                                    return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeUserLock('"
+                                            + row.id
+                                            + "') /><span class='lbl'></span></label>"
+                                } else {
+                                    return "<label><input name='switch-field-1' class='ace ace-switch ace-switch-3' type='checkbox' onclick=changeUserLock('"
+                                            + row.id
+                                            + "') checked/><span class='lbl'></span></label>"
+                                }
+                            }
+                        } ], //后端的数据
+                    rowNum : 10,
+                    rowList : [ 10, 20, 50 ],
+                    pager : pager_selector,
+                    sortname : 'registerTime',
+                    viewrecords : true,
+                    altRows : true, //设置隔行用不同的背景色区分开
+                    sortorder : "desc",
+                    width : "auto",
+                    height : "auto",
+                    //multiboxonly : true,
+                    multiselect : true,
+                    rownumbers : false,
+                    caption : "用户列表",
+                    loadComplete : function() {
+                        var table = this;
+                        setTimeout(function() {
+                            //styleCheckbox(table);
+                            //updateActionIcons(table);
+                            updatePagerIcons(table);
+                            //enableTooltips(table);
+                        }, 0);
+                    },
+                }) //jqGrid
+                $(window).triggerHandler('resize.jqGrid'); //初始化jqGrid大小
+
+                //搜索右边下拉按钮
+                $('#toggle-search-id').click(function() {
+                    $('#show-search-user-div').toggle() //显示或隐藏搜索user的div
+                })
+
+                //重新加载jqgrid数据，根据输入项
+                function reloadData() {
+                    $(grid_selector).jqGrid('setGridParam', {
+                        dataType : 'json',
+                        postData : $('#search-user-form').serializeObject(),	//postData.接收的是一个对象
+                        page : 1
+                    }).trigger("reloadGrid"); //重新载入#
+                }
+
+
+                //搜索
+                $('#search-user-btn').click(function() {
+                    reloadData() ;
+                })
+
+
+                var select2Width = judgeBrower(false) == 'chrome' ? '160px':'170px' ;
+
+                //美化下拉框
+                $(".select2").css('width', select2Width).select2({placeholder:"请选择",allowClear : true}) ;
+
+                //查看用户信息
+                $('#find-user-btn').click(function() {
+                    var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                    if (selectedIds.length !== 1) {
+                        showInfoMsg("请选择一条数据");
+                        return false;
+                    }
+                    var id=$(grid_selector).jqGrid('getGridParam','selrow')	; //得到被选择行
+                    var rowData = $(grid_selector).jqGrid('getRowData',id);
+                    $('#show-user-modal').modal() ;
+                })
+
+
+                //新建用户信息modal 显示
+                $('#add-user-btn').click(function(){
+                    //清除错误验证
+                    $('#edit-user-form .form-group').removeClass('has-error');
+                    $('#edit-user-form').validate().resetForm() ;
+
+                    $('#edit-user-form')[0].reset() ;	//重置表单
+                    $('#edit-username').rules('add',validate_username_rule) ;	//开启username的校验
+                    $('#edit-username').attr('disabled',false) ;
+
+                    $('.select2',$('#edit-user-form')).trigger("change") //select2下拉框数据显示
+                    $('#save-for-add-btn').show() ;	//显示新建按钮
+                    $('#save-for-update-btn').hide() ;	//隐藏保存按钮
+                    $('#input-password-group').show() ;	//显示输入密码组
+                    $('#reset-password-group').hide() ;	//隐藏重置密码组
+                    $('#edit-user-modal').modal();
+                })
+
+                //修改用户信息modal 显示
+                $('#update-user-btn').click(function(){
+                    var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                    if (selectedIds.length !== 1) {
+                        showInfoMsg("请选择一条数据");
+                        return false;
+                    }
+                    //清除错误验证
+                    $('#edit-user-form .form-group').removeClass('has-error');
+                    $('#edit-user-form').validate().resetForm() ;
+
+                    $('#edit-user-form')[0].reset() ;	//重置表单
+                    $('#edit-username').rules('remove') ;	//关闭username的校验
+                    $('#edit-username').attr('disabled',true) ;
+
+                    //var id=$(grid_selector).jqGrid('getGridParam','selrow')	; //得到被选择行
+                    //var rowData = $(grid_selector).jqGrid('getRowData',id);	//得到被选择行的数据
+                    var rowData =  $(grid_selector).jqGrid('getRowData',selectedIds[0]) ;
+                    $.ajax({
+                        url:"/sys/user/"+rowData.id,
+                        type : 'GET',
+                        dataType : 'json',
+                        success:function(data) {
+                            $('#edit-user-form')[0].reset() ;	//重置表单
+                            showMsg4model(data)
+                            fillform($('#edit-user-form'),data.data) //填充表单
+                            $('.select2',$('#edit-user-form')).trigger("change") //select2下拉框数据显示
+                        }
+                    })
+                    $('#save-for-add-btn').hide() ;	//隐藏保存按钮
+                    $('#save-for-update-btn').show() ; //显示新建按钮
+                    $('#input-password-group').hide() ;	//隐藏输入密码组
+                    $('#reset-password-group').show() ;	//显示重置密码组
+                    $('#edit-user-modal').modal();
+                })
+
+
+                //新建用户保存按钮
+                $('#save-for-add-btn').click(function(){
+                    if(!$('#edit-user-form').valid()) {
+                        return false ;
+                    }
+                    showLoading("正在提交数据，请稍后...") ;
+                    $.ajax({
+                        url:'/sys/user',
+                        type:'POST',
+                        dataType:'json',
+                        data: $.param($('#edit-user-form').serializeObject(['id','_method'])),
+                        success:function(data) {
+                            showMsg4model(data,true) ;
+                            $('#edit-user-modal').modal('hide') ;
+                            reloadData();
+                        }
+                    })
+                    hideLoading() ;
+                })
+
+                //保存修改用户按钮
+                $('#save-for-update-btn').click(function(){
+                    if(!$('#edit-user-form').valid()) {
+                        return false ;
+                    }
+                    showLoading("正在提交数据，请稍后...") ;
+                    $.ajax({
+                        url: '/sys/user',
+                        type: 'POST',
+                        dataType:'json',
+                        data: $.param($('#edit-user-form').serializeObject(['password'])),
+                        success:function(data){
+                            showMsg4model(data,true);
+                            $('#edit-user-modal').modal('hide') ;
+                            reloadData();
+                        }
+                    })
+                    hideLoading() ;
+                })
+
+                //点击删除按钮
+                $('#delete-user-btn').click(function(){
+                    var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                    if (selectedIds.length <= 0) {
+                        showInfoMsg("请选择数据");
+                        return false;
+                    }
+                    bootbox.confirm("您确定要删除所选的用户数据吗？",function(result){
+                        if(result) {
+                            showLoading() ;
+                            var idsParam = "ids="+selectedIds.join('&ids=') ;
+                            $.ajax({
+                                url: "/sys/user",
+                                type: "POST",
+                                dataType: "JSON",
+                                data: idsParam+"&_method=PATCH",
+                                success: function(data) {
+                                    showMsg4model(data,true) ;
+                                    reloadData() ;
+                                }
+                            })
+                            hideLoading();
+                        }
+                    })
+                })
+
+
+                //重置密码
+                $('#reset-password-btn').click(function(){
+                    bootbox.confirm('您确定要重置密码吗？',function(result){
+                        if(result) {
+                            var userId = document.getElementById("hidden-user-id") ;
+                            if(userId == null) {
+                                showErrorMsg('用户不存在，请重新打开用户编辑窗口')
+                            }
+                            $.ajax({
+                                url: '/sys/user/password/'+userId.value,
+                                type: 'post',
+                                dataType : 'json',
+                                data: {_method:'PATCH'},
+                                success:function(data) {
+                                    showMsg4model(data,true)
+                                }
+                            })	//ajax
+                        }
+                    })
+                })
+
+
+                //校验账号的规则
+                var validate_username_rule = {
+                    required: true ,
+                    alphabetAndNum: true,	//只能数字或字母
+                    rangelength: [5,15],
+                    remote: function() {
+                        return '/sys/user/validation/'+$('#edit-username').val()
+                    }
+                } ;
+                //校验用户
+                $('#edit-user-form').validate({
+                    errorElement: 'div',
+                    errorClass: 'help-block',
+                    focusInvalid: false,
+                    ignore: "",
+                    rules: {
+                        username: validate_username_rule,
+                        password:{
+                            required: true,
+                            alphabetAndNum: true,	//只能数字或字母
+                            rangelength: [5,15],
+                        },
+                        name: {
+                            required: true,
+                            rangelength: [1,15],
+                        },
+                        userType: {
+                            required: true,
+                        }
+                    },
+
+                    messages: {
+                        username: {
+                            required:'请输入账号',
+                            alphabetAndNum:'请输入输入数字或字母',
+                            remote:'账号已存在'
+                        },
+                        password: {
+                            required:'请输入密码',
+                            alphabetAndNum:'请输入数字或字母'
+                        },
+                        name: {
+                            required: '请输入用户名'
+                        },
+                        userType: {
+                            required:'请选择用户类型'
+                        }
+                    },
+
+                    highlight: function (e) {
+                        $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                    },
+
+                    success: function (e) {
+                        $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                    },
+                }) ;
+
+            })
+        })
+
+    </script>
+
+</html>

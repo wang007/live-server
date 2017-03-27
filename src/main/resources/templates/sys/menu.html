@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>菜单管理</title>
+
+<div class="page-header">
+    <h1>菜单管理
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            点击菜单进行添加、修改、查看、删除,
+                    <a href="javascript:;" data-rel="tooltip" data-placement="bottom"
+			title="进入菜单列表" onClick="toMain('/sys/menu/list')"> <strong>菜单列表</strong>
+				<i class="ace-icon fa fa-external-link"></i>
+		</a>
+        </small>
+        
+
+    </h1>
+</div>
+
+<div class="row">
+
+    <div class="col-xs-12">
+        <button class="btn btn-primary no-border" id="add-menu-btn">
+            <i class="ace-icon fa fa-plus bigger-120" />新建
+        </button>
+        <button class="btn btn-warning no-border" id="update-menu-btn">
+            <i class="ace-icon fa fa-pencil bigger-120" />修改
+        </button>
+        <button class="btn btn-danger no-border" id="delete-menu-btn">
+            <i class="ace-icon fa fa-trash-o bigger-120" />删除
+        </button>
+
+    </div>
+
+    <div class="col-xs-6">
+        <div class="widget-box widget-color-blue2">
+            <div class="widget-header">
+                <h4 class="widget-title lighter smaller">
+                    菜单树
+                </h4>
+            </div>
+
+            <div class="widget-body">
+                <div class="widget-main padding-8">
+                    <ul id="menuTree"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-6">
+        <div class="widget-box widget-color-blue2">
+            <div class="widget-header">
+                <h4 class="widget-title lighter smaller">
+                    菜单信息
+                </h4>
+            </div>
+
+            <div class="widget-body">
+                <input type="hidden" id="hidden-menu-id" value="" />
+                <input type="hidden" id="hidden-menu-name" value="" />
+                <div class="widget-main padding-8">
+                    <div class="profile-user-info profile-user-info-striped">
+                        <div class="profile-info-row">
+                            <div class="profile-info-name"> 序号 </div>
+                            <div class="profile-info-value editable-menu" id="showSerialNo">
+
+                            </div>
+                        </div>
+
+                        <div class="profile-info-row">
+                            <div class="profile-info-name"> 父菜单 </div>
+                            <div class="profile-info-value editable-menu" id="showParentMenuName">
+
+                            </div>
+                        </div>
+
+                        <div class="profile-info-row">
+                            <div class="profile-info-name red"> 所选菜单 </div>
+                            <div class="profile-info-value editable-menu" id="showMenuName" style="color:red">
+
+                            </div>
+                        </div>
+
+                        <div class="profile-info-row">
+                            <div class="profile-info-name"> 菜单url </div>
+                            <div class="profile-info-value editable-menu" id="showMenuUrl">
+
+                            </div>
+                        </div>
+
+                        <div class="profile-info-row">
+                            <div class="profile-info-name"> 菜单图标 </div>
+                            <div class="profile-info-value editable-menu" id="showMenuIcon">
+
+                            </div>
+                        </div>
+
+                        <div class="profile-info-row">
+                            <div class="profile-info-name"> 启用状态 </div>
+                            <div class="profile-info-value editable-menu" id="showIsEnable">
+
+                            </div>
+                        </div>
+
+                        <div class="profile-info-row">
+                            <div class="profile-info-name"> 权限值 </div>
+                            <div class="profile-info-value editable-menu" id="showPermissionValue">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 编辑菜单信息的modal -->
+    <div class="modal fade" id="edit-menu-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header table-header" style="padding: 8px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="white">&times;</span>
+                    </button>
+                    <h5 class="modal-title">添加菜单信息</h5>
+                </div>
+                <div class="modal-body no-padding-bottom">
+                    <input type="hidden" id="hidden-menu-id" name="referenceId" value=""/>
+                    <!-- 菜单信息 -->
+                    <div class="row form-group">
+                        <label class="control-label col-xs-2 no-padding-right" for="select-menu-name">所选菜单:</label>
+                        <div class="col-xs-4">
+                            <input type="text" id="select-menu-name" value="" disabled="true"/>
+                        </div>
+                    </div>
+
+                    <form class="form" id="edit-menu-form">
+                        <input type="hidden" name="id" id="hidden-menu-id"/>
+                        <!-- 修改表单提交的时候，需要用到这个input，添加的时候，需要去掉 -->
+                        <input type="hidden" name="_method" value="PUT"/>
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right" for="edit-serialNo">序号:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="serialNo" id="edit-serialNo"/>
+                            </div>
+                            <label class="control-label col-xs-2" for="edit-menuName">菜单名:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="menuName" id="edit-menuName"/>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right" for="edit-menuUrl">菜单url:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="menuUrl" id="edit-menuUrl"/>
+                            </div>
+                            <label class="control-label col-xs-2" for="edit-permissionValue">权限值:</label>
+                            <div class="col-xs-4">
+                                <input type="text" class="input-sm" name="permissionValue" id="edit-permissionValue"/>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right" for="edit-isEnable">启用状态:</label>
+                            <div class="col-xs-4">
+                                <label>
+                                    <input name='isEnable' class='ace ace-switch ace-switch-3' type='checkbox' value="1"
+                                           id="edit-isEnable" checked/>
+                                    <span class='lbl'></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-xs-2 no-padding-right">菜单图标:</label>
+                            <div class="col-xs-10">
+                                <input type="radio" name="menuIcon" value="" checked/>无图标 <span
+                                    style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-cog"/><i class="ace-icon fa fa-cog"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-list"/><i class="ace-icon fa fa-list"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-pencil-square-o"/><i
+                                    class="ace-icon fa fa-pencil-square-o"></i> <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-desktop"/><i
+                                    class="ace-icon fa fa-desktop"></i> <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-tag"/><i class="ace-icon fa fa-tag"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-eye"/><i class="ace-icon fa fa-eye"></i>
+                                <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-bookmark"/><i
+                                    class="ace-icon fa fa-bookmark"></i> <span style="margin-left: 20px;"></span>
+
+                                <input type="radio" name="menuIcon" value="fa-tachometer"/><i
+                                    class="ace-icon fa fa-tachometer"></i> <span style="margin-left: 20px;"></span>
+
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer" style="padding: 8px">
+                    <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times red2"></i>
+                        关闭
+                    </button>
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-update-btn">
+                        <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                        保存
+                    </button>
+
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-add-btn1">
+                        <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                        保存为同级菜单
+                    </button>
+                    <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-add-btn2">
+                        <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                        保存为子级菜单
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+
+
+
+</div>
+
+
+<script type="text/javascript">
+
+    var scripts = [null,"/static/ace/dist/js/fuelux/fuelux.tree.min.js", null] ;
+    $.ace_ajax_finish(scripts,function() {
+        jQuery(function ($) {
+
+            var remoteDateSource = function(options, callback) {
+                var parent_id = null
+                if( !('text' in options || 'type' in options) ){
+                    parent_id = 'root';//load first level data
+                }else if('type' in options && options['type'] == 'folder') {//it has children
+                    if('additionalParameters' in options && 'children' in options.additionalParameters)
+                        parent_id = options.additionalParameters['id']  //把当前节点作为父节点，去查询子节点
+                }
+                if(parent_id != null) {
+                    $.ajax({
+                        url: "/sys/menu/treeview/"+ parent_id ,
+                        type: 'GET',
+                        dataType: 'json',
+                        success : function(data) {
+                            showMsg4model(data) ;
+                            callback({"data":data.data}) ;
+                        }
+                    })
+                }
+            }
+
+            //菜单树
+            $('#menuTree').ace_tree({
+                dataSource: remoteDateSource,
+                multiSelect: false,
+                cacheItems: true,
+                'open-icon' : 'ace-icon tree-minus',
+                'close-icon' : 'ace-icon tree-plus',
+                'selectable' : true,
+                'selected-icon' : 'ace-icon fa fa-check',
+                'unselected-icon' : 'ace-icon fa fa-times',
+                loadingHTML : '<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>'
+            }) ;
+
+
+            //获取菜单信息
+            function getMenuInfo(menuId,callback) {
+
+                $.ajax({
+                    url: "/sys/menu/"+menuId,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function (data) {
+                        callback(data.data) ;
+                    }
+                })
+            }
+
+            //展示菜单信息
+            function showMenuInfo(menuData) {
+                $("#hidden-menu-id").val(menuData.id) ; //菜单id
+                $("#select-menu-name").val(menuData.menuName) ; //菜单id
+                $(".editable-menu").empty() ;   //清空原来的值
+                $("#showSerialNo").append(menuData.serialNo) ;
+                $("#showParentMenuName").append(menuData.parent.menuName) ;
+                $("#showMenuName").append(menuData.menuName) ;
+                $("#showMenuUrl").append(menuData.menuUrl) ;
+                if(menuData.menuIcon != null && menuData.menuIcon != "") {
+                    $("#showMenuIcon").append("<i class='ace-icon fa "+menuData.menuIcon+"'></i>")
+                }
+                $("#showIsEnable").append(menuData.permission.isEnable == 0 ? "<font color='red'>未启用</font>" : "启用") ;
+                $("#showPermissionValue").append(menuData.permission.permissionValue) ;
+
+            }
+            
+
+            $('#menuTree')
+                .on('loaded.fu.tree', function(e) {
+                    //树加载完后事件触发
+                })
+                .on('updated.fu.tree', function(e, result) {
+                    //选中或不选中时触发。在selected或deselected事件后触发
+                })
+                .on('selected.fu.tree', function(e, data) {
+                    //选中事件触发，针对于树叶
+                    getMenuInfo(data.target.additionalParameters.id, showMenuInfo)
+
+
+                })
+                .on('deselected.fu.tree', function(e, data) {
+                    //取消选中事件触发，针对于树叶
+                    getMenuInfo(data.target.additionalParameters.id, showMenuInfo)
+
+                })
+                .on('opened.fu.tree', function(e, data) {
+                    //打开事件触发，针对于树干
+                    getMenuInfo(data.additionalParameters.id, showMenuInfo)
+
+                })
+                .on('closed.fu.tree', function(e, data) {
+                    //关闭事件触发，针对于树干、
+                    getMenuInfo(data.additionalParameters.id, showMenuInfo)
+                });
+
+
+            var select2Width = judgeBrower(false) == 'chrome' ? '160px':'170px' ;
+            //美化下拉框
+            $(".select2").css('width', select2Width).select2({placeholder:"请选择",allowClear : true}) ;
+
+            //点击新建按钮
+            $("#add-menu-btn").click(function(){
+                var menuId = $("#hidden-menu-id").val() ;
+                $("#save-for-update-btn").hide() ;
+                $("#save-for-add-btn1").show() ;    //同级
+                $("#save-for-add-btn2").show() ;    //子级
+                if(menuId == null || menuId == "") {    //当没有选择任何菜单时的情况
+                    $("#hidden-menu-id").val("root") ;
+                    $("#select-menu-name").val("根菜单") ;
+                    $("#save-for-add-btn1").hide() ;    //同级
+                }
+
+
+                $("#edit-menu-form")[0].reset() ;   //重置表单
+                $("#edit-menu-modal").modal() ;
+            })
+
+            function saveMenuInfo(saveType) {
+                showLoading("正在保存中,请稍后...")
+                $.ajax({
+                    url: "/sys/menu",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $.param($("#edit-menu-form").serializeObject(['id','_method']))+"&saveType="+saveType+"&referenceId="+$("#hidden-menu-id").val(),
+                    success: function (data) {
+                        showMsg4model(data,true)
+                        $("#edit-menu-modal").modal("hide") ;
+                        toMain("/sys/menu/page",true) ;
+                    }
+                })
+                hideLoading() ;
+            }
+
+            //保存为同级菜单
+            $("#save-for-add-btn1").click(function(){
+                saveMenuInfo(1) ;
+            })
+
+            //保存为子级菜单
+            $("#save-for-add-btn2").click(function(){
+                saveMenuInfo(2) ;
+            })
+
+
+            //点击修改按钮
+            $("#update-menu-btn").click(function(){
+               var menuId = $("#hidden-menu-id").val() ;
+               if(menuId == null || menuId == "") {
+                   showInfoMsg("请先点击菜单进行选择！") ;
+                   return ;
+               }
+                $("#save-for-update-btn").show() ;
+                $("#save-for-add-btn1").hide() ;    //同级
+                $("#save-for-add-btn2").hide() ;    //子级
+
+                $("#edit-menu-form")[0].reset() ;   //重置表单
+                $("#edit-menu-modal").modal() ;
+
+                getMenuInfo(menuId, function(menuData){
+                    fillform($("#edit-menu-form"),menuData) ;
+                    $("#edit-permissionValue").val(menuData.permission.permissionValue) ;   //权限值
+                    if(menuData.permission.isEnable ==1) {
+                        $("#edit-isEnable").prop("checked",true) ;
+                    } else {
+                        $("#edit-isEnable").prop("checked",false) ;
+                    }
+                })
+            })
+
+
+            //保存更新菜单
+            $("#save-for-update-btn").click(function(){
+                $.ajax({
+                    url: "/sys/menu",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#edit-menu-form").serialize(),
+                    success: function(data){
+                        $("#edit-menu-modal").modal("hide") ;
+                        showMsg4model(data,true) ;
+                        toMain("/sys/menu/page",true) ;
+                    },
+                })
+            })
+
+            //删除菜单
+            $("#delete-menu-btn").click(function(){
+                var menuId = $("#hidden-menu-id").val() ;
+                if(menuId == null || menuId == "") {
+                    showInfoMsg("请先点击菜单进行选择！") ;
+                    return ;
+                }
+               var menuName = $("#select-menu-name").val() ;
+                bootbox.confirm("请确定要删除“"+menuName+"”吗？~删除之后将无法恢复",function (result) {
+                    if(result) {
+                        $.ajax({
+                            url: "/sys/menu/"+menuId,
+                            type: "POST",
+                            dataType: "JSON",
+                            data:{"_method": "DELETE"},
+                            success: function(data) {
+                                showMsg4model(data, true) ;
+                                toMain("/sys/menu/page")
+                            }
+                        })
+                    }
+
+                })
+
+            })
+
+
+
+        })
+    })
+
+
+
+
+</script>

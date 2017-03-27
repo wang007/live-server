@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--/*
+        引入页面底部的js文件，ace的js文件
+	    这里引入常用的ace插件的js文件，其他不常用的插的js文件在各自的页面中引用即可
+    */-->
+<div id="common_js_section" th:remove="tag">
+
+	<script th:src="@{/static/ace/dist/js/bootstrap.min.js}"></script>
+
+	<script th:src="@{/static/ace/dist/js/fuelux/fuelux.spinner.min.js}"></script>
+
+	<!--ace自带插件的js文件 start -->
+	<!-- bootstrap日期插件 -->
+	<script
+		th:src="@{/static/ace/dist/js/date-time/bootstrap-datepicker.min.js}"></script>
+		<script
+		th:src="@{/static/ace/dist/js/date-time/bootstrap-datetimepicker.min.js}"></script>
+	<!--下拉框单选带搜索的插件  -->
+	<script th:src="@{/static/ace/dist/js/select2.min.js}"></script>
+	<!--jqgrid表格 -->
+	<script th:src="@{/static/ace/dist/js/jqGrid/jquery.jqGrid.min.js}"></script>
+	<script th:src="@{/static/ace/dist/js/jqGrid/i18n/grid.locale-cn.js}"></script>
+	<!--dataTables表格 -->
+	<script th:src="@{/static/ace/dist/js/jquery.dataTables.min.js}"></script>
+	<script
+		th:src="@{/static/ace/dist/js/jquery.dataTables.bootstrap.min.js}"></script>
+	<!-- jquery.validate校验控件 -->
+	<script th:src="@{/static/ace/dist/js/jquery.validate.min.js}"></script>
+	<!-- 消息弹出框文件 -->
+	<script th:src="@{/static/ace/dist/js/bootbox.min.js}"></script>
+	<!--消息提示插件 -->
+	<script th:src="@{/static/ace/dist/js/jquery.gritter.min.js}"></script>
+
+
+	<!--ace自带插件的js文件 end -->
+	<!--外置必要插件的js文件 start -->
+	<!-- 该js文件可以使validate校验写到元素（input等）中  -->
+	<script th:src="@{/static/plugins/jqueryValidate/jquery.metadata.js}"></script>
+	<!--补充validate校验方法 -->
+	<script
+		th:src="@{/static/plugins/jqueryValidate/full_validate_method.js}"></script>
+	<!-- validate支持中文 -->
+	<script
+		th:src="@{/static/plugins/jqueryValidate/jquery.validate.messages_cn.js}"></script>
+	<!-- jqLoading遮罩层插件 -->
+	<script th:src="@{/static/plugins/js/jquery-ui-jqLoding.js}"></script>
+	<!--文件上传插件 -->
+	<script th:src="@{/static/plugins/js/ajaxfileupload.js}"></script>
+
+	<!--外置必要插件的js文件 end -->
+
+
+	<!-- ace scripts -->
+	<script th:src="@{/static/ace/assets/js/ace/elements.scroller.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.colorpicker.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.fileinput.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.typeahead.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.wysiwyg.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.spinner.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.treeview.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.wizard.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/elements.aside.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.ajax-content.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.touch-drag.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.sidebar.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.sidebar-scroll-1.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.submenu-hover.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.widget-box.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.settings.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.settings-rtl.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.settings-skin.js}"></script>
+	<script th:src="@{/static/ace/assets/js/ace/ace.widget-on-reload.js}"></script>
+	<script
+		th:src="@{/static/ace/assets/js/ace/ace.searchbox-autocomplete.js}"></script>
+		<script th:src="@{/static/ace/assets/js/chosen.jquery.js}"></script>
+	<!--引入自定义的js文件 start -->
+	<script th:src="@{/static/custom/common/common.js}"></script>
+	<script th:src="@{/static/custom/common/plugins-complete.js}"></script>
+</div>
+</html>

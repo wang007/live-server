@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8"></meta>
+<style>
+.btn-gap {
+	padding-top: 2px;
+}
+</style>
+<!--/* 引入全局的css文件和js文件  */-->
+<div th:replace="roomer/reserve/js_style :: #js_style_section"></div>
+<div class="page-header">
+	<h1>
+		预定管理 <small> 》客房信息 </small>
+	</h1>
+</div>
+<div class="row">
+	<div class="col-xs-1">
+		<!-- 楼层导航按钮组 -->
+		<!-- floorBtnModel -->
+		<ul id="nav" name="floorId">
+			<li><a th:each="floor:${floors}" th:id="${floor.id}"
+				th:text="${floor.name}"
+				th:class="(${floor.id} == ${filter.floorId})? 'btn btn-primary' : 'btn btn-defalut'">楼层
+			</a></li>
+		</ul>
+	</div>
+
+	<div class="col-xs-11">
+		<div class="widget-box">
+			<div class="widget-header">
+				<h4 class="smaller">楼层信息</h4>
+			</div>
+			<!-- [End].widget-header -->
+			<div class="widget-body well">
+				<div class="row">
+					<!-- guestRoomFilterModel -->
+					<form class="form-horizontal" role="form">
+						<div class="col-xs-4">
+							<div class="input-group">
+								<span class="input-group-addon"> 价格 </span> <input type="text"
+									id="form-field-1" placeholder="左区间，如：90.0"
+									class="col-xs-12 col-sm-12" name="minPrice" /> <span
+									class="input-group-addon"> <i class="fa fa-exchange"></i>
+								</span> <input type="text" id="form-field-1" placeholder="右区间，如：99.9"
+									class="col-xs-12 col-sm-12" name="maxPrice" /> <span
+									class="input-group-btn">
+									<button type="button" class="btn btn-info btn-sm"
+										name="search-price-btn">
+										<span class="ace-icon fa fa-search icon-on-right bigger-110"></span>
+										查询
+									</button>
+								</span>
+							</div>
+						</div>
+						<div class="col-xs-3">
+							<div class="form-group">
+								<label class="col-sm-4 control-label no-padding-right"
+									for="form-field-1">房间状态：</label>
+								<div class="col-xs-8">
+									<select class="form-control" id="form-field-select-1"
+										name="roomStatus">
+										<option value="all">全部</option>
+										<option
+											th:each="dict : ${@dictService.dictList('roomStatus')}"
+											th:value="${dict.dictMark}" th:text="${dict.dictValue}">空房</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-3">
+							<div class="form-group">
+								<label class="col-sm-4 control-label no-padding-right"
+									for="form-field-1">房间类型：</label>
+								<div class="col-xs-8">
+									<select class="form-control" id="form-field-select-1"
+										name="roomTypeId">
+										<option value="all">全部</option>
+										<option th:each="roomType : ${roomTypes}"
+											th:value="${roomType.id}" th:text="${roomType.typeName}">其他</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</form>
+					<!-- [End].form-horizontal -->
+					<!-- 空div，供排版用 -->
+					<div class="col-xs-2"></div>
+				</div>
+				<!-- [End].row -->
+				<div class="row">
+					<div class="col-xs-1">
+						<label>已入住：</label><span
+							class="label label-primary arrowed-in-right arrowed">&nbsp;&nbsp;</span>
+					</div>
+					<div class="col-xs-1">
+						<label>已预定：</label><span
+							class="label label-warning arrowed-in-right arrowed">&nbsp;&nbsp;</span>
+					</div>
+					<div class="col-xs-1">
+						<label>空房：</label><span
+							class="label label-grey arrowed-in-right arrowed">&nbsp;&nbsp;</span>
+					</div>
+				</div>
+				<div class="hr hr-24"></div>
+				<!-- 核心面板 -->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="row">
+							<!-- #section:pages/pricing.small-body -->
+							<div class="col-xs-12 pricing-span-body">
+								<div class="pricing-span col-xs-10"
+									th:each="guestRoom : ${guestRooms}"
+									th:with="boxColor=(${guestRoom.status} == 'checkIn')?'blue':((${guestRoom.status} == 'reserved')?'orange':'grey'),btnType=(${guestRoom.status} == 'checkIn')?'primary':((${guestRoom.status} == 'reserved')?'warning':'grey')">
+									<div
+										th:class="|widget-box pricing-box-small widget-color-${boxColor}|">
+										<div class="widget-header">
+											<h5 class="widget-title bigger lighter"
+												th:text="${guestRoom.serialNo}">a101</h5>
+										</div>
+										<div class="widget-body">
+											<div class="widget-main no-padding">
+												<ul class="list-unstyled list-striped pricing-table">
+													<li th:text="${guestRoom.typeName}">单人间</li>
+													<li><button class="btn btn-link" data-toggle="modal"
+															data-target="#detailModal" name="roomDetail"
+															th:id="${guestRoom.id}">详情</button></li>
+												</ul>
+												<div class="price">
+													<span
+														class="label label-lg label-info arrowed-in arrowed-in-right">
+														<span th:text="${guestRoom.price}">90.0</span> <small
+														th:text="(${guestRoom.typeName} == '钟点房')? '/时' : '/天'">/天</small>
+													</span>
+												</div>
+											</div>
+											<!-- btnGroup -->
+											<th:block th:if="${guestRoom.status} == 'reserved'">
+												<div>
+													<!-- changeCheckInBtnModel -->
+													<a href="#"
+														th:class="|btn btn-block btn-sm btn-${btnType}|"
+														name="change-checkIn-btn" data-toggle="modal"
+														th:id="${guestRoom.id}" data-target="#reserveModal"> <span>转入住</span>
+													</a>
+												</div>
+												<div>
+													<a href="#"
+														th:class="|btn btn-block btn-sm btn-${btnType}|"
+														th:id="${guestRoom.id}" name="cancel"> <span>取消</span>
+													</a>
+												</div>
+											</th:block>
+											<th:block th:if="${guestRoom.status} == 'empty'">
+												<div>
+													<a href="#" class="btn btn-block btn-sm btn-grey"
+														name="checkIn" data-toggle="modal" th:id="${guestRoom.id}"
+														data-target="#reserveModal"> <span>登记入住</span>
+													</a>
+												</div>
+												<div>
+													<!-- reserveBtnModel -->
+													<a href="#" class="btn btn-block btn-sm btn-grey"
+														data-toggle="modal" data-target="#reserveModal"
+														name="reserve" th:id="${guestRoom.id}"> <span>预定</span>
+													</a>
+												</div>
+											</th:block>
+											<th:block th:if="${guestRoom.status} == 'checkIn'">
+												<div>
+													<!-- checkoutBtnModel -->
+													<a href="#" class="btn btn-block btn-sm btn-primary"
+														data-toggle="modal" data-target="#checkoutModal"
+														th:id="${guestRoom.id}" name="checkout"> <span>退房登记</span>
+													</a>
+												</div>
+												<div>
+													<a href="#" class="btn btn-block btn-sm btn-primary"
+														data-target="#right-menu" th:id="${guestRoom.id}"
+														data-toggle="modal" name="changeRoom-btn"> <span>转房</span>
+													</a>
+												</div>
+
+											</th:block>
+											<!-- [End]btn-group -->
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- [End].pricing-span-body -->
+						</div>
+						<!-- [End].row -->
+					</div>
+				</div>
+				<!-- [End].row -->
+			</div>
+			<!-- [End].widget-body -->
+		</div>
+	</div>
+	<!-- [End].widget-box -->
+</div>
+<!-- [End].row -->
+
+<!-- 详细信息显示模态框 -->
+<!-- Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="detailModal">客房详细信息</h4>
+			</div>
+			<div class="modal-body">
+				<!-- 客房详细信息 -->
+				<div class="profile-user-info profile-user-info-striped">
+					<div class="profile-info-row">
+						<div class="profile-info-name">客房编号：</div>
+
+						<div class="profile-info-value" id="serialNo">a101</div>
+					</div>
+
+					<div class="profile-info-row">
+						<div class="profile-info-name">客房类型：</div>
+
+						<div class="profile-info-value" id="typeName">单人间</div>
+					</div>
+
+					<div class="profile-info-row">
+						<div class="profile-info-name">客房状态：</div>
+
+						<div class="profile-info-value" id="status">已预定</div>
+					</div>
+
+					<div class="profile-info-row">
+						<div class="profile-info-name">所属楼层：</div>
+
+						<div class="profile-info-value" id="floorId">一楼</div>
+					</div>
+
+					<div class="profile-info-row">
+						<div class="profile-info-name">标准价格：</div>
+
+						<div class="profile-info-value" id="price">90.0元/天</div>
+					</div>
+
+					<div class="profile-info-row">
+						<div class="profile-info-name">折后价：</div>
+
+						<div class="profile-info-value" id="discountPrice">85.0元/天</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name">普通会员价：</div>
+
+						<div class="profile-info-value" id="generalMemberPrice">
+							80.0元/天</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name">vip会员价：</div>
+
+						<div class="profile-info-value" id="vipMemberPrice">75.0元/天</div>
+					</div>
+					<div class="profile-info-row">
+						<div class="profile-info-name">备注：</div>
+
+						<div class="profile-info-value" id="remarks"></div>
+					</div>
+				</div>
+				<!-- [End].profile-user-info -->
+			</div>
+			<!-- [End].modal-body -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [End].modal -->
+
+<!-- changeCheckInBtnModel -->
+<!-- reserveBtnModel -->
+<!-- 预定信息编辑模态框 -->
+<!-- Modal -->
+<div class="modal fade" id="reserveModal" tabindex="-1" role="dialog"
+	aria-labelledby="reserveModal" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="reserveModal">预定信息编辑</h4>
+			</div>
+			<div class="modal-body">
+				<!-- 表单主体 -->
+				<!-- <div class="form-group">
+						<label class="col-sm-3 control-label no-padding-right"
+							for="form-field-1"> 入住单号： </label>
+						<div class="col-sm-8">
+							<input type="text" id="form-field-1" placeholder="入住单号"
+								class="col-xs-10 col-sm-10" disabled="disabled"
+								name="order.serialNo" />
+						</div>
+					</div> -->
+				<!-- #section:elements.accordion -->
+				<div id="accordion" class="accordion-style1 panel-group">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a class="accordion-toggle" data-toggle="collapse"
+									data-parent="#accordion" href="#collapseOne"> <i
+									class="ace-icon fa fa-angle-down bigger-110"
+									data-icon-hide="ace-icon fa fa-angle-down"
+									data-icon-show="ace-icon fa fa-angle-right"></i> &nbsp;客房信息
+								</a>
+							</h4>
+						</div>
+						<!-- [End].panel-heading -->
+						<div class="panel-collapse collapse" id="collapseOne">
+							<div class="panel-body">
+								<!-- 客房详细信息 -->
+								<ul class="list-unstyled spaced">
+									<li><i class="ace-icon fa fa-caret-right blue"></i><strong>客房编号：</strong>
+										<span id="guestRoom.serialNo"></span></li>
+
+									<li><i class="ace-icon fa fa-caret-right blue"></i><strong>客房类型：</strong>
+										<span id="guestRoom.typeName"></span></li>
+
+									<li><i class="ace-icon fa fa-caret-right blue"></i><strong>客房价格：</strong>
+										<span id="guestRoom.price"></span></li>
+
+									<li><i class="ace-icon fa fa-caret-right blue"></i> <strong>折后价：</strong>
+										<span id="guestRoom.discountPrice"></span></li>
+								</ul>
+							</div>
+						</div>
+						<!-- [End]#collapseOne -->
+					</div>
+					<!-- [End].panel panel-default -->
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a class="accordion-toggle" data-toggle="collapse"
+									data-parent="#accordion" href="#collapseTwo"> <i
+									class="ace-icon fa fa-angle-down bigger-110"
+									data-icon-hide="ace-icon fa fa-angle-down"
+									data-icon-show="ace-icon fa fa-angle-right"></i> &nbsp;预订信息
+								</a>
+							</h4>
+						</div>
+
+						<div class="panel-collapse collapse in" id="collapseTwo">
+							<div class="panel-body">
+								<!-- 预定表单 -->
+								<form class="form-horizontal" id="reservation-form" role="form">
+									<input type="hidden" name="guestRoom.id" /> <input
+										type="hidden" name="reserve.order.id" />
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 预定状态： </label>
+										<div class="col-sm-4">
+											<select class="form-control" id="form-field-select-1"
+												name="reserveStatus">
+												<option
+													th:each="dict : ${@dictService.dictList('reserveStatus')}"
+													th:value="${dict.dictMark}" th:text="${dict.dictValue}">空房</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-2">预定人姓名：</label>
+
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="form-field-2" placeholder="预定人姓名"
+													class="col-xs-10" name="customer" /> <span
+													class="help-inline col-xs-2"> <span
+													class="middle red"><i
+														class="ace-icon fa fa-asterisk"></i></span>
+												</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 证件类型： </label>
+										<div class="col-sm-4">
+											<select class="form-control" id="form-field-select-1"
+												name="cartificateType">
+												<option th:each="dict : ${@dictService.dictList('idType')}"
+													th:value="${dict.dictMark}" th:text="${dict.dictValue}">空房</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 证件号： </label>
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="cartificate" name="cartificate"
+													class="form-control" /> <span class="input-group-addon">
+													<span class="glyphicon glyphicon-user"></span>
+												</span> <span class="help-inline col-xs-12 col-sm-7"> <span
+													class="middle" name="cartificate"></span>
+												</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 联系电话： </label>
+										<div class="col-xs-8">
+											<div class="input-group input-group-sm">
+												<input type="tel" id="phone" name="telPhone"
+													class="form-control" /> <span class="input-group-addon">
+													<i class="ace-icon fa fa-phone"></i>
+												</span> <span class="help-inline col-xs-12 col-sm-7"> <span
+													class="middle"><strong class="red"><i
+															class="ace-icon fa fa-asterisk"></i></strong></span>
+												</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-2">押金：</label>
+
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="form-field-2" placeholder="提交的押金"
+													class="col-xs-12" name="deposit" />
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 入住人数： </label>
+										<div class="col-sm-8">
+											<input type="text" class="input-mini" id="spinner3"
+												name="peopleNum" />
+										</div>
+									</div>
+
+									<!-- current -->
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 会员编号： </label>
+										<div class="col-sm-8">
+											<input type="text" id="form-field-1"
+												placeholder="若房客为会员则输入会员卡号" class="col-xs-10 col-sm-10"
+												name="member.id" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 抵店时间： </label>
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="reachTime" name="reachTime"
+													class="form-control" /> <span class="input-group-addon">
+													<i class="ace-icon fa fa-calendar"></i>
+												</span> <span class="help-inline col-xs-12 col-sm-7"> <span
+													class="middle"><strong class="red"><i
+															class="ace-icon fa fa-asterisk"></i></strong></span>
+												</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 离店时间： </label>
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="leaveTime" name="leaveTime"
+													class="form-control" /> <span class="input-group-addon">
+													<i class="ace-icon fa fa-calendar"></i>
+												</span> <span class="help-inline col-xs-12 col-sm-7"> <span
+													class="middle"><strong class="red"><i
+															class="ace-icon fa fa-asterisk"></i></strong></span>
+												</span>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 备注： </label>
+										<div class="col-sm-8">
+											<textarea class="form-control" id="form-field-8"
+												placeholder="相关备注" name="orderRemarks"></textarea>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<!-- [End].panel panel-default -->
+				</div>
+				<!-- [End]#accordion -->
+			</div>
+			<!-- [End].modal-body -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" id="save-reserveOrder-btn" name="save"
+					class="btn btn-primary" data-dismiss="modal">
+					<i class="ace-icon fa fa-floppy-o bigger-120"></i>保存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [End].modal -->
+
+<!-- checkoutBtnModel -->
+<!-- 退房登记信息编辑模态框 -->
+<!-- Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog"
+	aria-labelledby="checkout" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="checkout">退房登记信息编辑</h4>
+			</div>
+			<div class="modal-body">
+				<!-- #section:elements.accordion -->
+				<div id="accordion" class="accordion-style1 panel-group">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a class="accordion-toggle" data-toggle="collapse"
+									data-parent="#accordion" href="#collapseOne2"> <i
+									class="ace-icon fa fa-angle-down bigger-110"
+									data-icon-hide="ace-icon fa fa-angle-down"
+									data-icon-show="ace-icon fa fa-angle-right"></i> &nbsp;客房信息
+								</a>
+							</h4>
+						</div>
+
+						<div class="panel-collapse collapse" id="collapseOne2">
+							<div class="panel-body">
+								<!-- 客房详细信息 -->
+								<ul class="list-unstyled spaced">
+									<li><i class="ace-icon fa fa-caret-right blue"></i><strong>客房编号：</strong>
+										<span id="checkOut.serialNo">编号</span></li>
+
+									<li><i class="ace-icon fa fa-caret-right blue"></i><strong>客房类型：</strong>
+										<span id="checkOut.typeName">编号</span></li>
+
+									<li><i class="ace-icon fa fa-caret-right blue"></i><strong>客房价格：</strong>
+										<span id="checkOut.discountPrice">编号</span>(是入住登记时的折后价)</li>
+									<li><i class="ace-icon fa fa-caret-right blue"></i><strong>押金：</strong>
+										<span id="order.deposit">编号</span></li>
+
+									<!-- 	<li class="divider"></li> -->
+
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!-- [End].panel panel-default -->
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a class="accordion-toggle" data-toggle="collapse"
+									data-parent="#accordion" href="#collapseTwo2"> <i
+									class="ace-icon fa fa-angle-down bigger-110"
+									data-icon-hide="ace-icon fa fa-angle-down"
+									data-icon-show="ace-icon fa fa-angle-right"></i> &nbsp;退房登记信息
+								</a>
+							</h4>
+						</div>
+
+						<div class="panel-collapse collapse in" id="collapseTwo2">
+							<div class="panel-body">
+								<!-- 表单主体 -->
+								<form class="form-horizontal" role="form" id="checkOut-form">
+									<input type="hidden" name="order.guestRoom.id" /> <input
+										type="hidden" name="order.id" />
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 住宿天数： </label>
+										<div class="col-sm-8">
+											<input type="text" class="input-mini" id="spinner3"
+												name="days" />
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 住宿费： </label>
+										<div class="col-sm-4">
+											<div class="input-group">
+												<input type="text" id="form-field-1" placeholder="房客住宿花费的费用"
+													class="col-xs-12 col-sm-12" name="accommodation"
+													disabled="disabled" /> <span class="input-group-btn">
+													<a type="button" class="btn btn-defalut btn-sm"
+													name="sum-btn">合计</a>
+												</span>
+											</div>
+											<!-- <input type="text" id="form-field-1" placeholder="房客住宿花费的费用"
+												class="col-xs-12 col-sm-12" name="accommodation" /> <a
+												class="btn btn-sm" id="sum-btn" name="sum-btn">合计</a> -->
+										</div>
+									</div>
+									<!-- <div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 店内消费： </label>
+										<div class="col-sm-8">
+											<input type="text" id="form-field-1" placeholder="店内相关消费"
+												class="col-xs-10 col-sm-5" name="typeName" />
+										</div>
+									</div> -->
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 餐费： </label>
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="form-field-2" placeholder="店内就餐费用"
+													class="col-xs-12" name="mealsCost" />
+											</div>
+											<!-- <input type="text" id="form-field-1" placeholder="店内就餐费用"
+												class="col-xs-10 col-sm-5" name="mealsCost" /> -->
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 电话费： </label>
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="form-field-2" placeholder="座机产生的费用"
+													class="col-xs-12" name="telCost" />
+											</div>
+											<!-- <input type="text" id="form-field-1" placeholder="座机产生的费用"
+												class="col-xs-10 col-sm-5" name="telCost" /> -->
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 实际应收： </label>
+										<div class="col-sm-4">
+											<div class="input-group">
+												<input type="text" id="form-field-1" placeholder="实际应收费用"
+													class="col-xs-12 col-sm-12" name="shouldReceive"
+													disabled="disabled" /> <span class="input-group-btn">
+													<a type="button" class="btn btn-defalut btn-sm"
+													name="shouldReceive-btn">应收</a>
+												</span>
+											</div>
+											<!-- <div class="input-group">
+												<input type="text" id="form-field-1" placeholder="自动计算"
+												class="col-xs-10 col-sm-5" name="shouldReceive" /> <a
+												class="btn btn-defalut" id="shouldReceive-btn"
+												name="shouldReceive-btn">应收</a>
+												</span>
+											</div> -->
+											<!-- 	 -->
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 应退押金： </label>
+										<div class="col-sm-8">
+											<!-- 	<input type="text" id="form-field-1" placeholder="应该退还的押金金额"
+												class="col-xs-10 col-sm-5" name="shouldReturnDeposit" /> -->
+											<div class="input-group input-group-sm">
+												<input type="text" id="form-field-2" placeholder="应该退还的押金金额"
+													class="col-xs-12" name="shouldReturnDeposit" />
+												<!-- <span
+													class="help-inline col-xs-2"> <span
+													class="middle red"><i
+														class="ace-icon fa fa-asterisk"></i></span>
+												</span> -->
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 付款方式： </label>
+										<div class="col-sm-4">
+											<select class="form-control" id="form-field-select-1"
+												name="payType">
+												<option
+													th:each="payType : ${@dictService.dictList('payType')}"
+													th:value="${payType.dictMark}"
+													th:text="${payType.dictValue}">已预定</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 实收： </label>
+										<div class="col-sm-8">
+											<div class="input-group input-group-sm">
+												<input type="text" id="form-field-2" placeholder="实际收取房客费用"
+													class="col-xs-10" name="realReceive" /><span
+													class="help-inline col-xs-2"> <span
+													class="middle red"><i
+														class="ace-icon fa fa-asterisk"></i></span>
+												</span>
+											</div>
+											<!-- 	<input type="text" id="form-field-1" placeholder="实际收取房客费用"
+												class="col-xs-10 col-sm-5" name="realReceive" /> -->
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 找零： </label>
+										<div class="col-sm-4">
+											<div class="input-group">
+												<input type="text" id="form-field-1" placeholder="找零"
+													class="col-xs-12 col-sm-12" name="oddChange"
+													disabled="disabled" /> <span class="input-group-btn">
+													<a type="button" class="btn btn-defalut btn-sm"
+													name="oddChange-btn">找零</a>
+												</span>
+											</div>
+											<!-- <input type="text" id="form-field-1" placeholder="找零"
+												class="col-xs-10 col-sm-5" name="oddChange" /> <a
+												class="btn btn-sm" id="oddChange-btn" name="oddChange-btn">找零</a> -->
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right"
+											for="form-field-1"> 备注： </label>
+										<div class="col-sm-8">
+											<textarea class="form-control" id="form-field-8"
+												placeholder="相关备注" name="checkOut.remarks"></textarea>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- [End].modal-body -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" id="save-checkOut-btn"
+					name="save-checkOut-btn" class="btn btn-primary"
+					data-dismiss="modal">
+					<i class="ace-icon fa fa-floppy-o bigger-120"></i>保存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- [End].modal -->
+<!-- current -->
+<!-- 右侧模态框,换房操作 -->
+<div id="right-menu" class="modal aside" data-body-scroll="false"
+	data-offset="true" data-placement="right" data-fixed="true"
+	data-backdrop="invisible" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header no-padding">
+				<div class="table-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">
+						<span class="white">&times;</span>
+					</button>
+					转房操作
+				</div>
+			</div>
+			<!-- changeRoom -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-xs-12">
+						<label>楼层：</label>
+						<div class="btn-group" name="floor-btn">
+							<button type="button" th:each="floor:${floors}"
+								th:text="${floor.name}" th:id="${floor.id}"
+								class="btn btn-white btn-success">1</button>
+						</div>
+					</div>
+				</div>
+				<div class="hr hr-24"></div>
+				<div class="row">
+					<div class="col-xs-12">
+						<label>房间：</label>
+						<div class="btn-group" name="changeRooms">
+							<!-- <button type="button" class="btn btn-white btn-defalut">a102</button> -->
+						</div>
+					</div>
+				</div>
+				<div class="hr hr-24"></div>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="input-group">
+							<span class="input-group-addon">转至 </span> <input type="text"
+								id="form-field-1" class="col-xs-12 col-sm-12" name="changeRoom" />
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-info btn-sm"
+									name="save-changeRoom-btn" data-dismiss="modal"
+									aria-hidden="true">确认</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- [End.modal-bogy] -->
+		</div>
+	</div>
+</div>
+<!-- [End].modal -->
+</html>
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+	$
+			.ace_ajax_finish(function() {
+				
+				// spinner插件
+				$("input[id='spinner3']").ace_spinner({
+					value : 1,
+					min : 1,
+					max : 10,
+					step : 1,
+					on_sides : true,
+					icon_up : 'ace-icon fa fa-plus smaller-75',
+					icon_down : 'ace-icon fa fa-minus smaller-75',
+					btn_up_class : 'btn-success',
+					btn_down_class : 'btn-danger'
+				});
+
+				// 日期插件
+				$("input[name='reachTime']").datetimepicker({
+					/* showOtherMonths : true,
+					selectOtherMonths : false, */
+					startView:'day'
+					
+				});
+				
+				$("input[name='leaveTime']").datetimepicker({
+					/* showOtherMonths : true,
+					selectOtherMonths : false, */
+					startView:'day'
+					
+				});
+				<!-- floorBtnModel -->
+				<!-- guestRoomModel -->
+				/** 客房动态查询模块 **/
+				
+				var data = /*[[${guestRooms}]]*/null;
+				var jsonData = {}; // 所有房间信息
+				for ( var index in data) {
+					var id = data[index].id;
+					jsonData[id] = data[index];
+				}
+				
+				var filter = /*[[${filter}]]*/null; // 客房查询的过滤条件
+				var filterEle = {
+					'minPrice' : 'input',
+					'maxPrice' : 'input',
+					'roomTypeId' : 'select',
+					'roomStatus' : 'select',
+					'floorId' : 'ul'
+				}; // 过滤条件对应的操作元素
+			
+				var roomActionUrl = "/roomer/reception/page"; // 客房查询地址
+
+				/** 还原过滤条件 **/
+				for ( var name in filterEle) {
+					var type = filterEle[name];
+					var value = filter[name];
+					if (value != 0 && value != null && type != 'ul') {
+						$(type + "[name='" + name + "']").val(value);
+					}
+				}
+
+				/** 绑定过滤条件的操作元素 **/
+				$("button[name='search-price-btn']")
+						.click(
+								function() {
+									var minPrice = $("input[name='minPrice']")
+											.val();
+									var maxPrice = $("input[name='maxPrice']")
+											.val();
+									if (minPrice != filter['minPrice']
+											|| maxPrice != filter['maxPrice']) {
+										filter['minPrice'] = (minPrice.length > 0 && minPrice != null) ? parseFloat(minPrice)
+												: 0;
+										filter['maxPrice'] = (maxPrice.length > 0 && maxPrice != null) ? parseFloat(maxPrice)
+												: 0;
+										toMain(roomActionUrl, filter); // 根据多个条件查询客房
+									}
+								});// 价格区间搜索
+
+				$("select[name='roomTypeId']")
+						.change(
+								function() {
+									var roomTypeId = $(this).children(
+											'option:selected').val();
+									if (roomTypeId != filter['roomTypeId']) {
+										filter['roomTypeId'] = (roomTypeId == 'all') ? null
+												: roomTypeId;
+										toMain(roomActionUrl, filter); // 根据多个条件查询客房
+									}
+								});// 客房类型下拉框
+
+				$("select[name='roomStatus']")
+						.change(
+								function() {
+									var roomStatus = $(this).children(
+											'option:selected').val();
+									if (roomStatus != filter['roomStatus']) {
+										filter['roomStatus'] = (roomStatus == 'all') ? null
+												: roomStatus;
+										toMain(roomActionUrl, filter); // 根据多个条件查询客房
+									}
+								});// 客房状态下拉框
+
+				$("ul[name='floorId'] > li").children().on("click", function() {
+					var floorId = $(this).attr("id");
+					if (floorId != filter['floorId']) {
+						filter['floorId'] = floorId;
+						toMain(roomActionUrl, filter); // 根据多个条件查询客房
+					}
+				});// 楼层按钮
+
+				/** 绑定详情按钮 **/
+				$("button[name='roomDetail']").click(function() {
+					var id = $(this).attr("id");
+					var record = jsonData[id];
+					for ( var name in record) {
+						var value = record[name];
+						if (value != null) {
+							switch (value) {
+								case 'checkIn':
+									value = '已入住';
+									break;
+								case 'reserved':
+									value = '已预定';
+									break;
+								case 'empty':
+									value = '空房';
+									break;
+							};
+							$("div[id='" + name + "']").text(value);
+						}
+					}
+				});
+				/*]]>*/
+				/** [End]客房动态查询模块 **/
+				
+					
+				<!-- reserveBtnModel -->
+				/** 预定模块 **/
+				var guestRoomEle = {
+						'guestRoom.id':'input',
+						'guestRoom.serialNo' : 'span',
+						'guestRoom.price' : 'span',
+						'guestRoom.discountPrice' : 'span',
+						'guestRoom.typeName' : 'span'
+					}; // 客房信息对应的操作元素，仅供显示
+				
+				/** 绑定预订按钮 **/
+				$("a[name='reserve']").click(function() {
+					var ele = {
+							'member.id':'select',
+							'reserve.order.id':'input',
+							'customer':'input',
+							'telPhone':'input',
+							'reachTime':'input',
+							'leaveTime':'input',
+							'cartificateType':'select',
+							'orderRemarks':'textarea'
+					}; // 预定表单中的操作元素
+					$('.select2').val("");
+					$('.select2',$('#reservation-form')).trigger("change"); //select2下拉框数据显示
+					for(var name in ele){
+						var type = ele[name];
+						if(type != 'select'){
+							$(type+"[name='"+ name +"']").val("");
+						}
+					} // 清空预定表单
+					
+					$("input[name='cartificate']").addClass("ignore"); // 忽略校验
+					$("span[name='cartificate']").empty(); // 去除星号
+					
+					var id = $(this).attr("id"); // 当前客房id
+					var record = jsonData[id]; // 当前客房详细信息
+					
+					for(var name in guestRoomEle){
+						var type = guestRoomEle[name];
+						paramName = name.substring(name.indexOf('.') +　1);
+						var value = record[paramName];
+						if(name == "guestRoom.id"){
+							$(type+"[name='"+ name +"']").val(value);
+						}else{
+							$(type+"[id='"+ name +"']").text(value);
+						}
+					} // 填充当前客房详细信息
+					
+					$("select[name = 'reserveStatus']").val("reserveNormal"); // 默认预订状态为正常
+					$("select[name = 'cartificateType']").val("idCard"); // 默认证件类型为身份证 */
+					
+				});
+				/* 'reserve.order.id':'input', */
+				var orderEle = {
+					'reserve.order.id':'input',
+					'guestRoom.id':'input',
+					'reserveStatus':'select',
+					'deposit':'input',
+					'customer':'input',
+					'cartificateType':'select',
+					'cartificate':'input',
+					'telPhone':'input',
+					'reachTime':'input',
+					'leaveTime':'input',
+					'peopleNum':'input',
+					'orderRemarks':'textarea'
+				}; // 预定信息对应的操作元素，供取值提交至服务器
+				
+				var orderData = {}; // 预定信息
+				/* else if(name == 'reserve.order.id'){
+					value = $(type　+　"[name='"+ name +"']").val();
+					orderData['id'] = (value.length > 0)?value:null;
+				} */
+				<!-- reserveBtnModel -->
+				/** 绑定预定保存按钮 **/
+				$("#save-reserveOrder-btn").click(function(){
+					if(!$('#reservation-form').valid()){
+	                	return false ; // 校验失败，无法保存
+	                }
+					for(var name in orderEle){
+						var type = orderEle[name];
+						var value = null;
+						if(name == 'deposit' || name == 'peopleNum'){
+							value = $(type　+　"[name='"+ name +"']").val();
+							orderData[name] = (value.length > 0)?parseFloat(value):0; // 转化成int类型
+						}else if(name == 'reserve.order.id'){
+							value = $(type　+　"[name='"+ name +"']").val();
+							orderData['id'] = (value.length > 0)?value:null;
+						}else{
+							value = $(type　+　"[name='"+ name +"']").val();
+							name = (name == 'orderRemarks')?'remarks': name; // 纠正参数与实体中的变量名不相对应
+							orderData[name] = (value.length > 0)?value:null;
+						}
+					}
+			 	 	$.ajax({
+				    	type: "POST",
+						url: "/roomer/reception/reservation", // 预订单提交地址
+						data: orderData,
+						success: function(data){
+					    	showMsg4model(data, data.status); // 提示操作结果
+					    	toMain(roomActionUrl, filter, true);  // 刷新客房信息
+						}
+					}); 
+				});
+				$("select[name='member.id']")
+				.change(
+						function() {
+							var id = $(this).children(
+									'option:selected').val();
+							var roomId = $("input[name='guestRoom.id']").val();
+							if(id.length > 0){
+							/* 	var record = jsonData[roomId];
+								var price = record.generalMemberPrice;
+								$(""). */
+							}
+						});// 会员下拉框状态下拉框
+						
+				var reservationRules = {
+					customer: {
+						required: true,
+					},
+					telPhone: {
+						required: true,
+						minlength:11, 
+						maxlength:11
+					},
+					reachTime: {
+						required: true,
+						date:true 
+					},
+					leaveTime: {
+						required: true,
+						date:true
+					},
+					deposit: {
+						required: false,
+						number:true
+					},
+					cartificate:{
+						required: true,
+						number:true,
+						maxlength:18,
+						minlength:18
+					}
+				}; // 预订单校验规则
+				
+				var reservationMsgs={
+					customer: {
+						required: "预定人不能为空",
+					},
+					telPhone: {
+						required: "预定人联系电话不能为空",
+						minlength:"电话长度必须是11位",
+						maxlength:"电话长度必须是11位"
+					},
+					reachTime:{
+						required:"抵店时间不能为空" 
+					}, 
+					leaveTime:{ 
+						required:"离店时间不能为空"
+					},
+					deposit: {
+						number:"押金必须是数字"
+					},
+					cartificate:{
+						required:"证件号不能为空",
+						maxlength:"证件号必须是18位",
+						minlength:"证件必须是18位",
+						number:"必须是数字"
+					}
+				}; // 预订单校验提示信息
+				
+				validate('#reservation-form',  reservationRules, reservationMsgs); // 校验
+				
+				/** [End]预定模块 **/
+				
+				/** 预订转入住 **/
+				/** 绑定预定转入住按钮 **/
+				$("a[name='change-checkIn-btn']").click(function(){
+					var id = $(this).attr("id"); // 当前客房id
+					var record = jsonData[id]; // 当前客房详细信息
+					
+					for(var name in guestRoomEle){
+						var type = guestRoomEle[name];
+						paramName = name.substring(name.indexOf('.') +　1);
+						var value = record[paramName];
+						if(name == "guestRoom.id"){
+							$(type+"[name='"+ name +"']").val(value);
+						}else{
+							$(type+"[id='"+ name +"']").text(value);
+						}
+					} // 填充当前客房详细信息
+					
+					$("input[name='cartificate']").removeClass("ignore"); // 追加证件号校验
+					$("select[name = 'reserveStatus']").val("reserveCheckIn"); // 默认预订状态为已入住
+					$("select[name = 'cartificateType']").val("idCard"); // 默认证件类型为身份证 */
+					$("span[name='cartificate']").empty();
+					$("span[name='cartificate']").append('<strong class="red"><i class="ace-icon fa fa-asterisk"></i></strong>');
+					
+					$.ajax({
+						   type: "GET",
+						   url: "/roomer/reception/reservation/"+id, // 获取当前客房对应的预订信息
+						   dataType:"json",
+						   success: function(model){
+								var order = model.data;
+								var ele = {
+									'member.id':'select',
+									'guestRoom.id':'input',
+									'reserve.order.id':'input',
+									'customer':'input',
+									'telPhone':'input',
+									'reachTime':'input',
+									'leaveTime':'input',
+									'cartificateType':'select',
+									'orderRemarks':'textarea'
+								};// 需要填充预订信息的操作元素
+								
+								for(var name in ele){
+									var type = ele[name];
+									var val = null;
+									if(name == 'reserve.order.id'){
+										val = order['id'];	
+										$(type+"[name='"+ name +"']").val(val);
+									}else if(name == 'guestRoom.id'){
+										val = order.guestRoom.id;
+										$(type+"[name='"+ name +"']").val(val);
+									}else if(name == 'orderRemarks'){
+										val = order['remarks'];
+										$(type+"[name='"+ name +"']").text(val);
+									}else{
+										val = order[name];
+										$(type+"[name='"+ name +"']").val(val);
+									}
+								}// 填充信息
+						   }
+						});
+					  
+				});
+				/** [End]预订转入住 **/
+				
+				<!-- checkoutBtnModel -->
+				/** 退房登记模块 **/
+				
+				var checkOutEle = {
+					'checkOut.serialNo' : 'span',
+					'checkOut.discountPrice' : 'span',
+					'checkOut.typeName' : 'span'
+				}; // 客房信息对应的操作元素，仅供显示
+				
+				var discountPrice = null;
+				/** 绑定退房登记按钮 **/
+				$("a[name='checkout']").click(function(){
+					var id = $(this).attr("id");
+					var record = jsonData[id];
+					for(var name in checkOutEle){
+						var type = checkOutEle[name];
+						paramName = name.substring(name.indexOf('.') +　1);
+						var value = record[paramName];
+						$(type+"[id='"+ name +"']").text(value);
+					}
+					discountPrice = record['discountPrice']; // 单独提出折后价方便计算住宿费用
+					$("input[name='accommodation']").val(discountPrice);
+					
+					var guestRoomId = record['id']; // 当前需要退房的客房id
+					
+					$.ajax({
+						   type: "GET",
+						   url: "/roomer/reception/reservation/"+guestRoomId,
+						   success: function(model){
+							   var record = model.data;
+							   $("input[name='order.id']").val(record.id); // 订单id
+							   $("span[id='order.deposit']").text(record.deposit); // 押金
+							   $("input[name='order.guestRoom.id']").val(record.guestRoom.id);// 客房id
+						   }
+					});
+				});
+				
+				/** 绑定合计按钮 **/
+				$("a[name='sum-btn']").click(function(){
+					var days = parseFloat($("input[name='days']").val());
+					$("input[name='accommodation']").val(parseFloat(discountPrice) * days); 
+				});
+				var shouldReceive = 0;
+				/** 绑定应收按钮 **/
+				$("a[name='shouldReceive-btn']").click(function(){
+					var ele = {
+						'accommodation':'input',
+						'mealsCost':'input',
+						'telCost':'input'
+					};// 表单元素
+					
+					for(var name in ele){
+						var type = ele[name];
+						var val = $(type+"[name='"+ name +"']").val();
+						if(val.length > 0){
+							shouldReceive += parseFloat(val);
+						}
+					}
+					$("input[name='shouldReceive']").val(shouldReceive);
+				});
+				/** 绑定找零按钮 **/
+				$("a[name='oddChange-btn']").click(function(){
+					var realReceive = parseFloat($("input[name='realReceive']").val());
+					if(realReceive >= shouldReceive){
+						var odd = realReceive - shouldReceive;
+						$("input[name='oddChange']").val(odd.toFixed(2));
+					}else{
+						showErrorMsg('找零出错');
+					}
+					
+				});
+				
+				/** 绑定退房登记保存按钮 **/
+				$("button[name='save-checkOut-btn']").click(function(){
+					if(!$('#checkOut-form').valid()) {
+                        return false ;
+                    }
+					if(!($("input[name='shouldReceive']").val().length > 0)){
+						showErrorMsg('实际应收费用不能为空');
+						return false ;
+					}
+					var checkOutData = {};// 退房登记信息
+					var ele = {
+						'order.guestRoom.id':'input',
+						'order.id':'input',
+						'days':'input',
+						'accommodation':'input',
+						'mealsCost':'input',
+						'telCost':'input',
+						'shouldReceive':'input',
+						'shouldReturnDeposit':'input',
+						'payType':'select',
+						'realReceive':'input',
+						'oddChange':'input',
+						'checkOut.remarks':'textarea'
+					}; /** 表单元素 **/
+					
+					for(var name in ele){
+						 if(!$('#checkOut-form').valid()) {
+		                        return false ;
+		                    }
+						var type = ele[name];
+						var val = null;
+						val = $(type+"[name='"+ name +"']").val();
+						
+						/** 正确转换数据类型  **/
+						if(name == 'order.guestRoom.id' || name == 'order.id' || name == 'payType' || name == 'checkOut.remarks'){
+							val = (val.length > 0)?val:null;
+						}else if(name == 'days'){
+							val = (val.length > 0)?parseInt(val):0;
+						}else{
+							val = (val.length > 0)?parseFloat(val).toFixed(2):0;
+						}
+						
+						if(name == 'checkOut.remarks')name = 'remarks'; // 纠正属性名称
+						if(name == 'order.guestRoom.id')name = 'guestRoomId'; // 纠正属性名称
+						
+						checkOutData[name] = val;
+					}
+				 	$.ajax({
+						   type: "POST",
+						   url: "roomer/reception/checkout",
+						   data: checkOutData,
+						   success: function(model){
+								showMsg4model(model, model.status);
+								toMain(roomActionUrl, filter, true); // 查询
+						   }
+						}); 
+				});
+				
+				validate('#checkOut-form',  {
+					mealsCost: {
+						required: false,
+						number:true
+					},
+					telCost: {
+						required: false,
+						number:true
+					},
+					shouldReturnDeposit: {
+						required: false,
+						number:true
+					},
+					realReceive: {
+						required: true,
+						number:true
+					}
+				}, {
+					mealsCost: {
+						number: "餐费必须是数字",
+					},
+					telCost: {
+						number: "座机费必须是数字"
+					},
+					shouldReturnDeposit:{ number:"应返回押金必须是数字"},
+					realReceive: {
+						required:"实收费用不能为空",
+						number:"实收费用必须是数字"
+					}
+				});
+				// 校验退房登记信息				
+				
+				/** [End]退房登记模块 **/
+				
+				/** 登记入住模块 **/
+				
+				/** 绑定登记入住按钮 **/
+				$("a[name='checkIn']").click(function(){
+					var ele = {
+							'reserve.order.id':'input',
+							'customer':'input',
+							'telPhone':'input',
+							'reachTime':'input',
+							'leaveTime':'input',
+							'cartificateType':'select',
+							'orderRemarks':'textarea'
+					}; // 预定表单中的操作元素
+					for(var name in ele){
+						var type = ele[name];
+						if(type != 'select'){
+							$(type+"[name='"+ name +"']").val("");
+						}
+					} // 清空预定表单
+					
+					$("input[name='cartificate']").removeClass("ignore"); // 追加证件号校验
+					$("select[name = 'reserveStatus']").val("reserveCheckIn"); // 默认预订状态为正常
+					$("select[name = 'cartificateType']").val("idCard"); // 默认证件类型为身份证 */
+					$("span[name='cartificate']").empty();
+					$("span[name='cartificate']").append('<strong class="red"><i class="ace-icon fa fa-asterisk"></i></strong>');
+					
+					var id = $(this).attr("id"); // 当前客房id
+					var record = jsonData[id]; // 当前客房详细信息
+					
+					for(var name in guestRoomEle){
+						var type = guestRoomEle[name];
+						paramName = name.substring(name.indexOf('.') +　1);
+						var value = record[paramName];
+						if(name == "guestRoom.id"){
+							$(type+"[name='"+ name +"']").val(value);
+						}else{
+							$(type+"[id='"+ name +"']").text(value);
+						}
+					} // 填充当前客房详细信息
+				});
+				/** [End]登记入住模块 **/
+				
+				/** 转房，客房查询 **/
+					//$("#right-menu").modal("hide"); // 默认隐藏转房界面
+					//$("div[name='changeRooms']").empty(); // 清空可转房间
+					var currentRoomTypeId = null; // 当前需要转房的id
+					/** 绑定转房按钮 **/
+					$("a[name='changeRoom-btn']").click(function(){
+						var id = $(this).attr("id");
+						currentRoomTypeId = id;
+					});
+					<!-- current -->
+					/** 监听楼层按钮 **/
+					$("div[name='floor-btn'] > button").on("click",function(){
+						var id = $(this).attr("id");
+						var guestRoom = jsonData[currentRoomTypeId];
+						var param = {'floorId':id,'roomStatus':'empty','roomTypeId':guestRoom.roomTypeId};
+						changeRoom(param);
+					});
+					/** 绑定转房确认按钮 **/
+					$("button[name='save-changeRoom-btn']").click(function(){
+							$.ajax({
+							   type: "POST",
+							   url: "/roomer/reception/transfer",
+							   dataType:"json",
+							   data: {newRoomId:$("input[name='changeRoom']").attr("id"),oldRoomId:currentRoomTypeId,_method:'put'},
+							   success: function(model){
+									showMsg4model(model, model.status);
+									if(model.status == 1){
+										toMain(roomActionUrl, filter); // 刷新客房信息
+									}
+							   }
+							});
+					});
+					
+					
+				/** [End]转房，客房查询 **/
+				
+				/** 取消预约 **/
+				
+				/** 绑定预订取消按钮 **/
+				$("a[name='cancel']").click(function(){
+					var id = $(this).attr("id");
+					$.ajax({
+						   type: "POST",
+						   url: "/roomer/reception/reservation",
+						   dataType:"json",
+						   data: {guestRoomId:id, _method:'put'},
+						   success: function(model){
+								showMsg4model(model, model.status);
+								toMain(roomActionUrl, filter); // 查询
+						   }
+						});
+				});
+				
+				/** [End]取消预约 **/
+			});
+		function changeRoom(param){
+			$.ajax({
+				   type: "POST",
+				   url: "/roomer/reception/transfer",
+				   dataType:"json",
+				   data: param,
+				   success: function(model){
+					   var records = model.data;
+					   var $div = $("div[name='changeRooms']");
+					   $div.empty();
+					  for(var i = 0; i < records.length; i++){
+						   var record = records[i];
+						   var $button = $("<button></button>");
+						   $button.attr({'type':'button','class':'btn btn-white btn-defalut','id':record.id});
+						   $button.text(record.serialNo);
+						   $button.appendTo($div);
+					   } 
+					  $("div[name='changeRooms'] > button").on("click",function(){
+						  var id = $(this).attr("id");
+						  var txt = $(this).text();
+						  $("input[name='changeRoom']").val(txt);
+						  $("input[name='changeRoom']").attr("id",id);
+						  $(this).addClass('active');
+						});
+				   }
+				}); 
+		}
+		/** 校验表单 **/
+		function validate(ele, rules, msgs){
+			$(ele).validate({
+				errorElement: 'div',
+				errorClass: 'help-block',
+				focusInvalid: false,
+				ignore: ".ignore",
+				rules: rules,
+				messages:msgs,
+				highlight: function (e) {
+					$(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+				},
+		
+				success: function (e) {
+					$(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+					$(e).remove();
+				},
+		
+				errorPlacement: function (error, element) {
+						error.insertAfter(element.parent());
+				},
+		
+				submitHandler: function (form) {
+				},
+				invalidHandler: function (form) {
+				}
+			});
+		}
+/*]]>*/
+</script>

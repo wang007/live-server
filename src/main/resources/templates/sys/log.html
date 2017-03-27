@@ -1,0 +1,289 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+<title>日志管理</title>
+
+<div class="page-header">
+        <h1>日志管理
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                                日志管理
+            </small>
+        </h1>
+</div>
+
+<div class="row">
+
+	<div class="col-xs-12">
+		
+		<button class="btn btn-danger no-border" id="delete-log-btn">
+			<i class="ace-icon fa fa-trash-o bigger-120" >删除</i>
+		</button>
+
+		<div class="btn-group">
+			<button class="btn btn-info no-border" id="search-log-btn"
+				style="height: 42px">
+				<i class="ace-icon fa fa-search bigger-120" >搜索</i>
+			</button>
+			
+			<button class="btn btn-info dropdown-toggle" id="toggle-search-id"
+				style="height: 42px">
+				<span class="ace-icon fa fa-caret-down icon-only bigger-120"></span>
+			</button>
+		</div>
+		<!-- /.btn-group -->
+	</div>
+	
+	<!-- 搜索栏 -->
+	<div class="col-xs-12" style="display: none;" id="show-search-log-div">
+		<div class="space-2"></div>
+		<form class="form-inline" role="form" id="search-log-form">
+
+			<div class="form-group">
+				<label for="search-ip">IP&nbsp;&nbsp;&nbsp;&nbsp;地址:</label> 
+				<input type="text" class="form-control input-sm" id="search-ip" name="ip" placeholder="如：192.1.1.1" />
+			</div>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<div class="form-group">
+				<label for="search-username">操作人账号:</label> 	
+				<input type="text" class="form-control input-sm" id="search-username" name="username" placeholder="如：admin" />
+			</div>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<div class="form-group">
+				<label for="search-name">操作人名称:</label> 
+				<input type="text" class="form-control input-sm" id="search-name" name="name" placeholder="如：admin" />
+			</div>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<div class="form-group">
+				<label for="search-operateType">操作方式: </label> 
+				<input type="text" class="form-control input-sm" id="search-operateType" name="operateType" placeholder="如：查询" />
+			</div>
+			<p></p>
+			<div class="form-group">
+				<label for="search-logLevel">日志级别: </label> 
+				<input type="text" class="form-control input-sm" id="search-logLevel" name="logLevel" placeholder="如：info" />
+			</div>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<div class="form-group">
+				<label for="search-handleTime">操作时间: </label>
+							<input type="text" id="beginTime" name="beginTime" class="form-control input-sm" /> 
+							<span class="">
+								<i class="ace-icon fa fa-calendar"></i>
+							</span>
+			</div>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<div class="form-group">
+				<label >至</label>&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="text" id="endTime" name="endTime" class="form-control input-sm" /> 
+							<span class="">
+								<i class="ace-icon fa fa-calendar"></i>
+							</span> 
+			</div>
+		</form>
+	</div>
+
+	<!-- 日志信息显示表格 -->
+	<div class="col-xs-12">
+		<!-- jqGrid表格和分页 -->
+		<table id="grid-table"></table>
+		<div id="grid-pager"></div>
+	</div>
+</div>
+
+
+<script type="text/javascript" th:inline="javascript">
+
+        $.ace_ajax_finish(function() {
+            jQuery(function ($) {
+            
+            	// 日期插件
+				$("input[name='beginTime']").datetimepicker({
+					/* showOtherMonths : true,
+					selectOtherMonths : false, */
+					startView:'day'
+					
+				});
+				$("input[name='endTime']").datetimepicker({
+					/* showOtherMonths : true,
+					selectOtherMonths : false, */
+					startView:'day'
+					
+				});
+            	
+                //鼠标悬停提示信息
+                $('[data-rel=tooltip]').tooltip();
+                $('[data-rel=popover]').popover({html:true});
+
+                var grid_selector = "#grid-table"; //jqGrid表格
+                var pager_selector = "#grid-pager"; //
+                //resize to fit page size
+                $(window).on('resize.jqGrid',function() {
+                    $(grid_selector).jqGrid('setGridWidth',$(".page-content").width());
+                })
+
+                $(grid_selector).jqGrid({
+                    url : "/sys/log",//获取数据的url地址
+                    datatype : "json", //获取数据的格式
+                    mtype : "get", //请求数据的方式
+                    colNames : [ '','id', '操作人 IP','操作人账号', '操作人名称', '操作时间','操作方式','日志级别','操作描述' ],//表头
+                    colModel : [
+						{
+						  name: 'rownumbers', //表格里面行数参数
+						  index: 'rownumbers',
+						  width: 1,
+						  key: true,
+						  hidden: true                        	
+						},        
+                       	{
+                          name : 'id',
+                          index : 'id',
+                          hidden : true
+                        },
+                        {
+                            name : 'ip',
+                            index : 'ip',
+                            align : 'center',
+                            hidden : false
+                        },
+                        {
+                            name : 'username',
+                            index : 'username',
+                            align : 'center',
+                            hidden : false,
+                            sortable : false,
+       
+                        },
+                        {
+                            name : 'name',
+                            index : 'name',
+                            align : 'center',
+                            sortable : false,
+              
+                        },
+                        {
+                            name : 'handleTime',
+                            index : 'handleTime',
+                            align : 'center',
+                            //formatter:'date',
+                            //formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'},
+                            sortable : false
+                        },
+                        {
+                            name : 'operateType',
+                            index : 'operateType',
+                            align : 'center',
+                            
+                            sortable : false
+                        },
+                        {
+                            name : 'logLevel',
+                            index : 'logLevel',
+                            align : 'center',
+                            sortable : false,
+                            formatter : function alamFormatter(cellvalue, options,row) {
+                                /*<![CDATA[*/
+                                var map = /*[[${@dictService.dictMap('logLevel')}]]*/ null;
+                                return map[row.logLevel] ;
+
+
+								/*]]>*/
+
+
+                            }
+                        },
+                        {
+                            name : 'description',
+                            index : 'description',
+                            align : 'center',
+                            
+                            sortable : false
+                        }
+                        ], //后端的数据
+                    rowNum : 10,
+                    rowList : [ 10, 20, 50 ],
+                    pager : pager_selector,
+                    sortname : 'ip',
+                    viewrecords : true,
+                    altRows : true, //设置隔行用不同的背景色区分开
+                    sortorder : "desc",
+                    width : "auto",
+                    height : "auto",
+                    //multiboxonly : true,
+                    multiselect : true,
+                    rownumbers : false,
+                    caption : "日志列表",
+                    loadComplete : function() {
+                        var table = this;
+                        setTimeout(function() {
+                            //styleCheckbox(table);
+                            //updateActionIcons(table);
+                            updatePagerIcons(table);
+                            //enableTooltips(table);
+                        }, 0);
+                    },
+                }) //jqGrid
+                $(window).triggerHandler('resize.jqGrid'); //初始化jqGrid大小
+
+                //搜索右边下拉按钮
+                $('#toggle-search-id').click(function() {
+                    $('#show-search-log-div').toggle() //显示或隐藏搜索的div
+                })
+
+                //重新加载jqgrid数据，根据输入项
+                function reloadData() {
+                    $(grid_selector).jqGrid('setGridParam', {
+                        dataType : 'json',
+                        postData : $('#search-log-form').serializeObject(),	//postData.接收的是一个对象
+                        page : 1
+                    }).trigger("reloadGrid"); //重新载入#
+                }
+
+
+                //搜索
+                $('#search-log-btn').click(function() {
+                	//alert($('#beginTime').val()+$('#endTime').val());
+                    reloadData() ;
+                })                
+                 
+                 //美化下拉框
+                $(".select2").css('width', '170px').select2({placeholder:"请选择",allowClear : true}) ;              
+                               
+              
+                //点击删除按钮
+                $('#delete-log-btn').click(function(){
+                	var selectedIds = $(grid_selector).jqGrid("getGridParam", "selarrrow");
+                    if (selectedIds.length <= 0) {
+                        showInfoMsg("请选择数据");
+                        return false;
+                    }                   
+                    bootbox.confirm("您确定要删除所选的日志数据吗？",function(result){
+                        if(result) {
+                            showLoading() ;
+                            //var idsParam = "ids="+selectedIds.join('&ids=') ;
+                            var idsParam=null;
+                            for(var i=0;i<selectedIds.length;i++){
+                            	idsParam+="&ids="+$(grid_selector).jqGrid("getRowData",selectedIds[i]).id;//传的是id
+                            	//idsParam=idsParam+"&ids";
+                            }
+                            //alert("idsParam:"+idsParam);
+                            $.ajax({
+                                url: "/sys/log",
+                                type: "POST",
+                                dataType: "JSON",
+                                data: idsParam+"&_method=PATCH",
+                                success: function(data) {
+                                    showMsg4model(data,true) ;
+                                    reloadData() ;
+                                }
+                            })
+                            hideLoading();
+                        }
+                    })
+                })
+                
+                
+            })
+        })
+
+    </script>
+
+</html>
