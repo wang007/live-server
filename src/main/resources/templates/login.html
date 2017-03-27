@@ -42,8 +42,8 @@
                     <div class="center">
                         <h1>
                             <i class="ace-icon fa fa-leaf green"></i>
-                            <span class="red">酒店</span>
-                            <span class="white" id="id-text2">管理系统</span>
+                            <span class="red">高校直播</span>
+                            <span class="white" id="id-text2">后台管理</span>
                         </h1>
                         <h4 class="blue" id="id-company-text" th:text="|&copy; ${application.systemTitle} |"></h4>
                     </div>
@@ -60,9 +60,9 @@
                                     </h4>
                                     <div class="space-6"></div>
 
-<!--                                    <p th:text="${errorMessage}" style="color: red;">
+                                    <!--                                    <p th:text="${errorMessage}" style="color: red;">
 
-                                    </p>-->
+                                                                        </p>-->
                                     <p id="errorPlaceId" style="color: red;"></p>
                                     <div class="space-6"></div>
 
@@ -100,25 +100,25 @@
                                         </fieldset>
                                     </form>
 
-                                   <!-- <div class="social-or-login center">
-                                        <span class="bigger-110">Or Login Using</span>
-                                    </div>
+                                    <!-- <div class="social-or-login center">
+                                         <span class="bigger-110">Or Login Using</span>
+                                     </div>
 
-                                    <div class="space-6"></div>
+                                     <div class="space-6"></div>
 
-                                    <div class="social-login center">
-                                        <a class="btn btn-primary">
-                                            <i class="ace-icon fa fa-facebook"></i>
-                                        </a>
+                                     <div class="social-login center">
+                                         <a class="btn btn-primary">
+                                             <i class="ace-icon fa fa-facebook"></i>
+                                         </a>
 
-                                        <a class="btn btn-info">
-                                            <i class="ace-icon fa fa-twitter"></i>
-                                        </a>
+                                         <a class="btn btn-info">
+                                             <i class="ace-icon fa fa-twitter"></i>
+                                         </a>
 
-                                        <a class="btn btn-danger">
-                                            <i class="ace-icon fa fa-google-plus"></i>
-                                        </a>
-                                    </div>-->
+                                         <a class="btn btn-danger">
+                                             <i class="ace-icon fa fa-google-plus"></i>
+                                         </a>
+                                     </div>-->
                                 </div><!-- /.widget-main -->
 
                                 <!--<div class="toolbar clearfix">
@@ -280,11 +280,11 @@
 <!-- basic scripts -->
 
 <!--[if !IE]> -->
-    <script th:src="@{/static/ace/dist/js/jquery.min.js}"></script>
+<script th:src="@{/static/ace/dist/js/jquery.min.js}"></script>
 <!-- <![endif]-->
 
 <!--[if IE]>
-    <script th:src="@{/static/ace/dist/js/jquery1x.min.js}"></script>
+<script th:src="@{/static/ace/dist/js/jquery1x.min.js}"></script>
 <![endif]-->
 
 <!-- inline scripts related to this page -->
@@ -322,7 +322,7 @@
             e.preventDefault();
         });
 
-        $('body').attr('class', 'login-layout light-login');
+        $('body').attr('class', 'login-layout blur-login');
         $('#id-text2').attr('class', 'grey');
         $('#id-company-text').attr('class', 'blue');
 
@@ -335,7 +335,7 @@
 
 
         $("#saveBtn").click(function(){
-           // $(this).prop("disabled",true) ;
+            // $(this).prop("disabled",true) ;
             $.ajax({
                 url: "/ajaxlogin",
                 type: "POST",
@@ -347,13 +347,13 @@
                     } else {
                         $("#errorPlaceId").empty() ;
                         $("#errorPlaceId").append(data.message) ;
-                    //    $(this).prop("disabled",false) ;
+                        //    $(this).prop("disabled",false) ;
                     }
                 },
                 error: function(data) {
                     $("#errorPlaceId").empty() ;
                     $("#errorPlaceId").append("网络异常！") ;
-                  //  $(this).prop("disabled",false) ;
+                    //  $(this).prop("disabled",false) ;
 
                 }
             })
