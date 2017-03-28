@@ -1,1 +1,31 @@
 /**全局css样式  */
+
+.alert-success {
+    color: #fff;
+    background-color: rgba(38, 185, 154, .88);
+    border-color: rgba(38, 185, 154, .88)
+}
+
+.alert-info {
+    color: #E9EDEF;
+    background-color: rgba(52, 152, 219, .88);
+    border-color: rgba(52, 152, 219, .88)
+}
+
+.alert-warning {
+    color: #E9EDEF;
+    background-color: rgba(243, 156, 18, .88);
+    border-color: rgba(243, 156, 18, .88)
+}
+
+.alert-danger, .alert-error {
+    color: #E9EDEF;
+    background-color: rgba(231, 76, 60, .88);
+    border-color: rgba(231, 76, 60, .88)
+}
+
+.ui-pnotify.dark .ui-pnotify-container {
+    color: #E9EDEF;
+    background-color: rgba(52, 73, 94, .88);
+    border-color: rgba(52, 73, 94, .88)
+}
