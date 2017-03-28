@@ -47,6 +47,18 @@ function SimpleTable() {
 			bAutoWidth : false,
 			"aoColumns" : aoColums,
 			"aaSorting" : [],
+            "language": {
+                "info": "当前为第 _PAGE_ 页，共_PAGES_页_TOTAL_条记录；",
+                "paginate": {
+                    "previous": "上一页",
+                    "next": "下一页",
+                    "last": "末页",
+                    "first": "首页",
+					"search":"搜索"
+                },
+                "lengthMenu": "每页显示 _MENU_ 条记录",
+				"search":"搜索："
+            }// 页面信息替换
 		});
 
 		// 绑定表格第一个复选框
