@@ -33,7 +33,11 @@
     <!--ace自带插件的js文件 end -->
     <!--外置必要插件的js文件 start -->
     <!--dataTables表格 -->
-    <script th:src="@{/static/plugins/dataTables/dist/jquery.dataTables.min.js}"></script>
+    <!--<script th:src="@{/static/plugins/dataTables/dist/jquery.dataTables.min.js}"></script>-->
+    <script th:src="@{/static/ace/dist/js/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/static/ace/dist/js/jquery.dataTables.bootstrap.min.js}"></script>
+
+
     <!-- iCheck -->
     <script th:src="@{/static/plugins/iCheck/icheck.js}"></script>
     <!-- PNotify https://github.com/sciactive/pnotify -->
@@ -81,5 +85,7 @@
     <!--引入自定义的js文件 start -->
     <script th:src="@{/static/custom/common/common.js}"></script>
     <script th:src="@{/static/custom/common/plugins-complete.js}"></script>
+    <script th:src="@{/static/custom/common/global.js}"></script>
+
 </div>
 </html>
