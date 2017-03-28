@@ -200,7 +200,7 @@ function ajaxAction(url, method, jsonData, currentUrl) {
 		success : function(data) {
 			showMsg4model(data, data.status);
 			// showSuccessMsg("提示", data.message, null, null);
-			toMain(currentUrl);
+			toMain(currentUrl, true);
 		}
 	});
 }
