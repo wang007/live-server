@@ -19,7 +19,7 @@ public class LogRepositoryImpl extends BaseRepositoryImpl {
 				+ "/~ and l.name like '%[name]%' ~/"
 				+ "/~ and l.username like '%[username]%'~/"
 				+ "/~ and l.handleTime >= '[beginTime]'~/"
-				+ "/~ and l.handle_time <= '[endTime]'~/"
+				+ "/~ and l.handleTime <= '[endTime]'~/"
 				+ "/~ and l.description like '%[description]%'~/"
 				+ "/~ and l.logLevel like '%[logLevel]%'~/"
 				+ "/~ and l.operateType like '%[operateType]%'~/"
