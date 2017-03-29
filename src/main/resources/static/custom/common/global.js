@@ -42,5 +42,5 @@ var Global = (function () {
 })();
 
 Global.init(); // 相关方法初始化
-Global.notify("通知框", "通知框共有五种样式，<br/>'type':{success | info | error | warning | dark} <br/> 使用方法:Global.notify(title, content, type);", "dark");
+//Global.notify("通知框", "通知框共有五种样式，<br/>'type':{success | info | error | warning | dark} <br/> 使用方法:Global.notify(title, content, type);", "dark");
 

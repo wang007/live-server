@@ -51,7 +51,8 @@
     $.ace_ajax_finish(function () {
         jQuery(function ($) {
             var dataTable = $("#datatable").dataTable({
-                bAutoWidth: false,
+                "pagingType": "full_numbers",
+                "bAutoWidth": false,
                 "language": {
                     "info": "当前为第 _PAGE_ 页，共_PAGES_页_TOTAL_条记录；",
                     "paginate": {
@@ -101,7 +102,7 @@
                         "render": function (data, type, full, meta) {
                             return '<input type="checkbox" name="iCheckGroup" value="' + data + '"/>'; // 创建选择框
                         }
-                    }//sorting_asc
+                    } //sorting_asc
                 ], // 设置默认值
                 "serverSide": true, // 是否开启服务器模式
                 "ajax": {
@@ -126,7 +127,7 @@
                     $("input[name='iCheckGroup']").iCheck({
                         checkboxClass: 'icheckbox_flat-blue'
                     }); // 为选择框添加样式
-                    if($("input[value='all']").is(':checked')){
+                    if ($("input[value='all']").is(':checked')) {
                         $("input[name='iCheckGroup']").iCheck('check');
                     }
                     $("input[name='iCheckGroup']").on("ifToggled", function () {
@@ -184,9 +185,30 @@
              * 刷新表格
              */
             function reloadTable() {
+                /*  var $firstPageBtn;
+                 var $ul = $("#datatable_paginate > ul");
+                 var $liArray = $ul.children();
+                 /!**
+                 * 遍历分页按钮
+                 *!/
+                 $liArray.each(function (index, element) {
+                 if (index == 0) {
+                 $firstPageBtn = $(this); // 记录首页按钮
+                 }
+                 var isHas = $(this).is('.active');
+                 if (isHas) {
+                 var val = $(this).text();
+                 if (parseInt(val) > 1) {
+                 $firstPageBtn.trigger("click"); // 模拟按钮点击事件
+                 } else {
+                 dataTable.ajax.reload(null, false); // 刷新表格，分页信息不会重置
+                 }
+                 return false;
+                 } // 获取当前选中按钮，若按钮序号大于1，则触发首页点击事件
+                 });*/
                 dataTable.ajax.reload(function (json) {
                     // 请求到的数据做相应的操作，如详情查看等
-                }, false); // 刷新表格，分页信息不会重置
+                }, true); // 刷新表格，分页信息不会重置
             }
 
         })
