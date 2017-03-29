@@ -51,15 +51,26 @@ var Global = (function () {
             "content": "#warning_modal_content",
             "modal": "#global_warning_modal"
         }; // 元素id
-        if (type == "danger") {
-            $(ids.h4).addClass("red");
+
+        if ($(ids.h4).is('.red') && type == "warning") {
+            $(ids.h4).removeClass('red');
+            $(ids.btn).removeClass('btn-danger');
+            $(ids.h4).addClass('orange');
+            $(ids.btn).addClass("btn-warning");
+        } // 调整样式
+        if ($(ids.h4).is('.orange') && type == "danger") {
+            $(ids.h4).removeClass('orange');
+            $(ids.btn).removeClass('btn-warning');
+            $(ids.h4).addClass('red');
             $(ids.btn).addClass("btn-danger");
+        } // 调整样式
+
+        if (type == "danger") {
             $(ids.btn).html('<i class="fa fa-trash"></i> 确 定');
         } else {
-            $(ids.h4).addClass("orange");
-            $(ids.btn).addClass("btn-warning");
             $(ids.btn).text("确 定");
-        } // 调整样式
+        } // 调整按钮内容
+
 
         $(ids.title).text(title); // 设置标题
         $(ids.content).text(content); // 设置内容
@@ -78,5 +89,4 @@ var Global = (function () {
 
 
 Global.init(); // 相关方法初始化
-//Global.notify("通知框", "通知框共有五种样式，<br/>'type':{success | info | error | warning | dark} <br/> 使用方法:Global.notify(title, content, type);", "dark");
 

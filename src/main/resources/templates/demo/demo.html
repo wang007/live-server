@@ -43,6 +43,7 @@
     <div class="col-xs-12">
         <div>
             <button type="button" class="btn btn-primary" id="btn_modal">警告框</button>
+            <button type="button" class="btn btn-primary" id="btn_modal2">警告框2</button>
             <button type="button" class="btn btn-primary" id="btn_pnotify">提示框</button>
         </div>
     </div>
@@ -108,7 +109,7 @@
                         "render": function (data, type, full, meta) {
                             return '<input type="checkbox" name="iCheckGroup" value="' + data + '"/>'; // 创建选择框
                         }
-                    } //sorting_asc
+                    }
                 ], // 设置默认值
                 "serverSide": true, // 是否开启服务器模式
                 "ajax": {
@@ -155,33 +156,45 @@
                 '> ',
                 "initComplete": function () {
                     $("#datatable_btn_group").append('操作：' +
-                        '<button type="button" class="btn btn-success datatable-btn"  data-placement="top" title="添加"><i class="fa fa-plus"></i></button>' +
-                        '<button type="button" class="btn btn-primary datatable-btn" data-placement="top" title="修改"><i class="fa fa-edit"></i></button>' +
-                        '<button type="button" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>' +
-                        '<button type="button" id="btn_refresh" class="btn btn-info datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
+                        '<button type="button" id="btn_datatable_create" name="datatable_btn_group" class="btn btn-success datatable-btn"  data-placement="top" title="添加"><i class="fa fa-plus"></i></button>' +
+                        '<button type="button" id="btn_datatable_update" name="datatable_btn_group" class="btn btn-primary datatable-btn" data-placement="top" title="修改"><i class="fa fa-edit"></i></button>' +
+                        '<button type="button" id="btn_datatable_del" name="datatable_btn_group" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>' +
+                        '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
                     $("#datatable_input_search").attr({
                         "class": "form-group pull-right top_search"
                     });
                     $("#datatable_input_search").append('<div class="input-group">' +
                         '<input type="text" id="search_input" class="form-control search-query" placeholder="请输入搜索内容"/>' +
                         '<span class="input-group-btn">' +
-                        '<button type="button" id="btn_search" class="btn btn-purple btn-sm" data-placement="top" title="搜索"><span class="ace-icon fa fa-search icon-on-right bigger-110"></span></button>' +
+                        '<button type="button" id="btn_datatable_search" name="datatable_btn_group" class="btn btn-purple btn-sm" data-placement="top" title="搜索"><span class="ace-icon fa fa-search icon-on-right bigger-110"></span></button>' +
                         '</span>' +
                         '</div>');
+
                     /**
-                     * 绑定刷新按钮
+                     * 绑定按钮组
                      */
-                    $("#btn_refresh").click(function () {
-                        $("#search_input").val("");
-                        reloadTable(); // 刷新页面
-                    });
-                    /**
-                     * 绑定搜索按钮
-                     */
-                    $("#btn_search").click(function () {
-                        var val = $("#search_input").val();
-                        if (val.length > 0 && val != null) {
-                            reloadTable(); // 刷新页面
+                    $("button[name='datatable_btn_group']").on("click", function () {
+                        var id = $(this).attr("id");
+                        switch (id) {
+                            case "btn_datatable_refresh":
+                                $("#search_input").val("");
+                                reloadTable(); // 刷新页面
+                                break; // 刷新
+                            case "btn_datatable_search":
+                                var val = $("#search_input").val();
+                                if (val.length > 0 && val != null) {
+                                    reloadTable(); // 刷新页面
+                                }
+                                break; // 搜索
+                            case "btn_datatable_create":
+                                console.log("create");
+                                break; // 新增
+                            case "btn_datatable_update":
+                                console.log("update");
+                                break; // 修改
+                            case "btn_datatable_del":
+                                console.log("del");
+                                break; // 删除
                         }
                     });
                 }
@@ -191,47 +204,36 @@
              * 刷新表格
              */
             function reloadTable() {
-                /*  var $firstPageBtn;
-                 var $ul = $("#datatable_paginate > ul");
-                 var $liArray = $ul.children();
-                 /!**
-                 * 遍历分页按钮
-                 *!/
-                 $liArray.each(function (index, element) {
-                 if (index == 0) {
-                 $firstPageBtn = $(this); // 记录首页按钮
-                 }
-                 var isHas = $(this).is('.active');
-                 if (isHas) {
-                 var val = $(this).text();
-                 if (parseInt(val) > 1) {
-                 $firstPageBtn.trigger("click"); // 模拟按钮点击事件
-                 } else {
-                 dataTable.ajax.reload(null, false); // 刷新表格，分页信息不会重置
-                 }
-                 return false;
-                 } // 获取当前选中按钮，若按钮序号大于1，则触发首页点击事件
-                 });*/
                 dataTable.ajax.reload(function (json) {
                     // 请求到的数据做相应的操作，如详情查看等
                 }, true); // 刷新表格，分页信息不会重置
             }
 
-
             /**
              * 绑定警告框
              */
             $("#btn_modal").click(function () {
-                Global.warning("警告", "确定要离开当前页面吗？", "warning", function () {
-                    console.log("做事情...");
+                Global.warning("danger样式", "确定要删除此信息吗？", "danger", function () {
+                    console.log("删除...");
                 });
             });
-
+            /**
+             * 绑定警告框2
+             */
+            $("#btn_modal2").click(function () {
+                Global.warning("warning样式", "确定要离开此页面吗？", "warning", function () {
+                    console.log("登出...");
+                });
+            });
             /**
              * 绑定提示框
              */
             $("#btn_pnotify").click(function () {
-                Global.notify("提示", "创建成功", "success");
+                Global.notify("success样式", "xxx成功", "success");
+                Global.notify("error样式", "xxx失败", "error");
+                Global.notify("warning样式", "xxx警告", "warning");
+                Global.notify("info样式", "xxx通知", "info");
+                Global.notify("dark样式", "xxx通知", "dark");
             });
 
         })
