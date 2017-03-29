@@ -32,18 +32,8 @@
         </div>
     </div>
 </div>
-</div>
-<form class="form-search">
-    <div class="row">
-        <div class="col-xs-12 col-sm-8">
-            <div class="input-group">
-
-
-            </div>
-        </div>
-    </div>
-</form>
 <!-- /row -->
+
 </body>
 </html>
 <script type="text/javascript">
@@ -210,6 +200,14 @@
                     // 请求到的数据做相应的操作，如详情查看等
                 }, true); // 刷新表格，分页信息不会重置
             }
+
+
+            /** 模态框 **/
+            $("#btn_modal").click(function () {
+                Global.warning("删除警告", "确定要删除数据吗？", "warning", function () {
+                    console.log("删除...");
+                });
+            });
 
         })
     });
