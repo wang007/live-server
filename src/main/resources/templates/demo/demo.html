@@ -33,7 +33,23 @@
     </div>
 </div>
 <!-- /row -->
+<div class="page-header">
+    <h1>
+        警告框/提示框
+        <!--<small> 》 dataTableDemo</small>-->
+    </h1>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div>
+            <button type="button" class="btn btn-primary" id="btn_modal">警告框</button>
+            <button type="button" class="btn btn-primary" id="btn_pnotify">提示框</button>
+        </div>
+    </div>
+</div>
 
+
+<div></div>
 </body>
 </html>
 <script type="text/javascript">
@@ -202,11 +218,20 @@
             }
 
 
-            /** 模态框 **/
+            /**
+             * 绑定警告框
+             */
             $("#btn_modal").click(function () {
-                Global.warning("删除警告", "确定要删除数据吗？", "warning", function () {
-                    console.log("删除...");
+                Global.warning("警告", "确定要离开当前页面吗？", "warning", function () {
+                    console.log("做事情...");
                 });
+            });
+
+            /**
+             * 绑定提示框
+             */
+            $("#btn_pnotify").click(function () {
+                Global.notify("提示", "创建成功", "success");
             });
 
         })

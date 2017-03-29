@@ -51,20 +51,21 @@ var Global = (function () {
             "content": "#warning_modal_content",
             "modal": "#global_warning_modal"
         }; // 元素id
-
         if (type == "danger") {
             $(ids.h4).addClass("red");
             $(ids.btn).addClass("btn-danger");
+            $(ids.btn).html('<i class="fa fa-trash"></i> 确 定');
         } else {
             $(ids.h4).addClass("orange");
             $(ids.btn).addClass("btn-warning");
+            $(ids.btn).text("确 定");
         } // 调整样式
 
         $(ids.title).text(title); // 设置标题
         $(ids.content).text(content); // 设置内容
-        $(ids.btn).click(function () {
+        $(ids.btn).unbind('click').bind('click', function () {
             callback();
-        }); // 绑定确定按钮
+        }); // 绑定确定按钮，同时防止多次绑定
         $(ids.modal).modal(); // 显示模态框
     };
 
@@ -74,6 +75,7 @@ var Global = (function () {
         warning: warning
     };
 })();
+
 
 Global.init(); // 相关方法初始化
 //Global.notify("通知框", "通知框共有五种样式，<br/>'type':{success | info | error | warning | dark} <br/> 使用方法:Global.notify(title, content, type);", "dark");
