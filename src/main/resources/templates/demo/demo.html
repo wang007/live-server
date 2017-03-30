@@ -3,16 +3,22 @@
 <meta charset="UTF-8"></meta>
 <title>demo</title>
 <style>
-    .datatable-length-row {
-        margin-top: 8px;
+    .switch {
+        min-height: 27px;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 7px;
+        position: relative;
+        display: block;
     }
 
-    .datatable-plus {
-        color: #7F879C;
-    }
-
-    .datatable-btn {
-        margin: 0 2px 0 2px;
+    .spinner {
+        min-height: 27px;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 5px;
+        position: relative;
+        display: block;
     }
 </style>
 </head>
@@ -42,23 +48,275 @@
 <div class="row">
     <div class="col-xs-12">
         <div>
-            <button type="button" class="btn btn-primary" id="btn_modal">警告框</button>
-            <button type="button" class="btn btn-primary" id="btn_modal2">警告框2</button>
+            <button type="button" class="btn btn-primary" id="btn_warning_modal">警告框</button>
+            <button type="button" class="btn btn-primary" id="btn_warning_modal2">警告框2</button>
             <button type="button" class="btn btn-primary" id="btn_pnotify">提示框</button>
         </div>
     </div>
 </div>
+<div class="page-header">
+    <h1>
+        新增模态框
+        <!--<small> 》 dataTableDemo</small>-->
+    </h1>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div>
+            <button type="button" class="btn btn-primary" id="btn_create_modal">新增记录模态框</button>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" tabindex="-1" role="dialog" id="datatable_edit_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header table-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="datatable_edit_modal_title">添加数据</h4>
+            </div>
+            <div class="modal-body">
+                <!-- PAGE CONTENT BEGINS -->
+                <form class="form-horizontal" role="form" id="create_form">
+                    <div class="form-group has-error">
+                        <label for="form-field-select-5"
+                               class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right">Input
+                            with error</label>
 
-<div></div>
+                        <div class="col-xs-12 col-sm-5">
+																	<span class="block input-icon input-icon-right">
+																 <select class="chosen-select form-control"
+                                                                         id="form-field-select-5"
+                                                                         data-placeholder="请选择...">
+                                <option value=""></option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                            </select>
+
+																	</span>
+                        </div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"><i
+                                class="ace-icon fa fa-times-circle"></i> <span>Error tip help!</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputError2" class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right">Input
+                            with error</label>
+
+                        <div class="col-xs-12 col-sm-5">
+																	<span class="block input-icon input-icon-right">
+																		<input type="text" id="inputError2"
+                                                                               class="width-100"/>
+
+																	</span>
+                        </div>
+                        <div class="help-block col-xs-12 col-sm-reset inline" id="username_span"><span
+                                class="middle red">*</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> Text Field: </label>
+
+                        <div class="col-sm-9">
+                            <input type="text" id="form-field-1" placeholder="Username" class="col-xs-10 col-sm-5"
+                                   required/>
+                            <span class="help-inline col-xs-6 col-sm-7">
+
+                                </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2"> Password
+                            Field: </label>
+
+                        <div class="col-sm-9">
+                            <input type="password" id="form-field-2" placeholder="Password" class="col-xs-10 col-sm-5"/>
+                            <span class="help-inline col-xs-6 col-sm-7">
+                                    <span class="middle red">*</span>
+                                </span>
+                        </div>
+                    </div>
+                    <div class="form-group has-error">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-2"> Textarea:
+                        </label>
+
+                        <div class="col-sm-6">
+                            <textarea class="form-control limited" id="form-field-3" maxlength="50"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group has-error">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-select-4"> Select:
+                        </label>
+
+                        <div class="col-sm-6">
+                            <select class="chosen-select form-control" id="form-field-select-4"
+                                    data-placeholder="请选择...">
+                                <option value=""></option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> CheckBox:
+                        </label>
+                        <div class="col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input name="form-field-checkbox" checked="checked" type="checkbox"/>
+                                    <span class="lbl"> choice 1</span>
+                                </label></div>
+                            <div class="checkbox">
+                                <label>
+                                    <input name="form-field-checkbox" type="checkbox"/>
+                                    <span class="lbl"> choice 1</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> CheckBox:
+                        </label>
+                        <div class="col-sm-6">
+
+                            <div class="radio">
+                                <label>
+                                    <input name="form-field-radio" checked="checked" type="radio"/>
+                                    <span class="lbl"> radio option 1</span>
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input name="form-field-radio" type="radio"/>
+                                    <span class="lbl"> radio option 1</span>
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> CheckBox:
+                        </label>
+                        <div class="col-sm-6">
+                            <div class="switch">
+                                <label>
+                                    <input name="switch-field-1" class="ace ace-switch ace-switch-4 btn-rotate"
+                                           type="checkbox">
+                                    <span class="lbl"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> Spinner:
+                        </label>
+                        <div class="col-sm-6">
+                            <div class="spinner">
+                                <input type="text" class="input-mini" id="spinner"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group has-error">
+                        <label class="col-sm-3 control-label no-padding-right"> DatePicker:
+                        </label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <input class="form-control date-picker" id="id-date-picker-1" type="text"
+                                       data-date-format="yyyy-mm-dd"/>
+                                <span class="input-group-addon">
+																		<i class="fa fa-calendar bigger-110"></i>
+																	</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button type="button" class="btn btn-success" id="datatable_edit_modal_btn"><i class="fa fa-plus"></i> 添
+                    加
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>
 </html>
 <script type="text/javascript">
     // var scripts =  [null, "static/plugins/dataTables/dist/jquery.dataTables.min.js",null] ;
     $.ace_ajax_finish(function () {
         jQuery(function ($) {
+
+            $("#create_form").validate();
+
+            $("input[name='form-field-checkbox']").iCheck({
+                checkboxClass: 'icheckbox_flat-blue'
+            }); // 为选择框添加样式
+
+            $("input[name='form-field-radio']").iCheck({
+                radioClass: 'iradio_flat-blue'
+            }); // 为单选框添加样式
+
+            $('.date-picker').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#spinner').ace_spinner({
+                value: 0,
+                min: 0,
+                max: 100,
+                step: 1,
+                btn_up_class: 'btn-info',
+                btn_down_class: 'btn-info'
+            })
+                .closest('.ace-spinner')
+                .on('changed.fu.spinbox', function () {
+                    //alert($('#spinner1').val())
+                });
+
+            if (!ace.vars['touch']) {
+                $('.chosen-select').chosen({allow_single_deselect: true});
+                //resize the chosen on window resize
+
+                $(window)
+                    .off('resize.chosen')
+                    .on('resize.chosen', function () {
+                        $('.chosen-select').each(function () {
+                            var $this = $(this);
+                            $this.next().css({'width': '100%'});
+                        })
+                    }).trigger('resize.chosen');
+                //resize chosen on sidebar collapse/expand
+                $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+                    if (event_name != 'sidebar_collapsed') return;
+                    $('.chosen-select').each(function () {
+                        var $this = $(this);
+                        $this.next().css({'width': '100%'});
+                    })
+                });
+            }
+
             var dataTable = new DataTablePlus({
-                'targetId': '#datatable',
+                'targetId': 'datatable',
                 'columns': [
                     {
                         'name': 'name',
@@ -77,7 +335,33 @@
                         'title': '其他'
                     }
                 ],
-                'dataUrl': 'demo/data'
+                'dataUrl': 'demo/data',
+                'serverResponseCode': 1001,
+                'modal': {
+                    'modalId': 'datatable_edit_modal',
+                    'modalCallback': function (result) {
+                        var btnType = result['btnType'];
+                        var $btn = $("#datatable_edit_modal_btn");
+                        if ($btn.is('.btn-success') && btnType == 'update') {
+                            $btn.removeClass('btn-success')
+                            $btn.addClass('btn-primary');
+                            $btn.html('<i class="fa fa-edit"></i> 修改');
+                            $("#datatable_edit_modal_title").text('修改数据');
+                        } // 调整样式
+                        if ($btn.is('.btn-primary') && btnType == 'create') {
+                            $btn.removeClass('btn-primary')
+                            $btn.addClass('btn-success');
+                            $btn.html('<i class="fa fa-plus"></i> 添加');
+                            $("#datatable_edit_modal_title").text('新增数据');
+                        }// 调整样式
+                        if (btnType == 'create') {
+                            console.log("create something.");
+                        } else {
+                            console.log(JSON.stringify(result.data));
+                            console.log("edit something.");
+                        }
+                    }
+                }
             }); // 设置参数
             dataTable.build(); // 创建表格
 
@@ -93,7 +377,7 @@
             /**
              * 绑定警告框
              */
-            $("#btn_modal").click(function () {
+            $("#btn_warning_modal").click(function () {
                 Global.warning("danger样式", "确定要删除此信息吗？", "danger", function () {
                     console.log("删除...");
                 });
@@ -101,7 +385,7 @@
             /**
              * 绑定警告框2
              */
-            $("#btn_modal2").click(function () {
+            $("#btn_warning_modal2").click(function () {
                 Global.warning("warning样式", "确定要离开此页面吗？", "warning", function () {
                     console.log("登出...");
                 });
@@ -115,6 +399,13 @@
                 Global.notify("warning样式", "xxx警告", "warning");
                 Global.notify("info样式", "xxx通知", "info");
                 Global.notify("dark样式", "xxx通知", "dark");
+            });
+
+            /**
+             * 绑定新增模态框
+             */
+            $("#btn_create_modal").click(function () {
+                $("#datatable_edit_modal").modal();
             });
 
         })
