@@ -13,10 +13,21 @@ import java.util.Random;
 public class CreateOrderNoUtils {
 	
 	/**
-	 * 获得当前系统时间
+	 * 获得当前系统日期的字符串
 	 * @return
 	 */
 	public static String getDate(){
+		Date date=new Date();
+		DateFormat format=new SimpleDateFormat("yyyyMMdd");
+		String time=format.format(date);
+		return time;
+	}
+
+	/**
+	 *  获取当前系统时间的字符串
+	 * @return
+	 */
+	public static String getTime() {
 		Date date=new Date();
 		DateFormat format=new SimpleDateFormat("yyyyMMddHHmmss");
 		String time=format.format(date);

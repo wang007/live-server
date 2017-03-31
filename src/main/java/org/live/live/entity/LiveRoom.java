@@ -28,8 +28,8 @@ public class LiveRoom extends BaseEntity {
      *  房间分类
      */
     @ManyToOne
-    @JoinColumn(name="room_category_id")
-    private RoomCategory roomCategory ;
+    @JoinColumn(name="live_category_id")
+    private LiveCategory liveCategory ;
 
     /**
      *  房间名
@@ -75,12 +75,12 @@ public class LiveRoom extends BaseEntity {
         this.anchor = anchor;
     }
 
-    public RoomCategory getRoomCategory() {
-        return roomCategory;
+    public LiveCategory getLiveCategory() {
+        return liveCategory;
     }
 
-    public void setRoomCategory(RoomCategory roomCategory) {
-        this.roomCategory = roomCategory;
+    public void setLiveCategory(LiveCategory liveCategory) {
+        this.liveCategory = liveCategory;
     }
 
     public String getRoomName() {

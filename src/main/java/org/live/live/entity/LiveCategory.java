@@ -7,12 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- *  房间分类
+ *  直播房间分类
  * Created by Mr.wang on 2017/3/28.
  */
 @Entity
-@Table(name="live_room_category")
-public class RoomCategory extends BaseEntity {
+@Table(name="live_category")
+public class LiveCategory extends BaseEntity {
 
     /**
      *  分类名称
@@ -21,10 +21,10 @@ public class RoomCategory extends BaseEntity {
     private String categoryName ;
 
     /**
-     * 分类图片的url
+     * 分类封面的url
      */
     @Column
-    private String categoryUrl ;
+    private String coverUrl ;
 
     /**
      *  分类简介
@@ -51,12 +51,12 @@ public class RoomCategory extends BaseEntity {
         this.categoryName = categoryName;
     }
 
-    public String getCategoryUrl() {
-        return categoryUrl;
+    public String getCoverUrl() {
+        return coverUrl;
     }
 
-    public void setCategoryUrl(String categoryUrl) {
-        this.categoryUrl = categoryUrl;
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
     }
 
     public String getDescription() {

@@ -8,6 +8,12 @@ $(document).ready(function () {
  jQuery.validator.addMethod("alphabetAndNum",function(value, element){
 	 	return this.optional(element) || /^[a-zA-Z0-9]+$/.test(value) ;
  	},"请输入数字或字母");
+
+ //校验上传文件的大小
+  jQuery.validator.addMethod("checkFileSize", function (value, element, param) {
+      return this.optional(element) || (param > element.files[0].size) ;
+
+  })
 });
 
 //增加身份证验证

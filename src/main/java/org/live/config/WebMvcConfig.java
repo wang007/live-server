@@ -2,15 +2,13 @@ package org.live.config;
 
 import org.live.common.constants.Constants;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * Created by Mr.wang on 2016/11/23.
  */
-@Configuration
+//@Configuration
 //开启servlet扫描，即扫描servlet，filter，listenter注解的serlvet容器相关的类
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
@@ -22,7 +20,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
      *
      * @return
      */
-    @Bean
+   // @Bean
     public CommonsMultipartResolver multipartResolver() {
 
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
