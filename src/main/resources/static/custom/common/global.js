@@ -89,7 +89,7 @@ var Global = (function () {
 
 /**
  * dataTable强化类
- * @description 对原生table进行功能强化,默认提供删除功能。添加和更改功能需额外通过绑定用户提供的modalId和callback方法来启用
+ * @description 对原生table进行功能强化,默认提供删除、详情查看功能。添加和更改功能需额外通过绑定用户提供的modalId和callback方法来启用
  * 注意事项：默认启用springmvc @RestController，后台需使用对应的RequestMethod.delete来映射删除功能即数据请求和删除请求的地址为同一个，用delete和post来区分
  * 使用方式:
  *          var table = new DataTablePlus({'targetId':'#xxx','columns':[{'name':'xxx','title':'xxxx'},{...},...],'dataUrl':'xxxUrl'});
@@ -97,14 +97,18 @@ var Global = (function () {
  * option:
  *          targetId : 目标dom元素id
  *          columns : 列表项基础信息，注意列表默认首列启用checkbox，checkbox自动定义id作为val,所以无需重复为列表定义id属性或checkbox元素
+ *              columns[i].name : 用于获取数据key值
+ *              columns[i].title : 列标题
+ *              columns[i].detail : {true, false} 是否用于详情查看
+ *              columns[i].show : {true, faluse} 是否用于表格数据显示
  *          dataUrl : 数据请求地址
  *          serverResponseCode : 服务器后台操作成功的响应标志，注意后台返回的响应标志名约定为'serverResponseCode'
- *          modal:{modalId:'xxid', modalCallback:function(data){..}}
- *              modalId : 需要绑定至新增按钮和修改按钮的modalId
- *              modalCallback : 用于绑定新增和修改按钮的响应逻辑
+ *          modal:{modalId:'xxid', modalCallback:function(result){..}}
+ *              modal.modalId : 需要绑定至新增按钮和修改按钮的modalId
+ *              modal.modalCallback : 用于绑定新增和修改按钮的响应逻辑
  *                  result : 携带按钮参数和当前选中行的所有数据，若有数据的话。
- *                      data : 当前选中行的所有数据
- *                      btnType : {'create'|'update'}按钮类型
+ *                      result.data : 当前选中行的所有数据
+ *                      result.btnType : {'create'|'update'}按钮类型
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'dataUrl':'数据请求地址'}
  * @constructor
  */
@@ -127,9 +131,12 @@ var DataTablePlus = function (option) {
         ]; // 默认列表信息
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i];
-            var name = column['name'];
-            var title = column['title'];
-            defaultColumns.push({'data': name, 'name': name, 'title': title});
+            var isShow = column['show']; // 该字段是否用于表格数据显示
+            if (isShow) {
+                var name = column['name'];
+                var title = column['title'];
+                defaultColumns.push({'data': name, 'name': name, 'title': title});
+            }
         } // 添加用户自定义列参数
         var table = $("#" + targetId).dataTable({
             "pagingType": "full_numbers",
@@ -211,7 +218,8 @@ var DataTablePlus = function (option) {
                     '<button type="button" id="btn_datatable_create" name="datatable_btn_group" class="btn btn-success datatable-btn"  data-placement="top" title="添加"><i class="fa fa-plus"></i></button>' +
                     '<button type="button" id="btn_datatable_update" name="datatable_btn_group" class="btn btn-primary datatable-btn" data-placement="top" title="修改"><i class="fa fa-edit"></i></button>' +
                     '<button type="button" id="btn_datatable_del" name="datatable_btn_group" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>' +
-                    '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
+                    '<button type="button" id="btn_datatable_info" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="详情"> &nbsp;<i class="fa fa-info"></i>&nbsp; </button>' +
+                    '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-defalut datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
                 $("#datatable_input_search").attr({
                     "class": "form-group pull-right top_search"
                 });
@@ -259,7 +267,7 @@ var DataTablePlus = function (option) {
                                 $("#" + modal['modalId']).modal(); // 显示modal
                                 modal.modalCallback({'btnType': 'update', 'data': data[index]});
                             } else {
-                                Global.notify("操作提醒", "未选取有效数据或选中多条数据！", "warning")
+                                Global.notify("修改操作提醒", "未选取有效数据或选中多条数据！", "warning");
                             }
                             break; // 修改
                         case "btn_datatable_del":
@@ -294,6 +302,41 @@ var DataTablePlus = function (option) {
                                 });
                             }
                             break; // 删除
+                        case "btn_datatable_info":
+                            var ids = [];
+                            var index;
+                            var i = 0;
+                            $("input[name='iCheckGroup']").each(function () {
+                                i++; // 定位选择框所在的行索引
+                                var val = $(this).val();
+                                if (val != "all" && $(this).is(':checked')) {
+                                    ids.push(val);
+                                    index = i - 2;
+                                }
+                            });
+
+                            if (ids.length == 1) {
+                                $("#datatable_info_modal").modal(); // 显示modal
+                                var record = data[index];
+                                var $ul = $("#datatable_info_modal_list");
+                                $ul.empty();
+                                for (var i = 0; i < columns.length; i++) {
+                                    var column = columns[i];
+                                    var isDetail = column['detail']; // 该字段是否用于详情查看
+                                    if (isDetail) {
+                                        var name = column['name'];
+                                        var title = column['title'];
+                                        var val = record[name];
+
+                                        var $li = $("<li></li>");
+                                        $li.append('<b>' + title + '：</b>' + val);
+                                        $li.appendTo($ul);
+                                    }
+                                } // 构建数据列表
+                            } else {
+                                Global.notify("详情操作提醒", "未选取有效数据或选中了多条数据！", "warning");
+                            }
+                            break; // 详情
                     }
                 });
             }

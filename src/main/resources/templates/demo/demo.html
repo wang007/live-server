@@ -258,6 +258,31 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="datatable_info_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header table-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详情查看</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="list-unstyled list-striped pricing-table-header" id="datatable_info_modal_list">
+                    <li>Disk Space </li>
+                    <li>Bandwidth </li>
+                    <li>Email Accounts </li>
+                    <li>MySQL Databases </li>
+                    <li>Ad Credit </li>
+                    <li>Free Domain </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 </body>
 </html>
 <script type="text/javascript">
@@ -320,19 +345,29 @@
                 'columns': [
                     {
                         'name': 'name',
-                        'title': '名称'
+                        'title': '名称',
+                        'show' : true,
+                        'detail' : true
                     }, {
                         'name': 'age',
-                        'title': '年龄'
+                        'title': '年龄',
+                        'show' : true,
+                        'detail' : true
                     }, {
                         'name': 'username',
-                        'title': '昵称'
+                        'title': '昵称',
+                        'show' : true,
+                        'detail' : true
                     }, {
                         'name': 'address',
-                        'title': '地址'
+                        'title': '地址',
+                        'show' : true,
+                        'detail' : true
                     }, {
                         'name': 'other',
-                        'title': '其他'
+                        'title': '其他',
+                        'show' : true,
+                        'detail' : true
                     }
                 ],
                 'dataUrl': 'demo/data',
@@ -362,17 +397,8 @@
                         }
                     }
                 }
-            }); // 设置参数
+        }); // 设置参数
             dataTable.build(); // 创建表格
-
-            /**
-             * 刷新表格
-             */
-            /*  function reloadTable() {
-             dataTable.ajax.reload(function (json) {
-             // 请求到的数据做相应的操作，如详情查看等
-             }, true); // 刷新表格，分页信息不会重置
-             }*/
 
             /**
              * 绑定警告框
