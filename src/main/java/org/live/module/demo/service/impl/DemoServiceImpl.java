@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,5 +29,20 @@ public class DemoServiceImpl implements DemoService {
         Page<DemoVo> page = demoRepository.find((PageRequest) params.get("pageRequest"), (Map<String, Object>) params.get("filter"));
         DataTableModel model = DataTableUtils.parseDataTableModel(page, (Integer) params.get("draw"), recordsTotal);
         return model;
+    }
+
+    @Override
+    public boolean del(List<String> ids) {
+        if (ids.size() > 0) {
+            try {
+                for (String id : ids) {
+                    demoRepository.delete(id);
+                }
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return false;
     }
 }

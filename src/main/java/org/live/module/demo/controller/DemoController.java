@@ -1,16 +1,15 @@
 package org.live.module.demo.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import org.live.common.response.DataTableModel;
 import org.live.module.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created by KAM on 2017/3/28.
@@ -32,5 +31,17 @@ public class DemoController {
     @ResponseBody
     public DataTableModel page(HttpServletRequest request) {
         return demoService.findPage(request);
+    }
+
+    @RequestMapping(value = "/data", method = RequestMethod.DELETE)
+    @ResponseBody
+    public String del(@RequestParam("ids[]") List<String> ids) {
+        JSONObject jsonObject = new JSONObject();
+        if (demoService.del(ids)) {
+            jsonObject.put("serverResponseCode", 1001);
+        } else {
+            jsonObject.put("serverResponseCode", 1002);
+        }
+        return jsonObject.toString();
     }
 }

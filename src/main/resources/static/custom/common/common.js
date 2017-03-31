@@ -287,47 +287,51 @@
      *
      */
     //提示操作成功的方法
-    window.showSuccessMsg = function(title,content,showtime,position) {
-    	$.gritter.add({
+    window.showSuccessMsg = function(title,content) {
+    	/*$.gritter.add({
 			title: title || '操作成功！',
 			text: content || '',
 			time: showtime || 2300,
 			image: '/static/images/common/gritter/success.png',
 			class_name: 'gritter-success gritter-light' + (position ? ' gritter-center' : '')
-		});
+		});*/
+        Global.notify(title,content, "success") ;
     	return false ;
     }
     //提示常规操作的方法
-    window.showInfoMsg = function(title,content,showtime,position) {
-    	$.gritter.add({
+    window.showInfoMsg = function(title,content) {
+    	/*$.gritter.add({
 			title: title || '操作提示！',
 			text: content || '',
 			time: showtime || 2300,
 			image: '/static/images/common/gritter/info.png',
 			class_name: 'gritter-info gritter-light' + (position ? ' gritter-center' : '')
-		});
+		});*/
+        Global.notify(title,content, "info") ;
     	return false ;
     }
     //提示操作警告的方法
-    window.showWarnMsg = function(title,content,showtime,position) {
-    	$.gritter.add({
+    window.showWarnMsg = function(title,content) {
+    	/*$.gritter.add({
 			title: title || '操作警告！',
 			text: content || '',
 			time: showtime || 2300,
 			image: '/static/images/common/gritter/warn.png',
 			class_name: 'gritter-warning gritter-light' + (position ? ' gritter-center' : '')
-		});
+		});*/
+        Global.notify(title,content, "warning") ;
     	return false ;
     }
     //提示操作错误的方法
-    window.showErrorMsg = function(title,content,showtime,position) {
-    	$.gritter.add({
+    window.showErrorMsg = function(title,content) {
+   /* 	$.gritter.add({
 			title: title || '操作错误！',
 			text: content || '',
 			time: showtime || 2300,
 			image: '/static/images/common/gritter/error.png',
 			class_name: 'gritter-error gritter-light' + (position ? ' gritter-center' : '')
-		});
+		});*/
+   Global.notify(title,content, "error") ;
     	return false ;
     }
     // 提示消息 end
