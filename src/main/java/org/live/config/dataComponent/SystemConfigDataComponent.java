@@ -41,6 +41,11 @@ public class SystemConfigDataComponent {
      */
     private String projectUploadFileDirectory ;
 
+    /**
+     *  文件存储在数据库中的前缀
+     */
+    private String dbUploadFilePrefix ;
+
     public String getTitle() {
         return title;
     }
@@ -81,4 +86,11 @@ public class SystemConfigDataComponent {
         this.passwordRetryCount = passwordRetryCount;
     }
 
+    public String getDbUploadFilePrefix() {
+        return dbUploadFilePrefix;
+    }
+
+    public void setDbUploadFilePrefix(String dbUploadFilePrefix) {
+        this.dbUploadFilePrefix = dbUploadFilePrefix;
+    }
 }

@@ -5,11 +5,14 @@ import org.live.common.constants.SystemConfigConstants;
 import org.live.config.dataComponent.SystemConfigDataComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *  获取serlvet容器
@@ -27,6 +30,9 @@ public class ServletContextHolder implements ServletContextAware {
      */
     @Resource
     private SystemConfigDataComponent systemConfig ;
+
+    @Resource
+    private Environment env ;
 
     private static ServletContext servletContext ;
 
@@ -73,17 +79,28 @@ public class ServletContextHolder implements ServletContextAware {
      */
     private void initProperties(ServletContext servletContext) {
 
-        LOGGER.trace("执行常量的serlvetContext属性的初始化操作") ;
+        LOGGER.debug("执行常量的serlvetContext属性的初始化操作") ;
         String realProjectDirPath = servletContext.getRealPath(systemConfig.getProjectFileDirectory()) ;    //projectDir真实路径
         String realUploadFileDirPath = servletContext.getRealPath(systemConfig.getProjectUploadFileDirectory()) ;   //文件上传的真实路径
+
+        String[] activeProfilsStr = env.getActiveProfiles() ;
+        List activeProfiles = Arrays.asList(activeProfilsStr) ;
 
         servletContext.setAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY, realProjectDirPath) ;   //保存到servlet容器中
         servletContext.setAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY, realUploadFileDirPath) ;
         servletContext.setAttribute(SystemConfigConstants.SYSTEM_TITLE_KEY, systemConfig.getTitle()) ;
+        servletContext.setAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY, systemConfig.getDbUploadFilePrefix()) ;
 
-        LOGGER.info(" real project Directory --> {}",realProjectDirPath) ;
-        LOGGER.info(" real uploadFile Directory --> {}",realUploadFileDirPath) ;
+        if(activeProfiles.contains("dev")) {    //查看当前开发环境
+            LOGGER.info("当前环境："+activeProfiles+" , 开发环境，设置开发环境的文件上传目录")  ;
+            servletContext.setAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY, "c:\\projectDir") ;   //保存到servlet容器中
+            servletContext.setAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY, "c:\\projectDir\\upload") ;
+        }
+
+        LOGGER.info(" real project Directory --> {}", servletContext.getAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY) ) ;
+        LOGGER.info(" real uploadFile Directory --> {}", servletContext.getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ) ;
         LOGGER.info(" system title --> {}", systemConfig.getTitle()) ;
+        LOGGER.info("db upload file prefix---> {}", systemConfig.getDbUploadFilePrefix()) ;
     }
 
 
