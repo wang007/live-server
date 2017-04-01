@@ -7,8 +7,10 @@ import org.apache.shiro.authc.*;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.live.common.constants.Constants;
+import org.live.common.constants.SystemConfigConstants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
+import org.live.common.support.ServletContextHolder;
 import org.live.common.utils.HttpServletUtils;
 import org.live.sys.entity.User;
 import org.live.sys.service.MenuService;
@@ -17,6 +19,8 @@ import org.live.sys.utils.MenuTreeUtils;
 import org.live.sys.vo.SidebarNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +48,9 @@ public class IndexController {
 
 	@Resource
 	private MenuService menuService ;
+
+	@Resource
+	private ResourceLoader resourceLoader;
 
 	/**
 	 * 跳转到主界面
@@ -155,27 +163,29 @@ public class IndexController {
 		return "redirect:/login" ;
 	}
 
-
-	@RequestMapping("/set")
+	/**
+	 * 文件下载
+	 * @return
+	 */
+	@RequestMapping(value="/upload/**")
 	@ResponseBody
-	public String setName() {
+	public ResponseEntity<?> fileDownload(HttpServletRequest request) {
+		try {
+			//文件下载的前缀
+			String uploadPreifx = ServletContextHolder.getAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY) ;
+			//本地系统存储文件的前缀
+			String realUploadFilePrefix = ServletContextHolder.getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ;
 
-		SecurityUtils.getSubject().getSession().setAttribute("name","xiaoxiao") ;
-		System.out.println("执行了setName操作");
-		return "" ;
+			String path = request.getRequestURI() ;
+			//去掉前缀upload
+			path = path.replaceFirst(uploadPreifx, "") ;
+			return ResponseEntity.ok(resourceLoader.getResource("file:"+ Paths.get(realUploadFilePrefix, path))) ;
+		} catch (Exception e) {
+			LOGGER.error("文件下载异常", e);
+		}
+		return null ;
 	}
 
-	@RequestMapping("/get")
-	@ResponseBody
-	public String getName(HttpSession session) {
 
-		System.out.println("执行了getName操作") ;
-		Object name = session.getAttribute("name") ;
-		System.out.println("name:--->"+ name) ;
-		return "" ;
-
-
-
-	}
 
 }

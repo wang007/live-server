@@ -4,6 +4,8 @@ import org.live.common.constants.SystemConfigConstants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
 import org.live.common.support.ServletContextHolder;
+import org.live.common.utils.CreateOrderNoUtils;
+import org.live.common.utils.UploadUtils;
 import org.live.live.entity.LiveCategory;
 import org.live.live.service.LiveCategoryService;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 
 /**
  *  直播房间分类的controller
@@ -73,7 +76,7 @@ public class LiveCategoryController {
      */
     @RequestMapping(value="/category",method = RequestMethod.POST)
     @ResponseBody
-    public ResponseModel<Object> addLiveCategory(MultipartFile file, LiveCategory liveCategory, @RequestParam("enabled") Integer enabledNum) {
+    public ResponseModel<Object> addLiveCategory(MultipartFile file, LiveCategory liveCategory, @RequestParam(value = "enabled", required = false) Integer enabledNum) {
 
         ResponseModel<Object> model = new SimpleResponseModel<Object>() ;
         try {
@@ -87,15 +90,32 @@ public class LiveCategoryController {
                 String prefixUpload = ServletContextHolder.getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ;
                 LOGGER.debug("文件上传路径的前缀：---> "+ prefixUpload) ;
 
+                String fileSuffix = UploadUtils.getFileSuffix(file.getOriginalFilename()) ; //文件后缀
+                //路径： 相对于项目的 /projectDir/upload/系统日期/系统时间+6位随机数.xxx
 
+                String targetPathSuffix = CreateOrderNoUtils.getDate()+File.separator+CreateOrderNoUtils.getCreateOrderNo()+fileSuffix ;
 
+                File targetFile = UploadUtils.createFile(prefixUpload, targetPathSuffix) ;
+                file.transferTo(targetFile);
 
+                String dbFilePrefix = ServletContextHolder.getAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY) ;
+                targetPathSuffix = targetPathSuffix.replace(File.separator, "/") ;  //替换分隔符
+
+                liveCategory.setCoverUrl(dbFilePrefix + "/" + targetPathSuffix) ;
+
+                categoryService.save(liveCategory) ;
+
+                model.setMessage("上传成功") ;
+                model.success() ;
+                return model ;
 
         } catch (Exception e) {
-
+                LOGGER.error(e.getMessage(), e) ;
+                model.setMessage("上传失败") ;
+                model.error() ;
+                return model ;
         }
 
-        return model ;
 
     }
 

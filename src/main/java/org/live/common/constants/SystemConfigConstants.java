@@ -27,6 +27,11 @@ public interface SystemConfigConstants {
      */
     public static final String SYSTEM_TITLE_KEY = "systemTitle" ;
 
+    /**
+     *  上传文件存储在数据库中的前缀
+     */
+    public static final String DB_UPLOAD_FILE_PREFIX_KEY = "dbUploadFilePrefixKey" ;
+
 
 
 }
