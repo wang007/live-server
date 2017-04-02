@@ -236,7 +236,7 @@
                         <label class="col-xs-3 control-label no-padding-right" for="update-serialNo"> 序号 <span style="color:red;">*</span></label>
 
                         <div class="col-xs-9">
-                            <input type="text" id="update-serialNo" placeholder="序号" class="col-xs-8" name="serailNo"/>
+                            <input type="text" id="update-serialNo" placeholder="序号" class="col-xs-8" name="serialNo"/>
                         </div>
                     </div>
 
@@ -279,7 +279,7 @@
                 </form>
             </div>
             <div class="modal-footer" style="padding: 8px">
-                <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal" id="close-update-category-btn">
                     <i class="ace-icon fa fa-times red2"></i>
                     关闭
                 </button>
@@ -335,6 +335,7 @@
                     return ;
                 }
                 fillform($("#update-category-form"), data.data) ;
+                $("#avatar").prop("src",data.data.coverUrl) ;
                 if(data.data.enabled) {
                     $("#update-enabled").prop("checked", true) ;
                 } else {
@@ -356,6 +357,36 @@
     $.ace_ajax_finish(scripts,function() {
         jQuery(function ($) {
 
+            //点击更新modal的关闭
+            $("#close-update-category-btn").click(function(){
+                //toMain("/live/category") ;
+            })
+
+            //点击更新的保存按钮
+            $("#save-for-update-btn").click(function(){
+                if(!$("#update-category-form").valid()) {
+                    return ;
+                }
+                showLoading("正在保存...") ;
+                $.ajax({
+                    url: "/live/category/serialNo",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $.param($("#update-category-form").serialize()),
+                    success: function(data) {
+                        if(data.status ==1) {
+                            showSuccessMsg(data.message) ;
+                        } else {
+                            showErrorMsg(data.message) ;
+                        }
+                        hideLoading() ;
+                        $("#update-category-modal").modal("hide") ;
+                        toMain("/live/category") ;
+                    }
+                })
+                $("#add-category-modal").modal()
+            })
+
             //点击添加按钮
             $("#add-category-btn").click(function(){
                 $.ajax({
@@ -363,7 +394,7 @@
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
-                        $("#edit-serialNo").val(data.data) ;
+                       $("#edit-serialNo").val(data.data) ;
                     }
                 })
                 $("#add-category-modal").modal()
@@ -434,13 +465,12 @@
 
 
             $('#add-category-form').validate({
-                debug:true ,
                 errorElement: 'div',
                 errorClass: 'help-block',
                 ignore: "",
                 rules: {
                     serialNo: {
-                        required: true,
+                        required: true ,
                         maxlength: 8 ,
                         digits:true
                     },
@@ -461,6 +491,33 @@
                     file: {
                         required: "请选择图片上传",
                         checkFileSize: "上传图片不能超过2M",
+                    }
+                },
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                },
+            }) ;
+
+            $('#update-category-form').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                ignore: "",
+                rules: {
+                    serialNo: {
+                        required: true,
+                        maxlength: 8 ,
+                        digits:true
+                    },
+                    categoryName:{
+                        required: true,
+                        rangelength: [2,10]
+                    },
+                    description: {
+                        maxlength:50
                     }
                 },
                 highlight: function (e) {
@@ -538,35 +595,25 @@
                         data: data,
                         contentType: false,    //不可缺
                         processData: false,    //不可缺
+                        dataType: "JSON",
                         success: function (data) {
-
+                            if(data.status ==1) {
+                                if("FileReader" in window) {
+                                    //for browsers that have a thumbnail of selected image
+                                    var thumb = $('#avatar').next().find('img').data('thumb');
+                                    if(thumb) $('#avatar').get(0).src = thumb;
+                                }
+                                deferred.resolve({'status':'OK'});
+                                if(last_gritter) $.gritter.remove(last_gritter);
+                                last_gritter = $.gritter.add({
+                                    title: '更新 成功!',
+                                    //text: 'Uploading to server can be easily implemented. A working example is included with the template.',
+                                    class_name: 'gritter-info gritter-center'
+                                });
+                            }   //if
                         }
                     });
-
-
-
-                    //dummy upload
-                    setTimeout(function(){
-                        if("FileReader" in window) {
-                            //for browsers that have a thumbnail of selected image
-                            var thumb = $('#avatar').next().find('img').data('thumb');
-                            if(thumb) $('#avatar').get(0).src = thumb;
-                        }
-
-                        deferred.resolve({'status':'OK'});
-
-                        if(last_gritter) $.gritter.remove(last_gritter);
-                        last_gritter = $.gritter.add({
-                            title: 'Avatar Updated!',
-                            text: 'Uploading to server can be easily implemented. A working example is included with the template.',
-                            class_name: 'gritter-info gritter-center'
-                        });
-
-                    } , parseInt(Math.random() * 800 + 800))
-
                     return deferred.promise();
-
-                    // ***END OF UPDATE AVATAR HERE*** //
                 },
                 success: function(response, newValue) {
                 }
