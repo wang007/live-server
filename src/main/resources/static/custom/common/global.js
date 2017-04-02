@@ -127,7 +127,7 @@ var Global = (function () {
  *                  call : 回调相关参数
  *                      call.btnType : {create|update} 当前按钮类型、
  *                      call.data : 若按钮类型为update,提供用于修改的当前行的全部数据
- *         rules : 默认启用jquery.validate，rules用于指定检验规则
+ *         rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -582,13 +582,20 @@ var DataTablePlus = function (option) {
             if (type == 'put') {
                 data['_method'] = 'put'
             }
-            console.log($.param(data))
             $.ajax({
                 type: "POST",
                 url: url,
                 data: $.param(data),
                 success: function (msg) {
-
+                    var successMsgCode = responseArguments['successMsgCode'];
+                    var successCode = responseArguments['successCode'];
+                    var errorMsgName = responseArguments['successCode'];
+                    if (msg[successMsgCode] == successCode) {
+                        var option = (type == "post") ? "添加" : "修改";
+                        Global.notify("操作提示：", option + "成功！", "success");
+                    } else {
+                        Global.notify("操作提示：", option + "失败，" + msg[errorMsgName], "error");
+                    }
                 }
             });
         }
