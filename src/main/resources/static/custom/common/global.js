@@ -88,9 +88,13 @@ var Global = (function () {
 })();
 
 /**
- * dataTable强化类
+ * dataTable强化插件
  * @description 对原生table进行功能强化,默认提供删除、详情查看、添加、修改、刷新、搜索等功能。
- * 注意事项：默认启用springmvc @RestController，后台需使用对应的RequestMethod.delete来映射删除功能即数据请求和删除请求的地址为同一个，用delete和post来区分
+ * 注意事项：默认启用Restful风格，本插件请求类型与springmvc请求类型比对
+ *           删除请求 : RequestMethod.DELETE
+ *           数据请求 : RequestMethod.POST
+ *           新增请求 : RequestMethod.POST
+ *           修改请求 : RequestMethod.PUT
  * 使用方式:
  *          var table = new DataTablePlus({'targetId':'#xxx','columns':[{'name':'xxx','title':'xxxx'},{...},...],'dataUrl':'xxxUrl'});
  *          var dataTable = table.build(); // 返回原生dataTable API
@@ -123,6 +127,7 @@ var Global = (function () {
  *                  call : 回调相关参数
  *                      call.btnType : {create|update} 当前按钮类型、
  *                      call.data : 若按钮类型为update,提供用于修改的当前行的全部数据
+ *         rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -136,7 +141,9 @@ var DataTablePlus = function (option) {
         var editUrl = option['url']['edit'] || null; // 添加或修改提交地址
         var responseArguments = option['responseArguments']; // 服务器响应状态信息
         var modal = option['modal']; // modal相关参数，用于指定modal的工作方式
+        var rules = option['rules']; // 检验规制，默认启用jquery.validate
         var data; // 当前表格的全部数据
+        var validator; // 表单检验器
         var defaultColumns = [
             {
                 "data": "id",
@@ -272,12 +279,40 @@ var DataTablePlus = function (option) {
                                     if (isEdit) {
                                         var inputType = column['inputType'];
                                         var name = column['name'];
+                                        var rule = rules[name] || null;
+                                        if (rule != null) {
+                                            var isRequired = rules[name]['required'] || false;
+                                            if (isRequired) {
+                                                $("span").detach("#required_hint"); // 去重
+                                                $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
+                                            }
+                                        }
                                         switch (inputType) {
                                             case 'textarea':
                                                 $("textarea[name='" + name + "']").val("");
+                                                var $div = $("div[name='" + name + "']");
+                                                if ($div.is(".has-success")) {
+                                                    $div.removeClass("has-success");
+                                                    $("i").remove(".glyphicon-ok");
+                                                }// 清除残留样式
+                                                if ($div.is(".has-error")) {
+                                                    $div.removeClass("has-error");
+                                                    $("i").remove(".glyphicon-remove");
+                                                    $("label[class='error']").text("");
+                                                } // 清除残留样式
                                                 break;
                                             default:
                                                 $("input[name='" + name + "']").val("");
+                                                var $div = $("div[name='" + name + "']");
+                                                if ($div.is(".has-success")) {
+                                                    $div.removeClass("has-success");
+                                                    $("i").remove(".glyphicon-ok");
+                                                }// 清除残留样式
+                                                if ($div.is(".has-error")) {
+                                                    $div.removeClass("has-error");
+                                                    $("i").remove(".glyphicon-remove");
+                                                    $("label[class='error']").text("");
+                                                } // 清除残留样式
                                                 break;
                                         }
                                     }
@@ -315,12 +350,40 @@ var DataTablePlus = function (option) {
                                             var name = column['name'];
                                             var value = originData[name];
                                             var inputType = column['inputType'];
+                                            var rule = rules[name] || null;
+                                            if (rule != null) {
+                                                var isRequired = rules[name]['required'] || false;
+                                                if (isRequired) {
+                                                    $("span").detach("#required_hint"); // 去重
+                                                    $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
+                                                }
+                                            }
                                             switch (inputType) {
                                                 case 'textarea':
                                                     $("textarea[name='" + name + "']").val(value);
+                                                    var $div = $("div[name='" + name + "']");
+                                                    if ($div.is(".has-success")) {
+                                                        $div.removeClass("has-success");
+                                                        $("i").remove(".glyphicon-ok");
+                                                    }// 清除残留样式
+                                                    if ($div.is(".has-error")) {
+                                                        $div.removeClass("has-error");
+                                                        $("i").remove(".glyphicon-remove");
+                                                        $("label[class='error']").text("");
+                                                    } // 清除残留样式
                                                     break;
                                                 default:
                                                     $("input[name='" + name + "']").val(value);
+                                                    var $div = $("div[name='" + name + "']");
+                                                    if ($div.is(".has-success")) {
+                                                        $div.removeClass("has-success");
+                                                        $("i").remove(".glyphicon-ok");
+                                                    }// 清除残留样式
+                                                    if ($div.is(".has-error")) {
+                                                        $div.removeClass("has-error");
+                                                        $("i").remove(".glyphicon-remove");
+                                                        $("label[class='error']").text("");
+                                                    } // 清除残留样式
                                                     break;
                                             }
                                         }
@@ -406,6 +469,11 @@ var DataTablePlus = function (option) {
                             break; // 详情
                         case "datatable_edit_modal_btn":
                             var $btn = $("#datatable_edit_modal_btn");
+                            if (!$("#datatable_edit_form").valid()) {
+                                Global.notify(" 错误提醒：", "请修改好表单错误项！", "error");
+                                return false;
+                            }
+
                             if ($btn.is('.btn-success')) {
                                 // 新增
                                 var postData = {};
@@ -475,6 +543,7 @@ var DataTablePlus = function (option) {
                                 // 提交postData
                                 postModalData(editUrl, postData, "put") // 提交postData
                             }
+                            $("#datatable_edit_modal").modal('hide'); // 关闭模态框
                             break; // 编辑modal提交按钮
                     }
                 });
@@ -513,13 +582,20 @@ var DataTablePlus = function (option) {
             if (type == 'put') {
                 data['_method'] = 'put'
             }
-            console.log($.param(data))
             $.ajax({
                 type: "POST",
                 url: url,
                 data: $.param(data),
                 success: function (msg) {
-
+                    var successMsgCode = responseArguments['successMsgCode'];
+                    var successCode = responseArguments['successCode'];
+                    var errorMsgName = responseArguments['successCode'];
+                    if (msg[successMsgCode] == successCode) {
+                        var option = (type == "post") ? "添加" : "修改";
+                        Global.notify("操作提示：", option + "成功！", "success");
+                    } else {
+                        Global.notify("操作提示：", option + "失败，" + msg[errorMsgName], "error");
+                    }
                 }
             });
         }
@@ -550,12 +626,10 @@ var DataTablePlus = function (option) {
             var el = {
                 'form': '<form class="form-horizontal" role="form" id="datatable_edit_form">',
                 '/form': '</form>',
-                'group': '<div class="form-group">',
-                '/group': '</div>',
                 'label': '<label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right">',
                 '/label': '</label>',
-                'span': '<div class="help-block col-xs-12 col-sm-reset inline"><span class="middle red">',
-                '/span': '</span></div>',
+                'span': '<div class="help-block col-xs-12 col-sm-reset inline">',
+                '/span': '</div>',
                 'col5': '<div class="col-xs-12 col-sm-5">',
                 '/col5': '</div>',
                 'col6': '<div class="col-sm-6">',
@@ -569,50 +643,63 @@ var DataTablePlus = function (option) {
                     var inputType = column['inputType'];
                     var title = column['title'];
                     var name = column['name'];
-                    buffer.append(el['group']);
+                    var hint = "";
+                    var rule = rules[name] || null;
+                    if (rule != null) {
+                        var isRequired = rules[name]['required'] || false;
+                        if (isRequired) {
+                            hint = '<span class="red" id="required_hint">*</span>';
+                        }
+                    }
+                    buffer.append('<div class="form-group" name="' + name + '">');
                     buffer.append(el['label']);
                     buffer.append(title);
                     buffer.append(el['/label']);
                     switch (inputType) {
                         case 'text' :
                             buffer.append(el['col5']);
-                            buffer.append('<input type="text" class="width-100" name="' + name + '">');
+                            buffer.append('<input type="text" id="_' + name + '" class="width-100" name="' + name + '">');
                             buffer.append(el['/col5']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
                             break;
                         case 'password' :
                             buffer.append(el['col5']);
-                            buffer.append('<input type="password" class="width-100" name="' + name + '">');
+                            buffer.append('<input type="password" id="_' + name + '" class="width-100" name="' + name + '">');
                             buffer.append(el['/col5']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
                             break;
                         case 'url' :
                             buffer.append(el['col5']);
-                            buffer.append('<input type="url" class="width-100" name="' + name + '">');
+                            buffer.append('<input type="url" id="_' + name + '" class="width-100" name="' + name + '">');
                             buffer.append(el['/col5']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
                             break;
                         case 'email' :
                             buffer.append(el['col5']);
-                            buffer.append('<input type="email" class="width-100" name="' + name + '">');
+                            buffer.append('<input type="email" id="_' + name + '" class="width-100" name="' + name + '">');
                             buffer.append(el['/col5']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
                             break;
                         case 'textarea' :
                             buffer.append(el['col6']);
-                            buffer.append('<textarea class="form-control limited" id="form-field-3" maxlength="' + column['maxLength'] + '" name="' + name + '"></textarea>');
+                            buffer.append('<textarea class="form-control limited" id="_' + name + '" maxlength="' + column['maxLength'] + '" name="' + name + '"></textarea>');
                             buffer.append(el['/col6']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
                             break;
                         case 'select' :
                             var data = column['data'];
                             buffer.append(el['col6']);
-                            buffer.append('<select class="chosen-select form-control" name="' + name + '"data-placeholder="请选择...">');
+                            buffer.append('<select class="chosen-select form-control" id="_' + name + '" name="' + name + '"data-placeholder="请选择...">');
                             buffer.append('<option value=""></option>');
                             for (var j = 0; j < data.length; j++) {
                                 buffer.append('<option value="' + data[j]['value'] + '">' + data[j]['label'] + '</option>');
@@ -620,6 +707,7 @@ var DataTablePlus = function (option) {
                             buffer.append('</select>');
                             buffer.append(el['/col6']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
 
                             break;
@@ -632,13 +720,14 @@ var DataTablePlus = function (option) {
                                 if (isChecked) {
                                     $checked = 'checked="checked"';
                                 }
-                                buffer.append('<div class="checkbox"><label>');
-                                buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="checkbox"/>');
+                                buffer.append('<div class="checkbox" id="_' + name + '"><label>');
+                                buffer.append('<input  name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="checkbox"/>');
                                 buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
                                 buffer.append('</label></div>');
                             }
                             buffer.append(el['/col6']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
 
                             specialEls.push(column);
@@ -652,13 +741,14 @@ var DataTablePlus = function (option) {
                                 if (isChecked) {
                                     $checked = 'checked="checked"';
                                 }
-                                buffer.append('<div class="radio"><label>');
+                                buffer.append('<div class="radio" id="_' + name + '"><label>');
                                 buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="radio"/>');
                                 buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
                                 buffer.append('</label></div>');
                             }
                             buffer.append(el['/col6']);
                             buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
 
                             specialEls.push(column);
@@ -671,30 +761,39 @@ var DataTablePlus = function (option) {
                             }
                             buffer.append(el['col6']);
                             buffer.append('<div class="switch"><label>');
-                            buffer.append('<input name="' + name + '" ' + $checked + ' class="ace ace-switch ace-switch-4 btn-rotate" type="checkbox">');
+                            buffer.append('<input id="_' + name + '" name="' + name + '" ' + $checked + ' class="ace ace-switch ace-switch-4 btn-rotate" type="checkbox">');
                             buffer.append('<span class="lbl"></span>');
                             buffer.append('</label></div>');
                             buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
                             break;
                         case 'spinner' :
                             buffer.append(el['col6']);
                             buffer.append('<div class="spinner">');
-                            buffer.append('<input type="text" name="' + name + '" class="input-mini" id="spinner"/>');
+                            buffer.append('<input id="_' + name + '" type="text" name="' + name + '" class="input-mini" id="spinner"/>');
                             buffer.append('</div>');
                             buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
 
                             specialEls.push(column);
                             break;
                         case 'datepicker':
                             buffer.append(el['col6']);
                             buffer.append('<div class="input-group">');
-                            buffer.append('<input class="form-control date-picker" name="' + name + '" type="text" data-date-format="yyyy-mm-dd"/>');
+                            buffer.append('<input id="_' + name + '" class="form-control date-picker" name="' + name + '" type="text" data-date-format="yyyy-mm-dd"/>');
                             buffer.append('<span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>');
                             buffer.append('</div>');
                             buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
                             break;
                     }
-                    buffer.append(el['/group']);
+                    buffer.append('</div>');
                 }
             }
             buffer.append(el['/form']);
@@ -760,6 +859,46 @@ var DataTablePlus = function (option) {
                         break;
                 }
             }
+
+            // 开启检验
+            validator = $("#datatable_edit_form").validate({
+                rules: rules,
+                //onsubmit: true,
+                debug: false, // 关闭表单提交功能
+                errorPlacement: function (error, element) {
+                    var name = element.attr("name");
+                    var $span = $("span[name='" + name + "']");
+                    error.appendTo($span);
+                }, // 指定错误信息提示位置
+                success: function (label) {
+                    var $span = label.parent();
+                    var name = $span.attr("name");
+                    var $div = $("div[name='" + name + "']");
+                    $("i").remove(".glyphicon-ok"); // 去重
+                    $("span").detach("#required_hint"); // 清除*字符
+                    $span.prepend('<i class="glyphicon glyphicon-ok green"></i> ');
+                    $div.addClass("has-success");
+                },// 指定检验完成后的样式
+                highlight: function (element, errorClass, validClass) {
+                    var name = element.name;
+                    var $span = $("span[name='" + name + "']");
+                    $("i").remove(".glyphicon-remove"); // 去重
+                    $("span").detach("#required_hint"); // 清除*字符
+                    $span.prepend('<i class="glyphicon glyphicon-remove red"></i> ');
+                    var $div = $("div[name='" + name + "']");
+                    if ($div.is(".has-success")) {
+                        $div.removeClass("has-success"); // 清除样式
+                        $("i").remove(".glyphicon-ok"); // 清除图标
+                    }
+                    $div.addClass("has-error");
+                }, // 检验出错
+                unhighlight: function (element, errorClass, validClass) {
+                    var name = element.name;
+                    var $div = $("div[name='" + name + "']");
+                    $("i").remove(".glyphicon-remove"); // 清除图标
+                    $div.removeClass("has-error"); // 清除样式
+                } // 检验正常
+            });
 
         }
 
