@@ -12,10 +12,10 @@ import java.util.List;
 public interface LiveCategoryRepository extends BaseRepository<LiveCategory, String> {
 
     /**
-     * 查询全部的直播分类，按serialNo分类
+     * 查询全部的直播分类，按enabled，serialNo排序
      * @return
      */
-    @Query("select c from LiveCategory c order by c.serailNo ASC")
+    @Query("select c from LiveCategory c order by c.enabled DESC, c.serailNo ASC")
     public List<LiveCategory> findAllCategory() ;
 
     /**
