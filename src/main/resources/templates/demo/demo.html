@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <meta charset="UTF-8"></meta>
 <title>demo</title>
+<link rel="stylesheet" href="static/ace/assets/css/font-awesome.css" />
 <style>
-
 </style>
 </head>
 <body>
@@ -614,16 +614,20 @@
                 },
                 'modal': {
                     'auto': true /*, // 关闭自动模式
-                    'modalId':'edit_modal', // 绑定自定义modal id
-                    'clickCallBack':function(call){
-                        var btnType = call['btnType'];
-                        if(btnType == "create"){
-                           console.log("当前点击的是添加按钮");
-                        }else{
-                            console.log("当前点击的是修改按钮");
-                            console.log("data:" + JSON.stringify(call['data']));
-                        }
-                    }*/ // 定义回调方法
+                     'modalId':'edit_modal', // 绑定自定义modal id
+                     'clickCallBack':function(call){
+                     var btnType = call['btnType'];
+                     if(btnType == "create"){
+                     console.log("当前点击的是添加按钮");
+                     }else{
+                     console.log("当前点击的是修改按钮");
+                     console.log("data:" + JSON.stringify(call['data']));
+                     }
+                     }*/ // 定义回调方法
+                }, 'rules': {
+                    'name': {
+                        required:true
+                    }
                 }
             }); // 设置参数
             dataTable.build(); // 创建表格
