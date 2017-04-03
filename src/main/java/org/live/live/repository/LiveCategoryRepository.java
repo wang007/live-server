@@ -12,17 +12,17 @@ import java.util.List;
 public interface LiveCategoryRepository extends BaseRepository<LiveCategory, String> {
 
     /**
-     * 查询全部的直播分类，按serialNo分类
+     * 查询全部的直播分类，按enabled，serialNo排序
      * @return
      */
-    @Query("select c from LiveCategory c order by c.serailNo ASC")
+    @Query("select c from LiveCategory c order by c.enabled DESC, c.serialNo ASC")
     public List<LiveCategory> findAllCategory() ;
 
     /**
      *  获取max的最大值
      * @return
      */
-    @Query(value=" select max(l.serailNo) from LiveCategory l")
+    @Query(value=" select max(l.serialNo) from LiveCategory l")
     public Integer findMaxSerialNo() ;
 
 

@@ -44,50 +44,47 @@
         <div class="col-xs-12">
             <ul class="ace-thumbnails clearfix">
 
-                <li style="margin-top: 18px;margin-right: 18px;border: 1px solid #919191;">
-                    <a href="javascript:;" onclick="test()">
-                        <img width="180" height="200" alt="170x180" src="/static/ace/assets/images/gallery/thumb-4.jpg" />
+                <li  th:if="${liveCategorys} != null" th:each="liveCategory: ${liveCategorys}" class="profile-picture" style="margin-top: 18px;margin-right: 18px;border: 1px solid #b9b9b9;padding:2px;">
+                    <a href="javascript:;" onclick="test()" th:onclick="|showLiveCategory('${liveCategory.id}')|">
+                        <img width="180" height="200" alt="170x180" th:src="${liveCategory.coverUrl}" />
                         <div class="text">
-                            <div class="inner">这是我校计信系的直播频道，啦拉你妹啦啦啦啦啦啦，这是我校计信系的直播频道，啦啦啦啦啦啦啦啦啦啦啦啦啦啦</div>
+                            <div class="inner" th:text="${liveCategory.description}"></div>
                         </div>
                     </a>
-                    <!--<div class="tags">
-                        &lt;!&ndash; #section:pages/gallery.tags &ndash;&gt;
-                        <span class="label-holder">
-                            <span class="label label-danger" style="font-size: 15px;">计信系直播频道计信系</span>
-                        </span>
-                        &lt;!&ndash; /section:pages/gallery.tags &ndash;&gt;
-                    </div>-->
                     </a>
                     <div class="tools tools-top">
-                        <a href="javascript:;">
-                            <i class="ace-icon fa fa-link"></i>
-                        </a>
-
-                        <a href="javascript:;">
-                            <i class="ace-icon fa fa-paperclip"></i>
-                        </a>
-                        <a href="javascript:;">
+                        <a href="javascript:;" th:onclick="|editLiveCategory('${liveCategory.id}')|">
                             <i class="ace-icon fa fa-pencil"></i>
                         </a>
 
-                        <a href="javascript:;">
+                        <a href="javascript:;" th:onclick="|removeLiveCategory('${liveCategory.id}')|">
                             <i class="ace-icon fa fa-times red"></i>
                         </a>
                     </div>
                     <div style="text-align: center;margin-top: 2px">
-                        <span class="label label-info arrowed arrowed-right" style="font-size:15px;;">计信系计信系计信系计</span>
+                        <span th:if="${liveCategory.enabled} == true" class="label label-info arrowed arrowed-right" style="font-size:15px;" th:text="${liveCategory.categoryName}"></span>
+                        <span th:if="${liveCategory.enabled} == false" class="label" style="font-size:15px;" th:text="${liveCategory.categoryName}"></span>
                     </div>
                 </li>
-
-
-
             </ul>
+
+            <div class="alert alert-danger" th:if="${#lists.isEmpty(liveCategorys)}" style="margin-top: 20px;">
+                <button type="button" class="close" data-dismiss="alert">
+                    <i class="ace-icon fa fa-times"></i>
+                </button>
+                <strong>温馨提醒：</strong>
+                    还未创建直播分类，请点击‘添加’按钮进行创建。
+                <br>
+            </div>
+
         </div>
     </div>
+
+
 </div>  <!--/.row-->
 
-<div class="modal fade" id="edit-category-modal">
+<!-- 添加分类信息的modal-->
+<div class="modal fade" id="add-category-modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header table-header" style="padding: 8px">
@@ -97,23 +94,16 @@
                 <h5 class="modal-title">编辑直播分类信息</h5>
             </div>
             <div class="modal-body no-padding-bottom">
-                <!-- 用户信息 -->
-                <form class="form-horizontal" id="edit-category-form">
-                    <!--<input type="hidden" name="id" id="hidden-category-id"/>-->
-                    <!-- 修改表单提交的时候，需要用到这个input，添加的时候，需要去掉 -->
-                    <!--<input type="hidden" name="_method" value="PUT" />-->
-
-
+                <form class="form-horizontal" id="add-category-form">
                     <div class="row form-group">
-                        <label class="col-xs-3 control-label no-padding-right" for="edit-serialNo"> 序号 </label>
-
+                        <label class="col-xs-3 control-label no-padding-right" for="edit-serialNo"> 序号 <span style="color:red;">*</span></label>
                         <div class="col-xs-9">
                             <input type="text" id="edit-serialNo" placeholder="序号" class="col-xs-8" name="serialNo"/>
                         </div>
                     </div>
 
                     <div class="row form-group">
-                        <label class="col-xs-3 control-label no-padding-right" for="edit-categoryName"> 分类名称 </label>
+                        <label class="col-xs-3 control-label no-padding-right" for="edit-categoryName"> 分类名称 <span style="color:red;">*</span></label>
 
                         <div class="col-xs-9">
                             <input type="text" id="edit-categoryName" placeholder="分类名称" class="col-xs-8" name="categoryName"/>
@@ -132,7 +122,7 @@
                     </div>
 
                     <div class="row form-group">
-                        <label class="col-xs-3 control-label no-padding-right" for="edit-categoryName"> 分类简介 </label>
+                        <label class="col-xs-3 control-label no-padding-right" for="edit-description"> 分类简介 </label>
 
                         <div class="col-xs-9">
                             <textarea class="col-xs-8" rows="4" id="edit-description" placeholder="请输入分类简介..." name="description"/>
@@ -140,7 +130,7 @@
                     </div>
 
                     <div class="row form-group">
-                        <label class="col-xs-3 control-label no-padding-right" for="edit-categoryName"> 分类封面 </label>
+                        <label class="col-xs-3 control-label no-padding-right" for="edit-coverUrl"> 分类封面 <span style="color:red;">*</span></label>
                         <div class="col-xs-9" id="coverUrl-div">
                             <input type="file" id="edit-coverUrl" name="file"/>
                         </div>
@@ -163,18 +153,256 @@
 </div><!-- /.modal -->
 
 
+<!-- 展示分类的modal-->
+<div class="modal fade" id="show-category-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header table-header" style="padding: 8px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white">&times;</span>
+                </button>
+                <h5 class="modal-title">编辑直播分类信息</h5>
+            </div>
+            <div class="modal-body no-padding-bottom">
+                <!-- 用户信息 -->
+                <form class="form-horizontal" id="show-category-form">
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="show-serialNo"> 序号 </label>
+
+                        <div class="col-xs-9">
+                            <input type="text" id="show-serialNo" placeholder="序号" class="col-xs-8" name="serialNo" disabled/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="show-categoryName"> 分类名称 </label>
+
+                        <div class="col-xs-9">
+                            <input type="text" id="show-categoryName" placeholder="分类名称" class="col-xs-8" name="categoryName" disabled/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="show-enabled"> 启用状态 </label>
+                        <div class="col-xs-9">
+                            <input type="text" id="show-enabled" placeholder="启用状态" class="col-xs-8" name="enabled" disabled/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="show-description"> 分类简介 </label>
+
+                        <div class="col-xs-9">
+                            <textarea class="col-xs-8" rows="4" id="show-description" placeholder="请输入分类简介..." name="description" disabled/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="show-coverUrl"> 分类封面 </label>
+                        <div class="col-xs-9">
+                            <img width="180" height="200" src="" id="show-coverUrl" style="border: 1px solid #919191;"/>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer" style="padding: 8px">
+                <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times red2"></i>
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+
+<!-- 修改分类信息的modal-->
+<div class="modal fade" id="update-category-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header table-header" style="padding: 8px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="white">&times;</span>
+                </button>
+                <h5 class="modal-title">编辑直播分类信息</h5>
+            </div>
+            <div class="modal-body no-padding-bottom">
+                <form class="form-horizontal" id="update-category-form">
+                    <input type="hidden" name="id" id="update-category-id" />
+                    <input type="hidden" name="_method" value="PUT" />
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="update-serialNo"> 序号 <span style="color:red;">*</span></label>
+
+                        <div class="col-xs-9">
+                            <input type="text" id="update-serialNo" placeholder="序号" class="col-xs-8" name="serialNo"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="update-categoryName"> 分类名称 <span style="color:red;">*</span></label>
+
+                        <div class="col-xs-9">
+                            <input type="text" id="update-categoryName" placeholder="分类名称" class="col-xs-8" name="categoryName"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="update-enabled"> 启用状态 </label>
+
+                        <div class="col-xs-9">
+                            <label style="padding-top:8px;">
+                                <input class='ace ace-switch ace-switch-3' id="update-enabled" type='checkbox' name="enabled" value="1" checked/>
+                                <span class='lbl'></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="update-description"> 分类简介 </label>
+
+                        <div class="col-xs-9">
+                            <textarea class="col-xs-8" rows="4" id="update-description" placeholder="请输入分类简介..." name="description"/>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-xs-3 control-label no-padding-right" for="avatar"> 分类封面 <span style="color:red;">*</span></label>
+                        <div class="col-xs-9">
+                            <span class="profile-picture">
+							    <img id="avatar" width="150" height="150" class="editable img-responsive" src="" />
+						    </span>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer" style="padding: 8px">
+                <button type="button" class="btn btn-white btn-default btn-round" data-dismiss="modal" id="close-update-category-btn">
+                    <i class="ace-icon fa fa-times red2"></i>
+                    关闭
+                </button>
+                <button type="button" class="btn btn-white btn-info btn-bold" id="save-for-update-btn">
+                    <i class="ace-icon fa fa-floppy-o bigger-120 blue"></i>
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+
+
+
+
 
 
 <script type="text/javascript">
-    
-    function test() {
 
-        alert("hello world")
+    //显示分类
+    function showLiveCategory(id) {
+        $.ajax({
+            url: "/live/category/"+id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                if(data.status != 1) {
+                    showErrorMsg("查询直播分类失败") ;
+                    return ;
+                }
+                fillform($("#show-category-form"), data.data) ;
+                if(data.data.enabled) {
+                    $("#show-enabled").val("启用") ;
+                } else {
+                    $("#show-enabled").val("未启用") ;
+                }
+                $("#show-coverUrl").prop("src", data.data.coverUrl) ;
+                $("#show-category-modal").modal() ;
+            }
+        })
+
     }
 
+    //修改分类信息
+    function editLiveCategory(id) {
+        $.ajax({
+            url: "/live/category/"+id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                if(data.status != 1) {
+                    showErrorMsg("查询直播分类失败") ;
+                    return ;
+                }
+                fillform($("#update-category-form"), data.data) ;
+                $("#avatar").prop("src",data.data.coverUrl) ;
+                if(data.data.enabled) {
+                    $("#update-enabled").prop("checked", true) ;
+                } else {
+                    $("#update-enabled").prop("checked", false) ;
+                }
+                $("#update-category-modal").modal() ;
+            }
+        })
+    }
+
+    //删除分类
+    function removeLiveCategory(id) {
+        Global.warning("您确定要删除吗？","~删除后将无法恢复", "warning", function(){
+            $.ajax({
+                url: "/live/category/"+id,
+                type: "POST",
+                dataType: "JSON",
+                data: "_method=DELETE",
+                success: function(data) {
+                    showMsg4model(data, true) ;
+                    if(data.status ==1) {
+                        toMain("/live/category") ;
+                    }
+                }
+            })
+        })
+    }
+
+
+    var scripts =  [null, "/static/ace/dist/js/x-editable/bootstrap-editable.min.js", "/static/ace/dist/js/x-editable/ace-editable.min.js",null] ;
     //1.js代码放里面
-    $.ace_ajax_finish(function() {
+    $.ace_ajax_finish(scripts,function() {
         jQuery(function ($) {
+
+            //点击更新modal的关闭
+            $("#close-update-category-btn").click(function(){
+                //toMain("/live/category") ;
+            })
+
+            //点击更新的保存按钮
+            $("#save-for-update-btn").click(function(){
+                if(!$("#update-category-form").valid()) {
+                    return ;
+                }
+                showLoading("正在保存...") ;
+                console.log($("#update-category-form").serialize()) ;
+                $.ajax({
+                    url: "/live/category",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: $("#update-category-form").serialize(),
+                    success: function(data) {
+                        if(data.status ==1) {
+                            showSuccessMsg(data.message) ;
+                        } else {
+                            showErrorMsg(data.message) ;
+                        }
+                        hideLoading() ;
+                        $("#update-category-modal").modal("hide") ;
+                        toMain("/live/category", true) ;
+                    },
+                    error: function(data,status,e) {
+                        hideLoading() ;
+                        $("#update-category-modal").modal("hide") ;
+                        showErrorMsg("保存失败") ;
+                    }
+                })
+            })
 
             //点击添加按钮
             $("#add-category-btn").click(function(){
@@ -183,10 +411,10 @@
                     type: "GET",
                     dataType: "JSON",
                     success: function(data) {
-                        $("#edit-serialNo").val(data.data) ;
+                       $("#edit-serialNo").val(data.data) ;
                     }
                 })
-                $("#edit-category-modal").modal()
+                $("#add-category-modal").modal()
             })
 
             //刷新
@@ -196,33 +424,40 @@
 
             //点击保存添加分类
             $("#save-btn").click(function(){
-                //if(!$('#edit-category-form').valid()) {
-                //    return ;
-               // }
-
+                if(!$('#add-category-form').valid()) {
+                    return ;
+                }
                 //console.log($.param($('#edit-category-form').serializeObject(['file']))) ;
-                console.log($('#edit-category-form').serializeObject(['file'])) ;
+                console.log($('#add-category-form').serializeObject(['file'])) ;
+                showLoading("正在保存...") ;
                 $.ajaxFileUpload({
                     url: "/live/category",
                     type: "POST",
                     secureuri: false,
                     fileElementId: ['edit-coverUrl'],
                     dataType: 'text',
-                    data: $('#edit-category-form').serializeObject(['file']) ,
+                    data: $('#add-category-form').serializeObject(['file']) ,
                     success:function(data,status){
-
-                        console.log(obj)
-                        console.log(data)
-                        console.log(status)
+                        if(data.indexOf("成功")) {
+                            showSuccessMsg("保存成功！") ;
+                        } else {
+                            showErrorMsg("保存失败！") ;
+                        }
+                        hideLoading() ;
+                        $("#add-category-modal").modal('hide') ;
+                        toMain("/live/category", true) ;
                     },
                     error : function(data,status,e) {
-                        console.log(data);
-                        console.log(status) ;
-                        console.log(e) ;
+                        hideLoading() ;
+                        $("#add-category-modal").modal('hide') ;
+                        showErrorMsg("保存失败！") ;
+                        toMain("/live/category", true) ;
                     }
                 })
 
             })
+
+
 
             $('#coverUrl-div')
                 .find('input[type=file]').ace_file_input({
@@ -239,15 +474,196 @@
                 .end().find('button[type=reset]').on(ace.click_event, function(){
                 $('#coverUrl-div input[type=file]').ace_file_input('reset_input');
             })
-              //  .end().find('.date-picker').datepicker().next().on(ace.click_event, function(){
-               // $(this).prev().focus();
-           // })
 
-           // $('.input-mask-phone').mask('(999) 999-9999');
 
-           // $('#user-profile-3').find('input[type=file]').ace_file_input('show_file_list', [{type: 'image', name: $('#avatar').attr('src')}]);
-        })
+
+            $('#add-category-form').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                ignore: "",
+                rules: {
+                    serialNo: {
+                        required: true ,
+                        maxlength: 8 ,
+                        digits:true
+                    },
+                    categoryName:{
+                        required: true,
+                        rangelength: [2,10]
+                    },
+                    description: {
+                        maxlength:50
+                    },
+                    file: {
+                        required: true,
+                        checkFileSize: 2097152, //2M
+                    }
+                },
+
+                messages:{
+                    file: {
+                        required: "请选择图片上传",
+                        checkFileSize: "上传图片不能超过2M",
+                    }
+                },
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                },
+            }) ;
+
+            $('#add-category-form').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                ignore: "",
+                rules: {
+                    serialNo: {
+                        required: true ,
+                        maxlength: 8 ,
+                        digits:true
+                    },
+                    categoryName:{
+                        required: true,
+                        rangelength: [2,10]
+                    },
+                    description: {
+                        maxlength:50
+                    },
+                    file: {
+                        required: true,
+                        checkFileSize: 2097152, //2M
+                    }
+                },
+                messages:{
+                    file: {
+                        required: "请选择图片上传",
+                        checkFileSize: "上传图片不能超过2M",
+                    }
+                },
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                },
+            }) ;
+
+            $('#update-category-form').validate({
+                errorElement: 'div',
+                errorClass: 'help-block',
+                ignore: "",
+                rules: {
+                    serialNo: {
+                        required: true,
+                        maxlength: 8 ,
+                        digits:true
+                    },
+                    categoryName:{
+                        required: true,
+                        rangelength: [2,10]
+                    },
+                    description: {
+                        maxlength:50
+                    }
+                },
+                highlight: function (e) {
+                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                },
+
+                success: function (e) {
+                    $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                },
+            }) ;
+
+
+
+
+            $('#avatar').editable({
+                type: 'image',
+                name: 'avatar',
+                value: null,
+                image: {
+                    //specify ace file input plugin's options here
+                    btn_choose: '更新 封面',
+                    droppable: true,
+                    maxSize: 2097152,//~100Kb
+                    //and a few extra ones here
+                    name: 'avatar',//put the field name here as well, will be used inside the custom plugin
+                    on_error : function(error_type) {//on_error function will be called when the selected file has a problem
+                        if(error_type == 1) {//file format error
+                            showWarnMsg("请选择图片上传!") ;
+                        } else if(error_type == 2) {//file size rror
+                            showWarnMsg("文件大小超过限制!","请选择小于2MB的图片!") ;
+                        }
+                        else {//other error
+                        }
+                    },
+                    on_success : function() {
+                        $.gritter.removeAll();
+                    }
+                },
+                url: function(params) {
+                    // ***UPDATE AVATAR HERE*** //
+                    //for a working upload example you can replace the contents of this function with
+                    //examples/profile-avatar-update.js
+
+                    var deferred = new $.Deferred
+
+                    var value = $('#avatar').next().find('input[type=hidden]:eq(0)').val();
+                    //console.log(value) ;
+                    if(!value || value.length == 0) {
+                        deferred.resolve();
+                        return deferred.promise();
+                    }
+
+                    //创建FormData对象
+                    var data = new FormData();
+                    data.append("file", $('#avatar').next().find('input[type=file]')[0].files[0]) ;
+                    data.append("_method","PUT") ;
+                    //console.log($('#avatar').next().find('input[type=file]')[0]) ;
+                    //console.log(data) ;
+                    $.ajax({
+                        url: '/live/category/cover/'+$("#update-category-id").val(),
+                        type: 'POST',
+                        data: data,
+                        contentType: false,    //不可缺
+                        processData: false,    //不可缺
+                        dataType: "JSON",
+                        success: function (data) {
+                            if(data.status ==1) {
+                                if("FileReader" in window) {
+                                    //for browsers that have a thumbnail of selected image
+                                    var thumb = $('#avatar').next().find('img').data('thumb');
+                                    if(thumb) $('#avatar').get(0).src = thumb;
+                                }
+                                deferred.resolve({'status':'OK'});
+                                showSuccessMsg("保存成功！") ;
+                            }   //if
+                        }
+                    });
+                    return deferred.promise();
+                },
+                success: function(response, newValue) {
+                }
+            })  //editable
+            /////////////////////////////////////
+            $(document).one('ajaxloadstart.page', function(e) {
+                //in ajax mode, remove remaining elements before leaving page
+                try {
+                    $('.editable').editable('destroy');
+                } catch(e) {}
+                //$('[class*=select2]').remove();
+            });
+
+
+        })  //jQuery
     })
+
+
 
 
 /*   //2.如果页面中还需要引入其他的js文件
@@ -258,44 +674,7 @@
         })
     })*/
 
-    $('#edit-category-form').validate({
-        debug:true ,
-        errorElement: 'div',
-        errorClass: 'help-block',
-        ignore: "",
-        rules: {
-            serialNo: {
-                required: true,
-                maxlength: 8 ,
-                digits:true
-            },
-            categoryName:{
-                required: true,
-                rangelength: [2,10]
-            },
-            description: {
-                maxlength:50
-            },
-            file: {
-                required: true,
-                checkFileSize: 2*1024*1024, //2M
-            }
-        },
 
-        messages:{
-            file: {
-                required: "请选择图片上传",
-                checkFileSize: "上传图片不能超过2M",
-            }
-        },
-        highlight: function (e) {
-            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-        },
-
-        success: function (e) {
-            $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
-        },
-    }) ;
 
 
 

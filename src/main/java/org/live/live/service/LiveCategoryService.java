@@ -23,5 +23,12 @@ public interface LiveCategoryService extends BaseService<LiveCategory, String> {
      */
     public Integer findMaxSerialNo() ;
 
+    /**
+     *  根据id，删除直播分类
+     * @param id
+     * @return true: 删除成功，false：该分类下存在直播间，不能进行删除
+     */
+    public boolean deleteLiveCategoryById(String id) ;
+
 
 }

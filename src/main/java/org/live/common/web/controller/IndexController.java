@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -169,8 +170,10 @@ public class IndexController {
 	 */
 	@RequestMapping(value="/upload/**")
 	@ResponseBody
-	public ResponseEntity<?> fileDownload(HttpServletRequest request) {
+	public ResponseEntity<?> fileDownload(HttpServletRequest request, HttpServletResponse response) {
 		try {
+
+			//response.addHeader("Cache-Control","max-age=86400") ;	//缓存一天
 			//文件下载的前缀
 			String uploadPreifx = ServletContextHolder.getAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY) ;
 			//本地系统存储文件的前缀

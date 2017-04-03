@@ -41,7 +41,7 @@ public class LiveCategory extends BaseEntity {
     /**
      * 序列号，用于排序
      */
-    private int serailNo ;
+    private int serialNo ;
 
     public String getCategoryName() {
         return categoryName;
@@ -75,11 +75,11 @@ public class LiveCategory extends BaseEntity {
         this.enabled = enabled;
     }
 
-    public int getSerailNo() {
-        return serailNo;
+    public int getSerialNo() {
+        return serialNo;
     }
 
-    public void setSerailNo(int serailNo) {
-        this.serailNo = serailNo;
+    public void setSerialNo(int serialNo) {
+        this.serialNo = serialNo;
     }
 }
