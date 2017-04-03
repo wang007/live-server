@@ -128,6 +128,7 @@ var Global = (function () {
  *                      call.btnType : {create|update} 当前按钮类型、
  *                      call.data : 若按钮类型为update,提供用于修改的当前行的全部数据
  *         rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
+ *          ajax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -142,6 +143,7 @@ var DataTablePlus = function (option) {
         var responseArguments = option['responseArguments']; // 服务器响应状态信息
         var modal = option['modal']; // modal相关参数，用于指定modal的工作方式
         var rules = option['rules']; // 检验规制，默认启用jquery.validate
+        var ajax = option['ajax'] || null; // 用于修改提交后台数据的方法
         var data; // 当前表格的全部数据
         var validator; // 表单检验器
         var defaultColumns = [
@@ -205,6 +207,9 @@ var DataTablePlus = function (option) {
                         d.search["value"] = searchVal; // 添加过滤参数
                     } else {
                         d.search["value"] = "";
+                    }
+                    if(ajax != null){
+                        d = ajax(d);
                     }
                     return JSON.stringify(d);
                 }
