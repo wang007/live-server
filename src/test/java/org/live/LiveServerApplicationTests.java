@@ -2,6 +2,11 @@ package org.live;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.live.dictionary.entity.DictType;
+import org.live.dictionary.entity.Dictionary;
+import org.live.dictionary.entity.DictionaryVo;
+import org.live.dictionary.repository.DictRepository;
+import org.live.dictionary.repository.DictTypeRepository;
 import org.live.module.demo.entity.Demo;
 import org.live.module.demo.entity.DemoVo;
 import org.live.module.demo.repository.DemoRepository;
@@ -21,7 +26,9 @@ import java.util.Map;
 @SpringBootTest
 public class LiveServerApplicationTests {
     @Autowired
-    private DemoRepository demoRepository;
+    private DictTypeRepository dictTypeRepository;
+    @Autowired
+    private DictRepository dictRepository;
 
     @Test
     public void contextLoads() {
@@ -30,33 +37,32 @@ public class LiveServerApplicationTests {
     @Test
     public void save() {
         for (int i = 0; i < 20; i++) {
-            Demo demo = new Demo();
-            demo.setName("kam" + i);
-            demo.setAge("25" + i);
-            demo.setUsername("user" + i);
-            demo.setAddress("英国伦敦" + i);
-            demo.setOther("其他数据" + i);
-            demoRepository.save(demo);
+            DictType dictType = new DictType();
+            dictType.setTypeName("type" + i);
+            dictType.setDictTypeMark("mark" + i);
+            dictType.setDescription("description" + i);
+            dictTypeRepository.save(dictType);
         }
-        System.out.println("count:" + demoRepository.count());
+
+        System.out.println("count:" + dictTypeRepository.count());
     }
 
     @Test
     public void findPage() {
-        String search = "8";
-        String[] names = {"name", "age", "username", "address", "other"};
-        Sort sort = new Sort(Sort.Direction.ASC, "name");
+        String search = "INFO";
+        String[] names = {"typeName", "dictMark", "dictValue", "remarks"};
+        Sort sort = new Sort(Sort.Direction.ASC, "dt.typeName");
         PageRequest pageRequest = new PageRequest(0, 5, sort); // 映射请求分页请求参数
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         for (String name : names) {
             map.put(name, search);
         }
-        Page<DemoVo> page = demoRepository.find(pageRequest, map);
-        List<DemoVo> data = page.getContent();
+        Page<DictionaryVo> page = dictRepository.find(pageRequest, map);
+        List<DictionaryVo> data = page.getContent();
         Long length = page.getTotalElements();
         System.out.println(data.size() + ":" + length);
-        for (DemoVo dv : data) {
-            System.out.println(dv.getName());
+        for (DictionaryVo d : data) {
+            System.out.println(d.getTypeName());
         }
     }
 }

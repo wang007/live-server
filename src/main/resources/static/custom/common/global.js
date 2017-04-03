@@ -129,8 +129,9 @@ var Global = (function () {
  *                  call : 回调相关参数
  *                      call.btnType : {create|update} 当前按钮类型、
  *                      call.data : 若按钮类型为update,提供用于修改的当前行的全部数据
- *         rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
+ *          rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
  *          ajax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
+ *          columnsDefs : 暴露dataTables原生columnsDefs属性以满足单元格的复杂需求，注意因列表第一项以被checkbox占据，所以列表项的索引应该从1开始
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -139,6 +140,7 @@ var DataTablePlus = function (option) {
     this.build = function () {
         var targetId = option['targetId']; // 目标dom元素id
         var columns = option['columns']; // 列表基础信息
+        var columnsDefs = option['columnsDefs'] || null; // 列表基础定义
         var dataUrl = option['url']['data']; // 数据请求地址
         var delUrl = option['url']['delete']; // 删除提交地址
         var editUrl = option['url']['edit'] || null; // 添加或修改提交地址
@@ -155,6 +157,16 @@ var DataTablePlus = function (option) {
                 "title": '<input type="checkbox" name="iCheckGroup" value="all"/>'
             }
         ]; // 默认列表信息
+        var defaultColumnDefs = [
+            {
+                "targets": 0,
+                "width": "3%",
+                "orderable": false,
+                "render": function (data, type, full, meta) {
+                    return '<input type="checkbox" name="iCheckGroup" value="' + data + '"/>'; // 创建选择框
+                }
+            }
+        ]; // 默认列表定义
         for (var i = 0; i < columns.length; i++) {
             var column = columns[i];
             var isShow = column['show']; // 该字段是否用于表格数据显示
@@ -164,6 +176,12 @@ var DataTablePlus = function (option) {
                 defaultColumns.push({'data': name, 'name': name, 'title': title});
             }
         } // 添加用户自定义列参数
+        if (columnsDefs != null) {
+            for (var i = 0; i < columnsDefs.length; i++) {
+                defaultColumnDefs.push(columnsDefs[i]);
+            }
+        } // 添加用户自定义列表定义
+
         var table = $("#" + targetId).dataTable({
             "pagingType": "full_numbers",
             "bAutoWidth": false,
@@ -184,16 +202,7 @@ var DataTablePlus = function (option) {
                 "zeroRecords": "没有找到对应的数据"
             },// 页面信息替换
             "columns": defaultColumns,
-            "columnDefs": [
-                {
-                    "targets": 0,
-                    "width": "3%",
-                    "orderable": false,
-                    "render": function (data, type, full, meta) {
-                        return '<input type="checkbox" name="iCheckGroup" value="' + data + '"/>'; // 创建选择框
-                    }
-                }
-            ], // 设置默认值
+            "columnDefs": defaultColumnDefs, // 设置默认值
             "serverSide": true, // 是否开启服务器模式
             "ajax": {
                 "url": dataUrl, // 服务器地址

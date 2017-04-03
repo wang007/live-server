@@ -38,7 +38,7 @@ public interface ResponseModel<T> {
 
     /**
      * 设置数据模型
-     * @param T
+     * @param  data
      */
     public ResponseModel setData(T data) ;
 
