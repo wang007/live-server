@@ -9,29 +9,11 @@ package org.live.common.constants;
  */
 public interface SystemConfigConstants {
 
-    /**
-     *  相对于项目的目录的key，
-     *  这个目录存放一些上传文件，日志文件，等
-     */
-    public static final String REAL_PROJECT_DIR_KEY = "realProjectDir" ;
-
-    /**
-     *  文件上传目录的key
-     *  上传文件时，在该目录下添加一个自己的模块目录，然后上传文件保存到这个新添加的目录中
-     *
-     */
-    public static final String REAL_UPLOAD_FILE_DIR_KEY = "realUploadFileDir" ;
 
     /**
      *  系统的title的key
      */
     public static final String SYSTEM_TITLE_KEY = "systemTitle" ;
-
-    /**
-     *  上传文件存储在数据库中的前缀
-     */
-    public static final String DB_UPLOAD_FILE_PREFIX_KEY = "dbUploadFilePrefixKey" ;
-
 
 
 }

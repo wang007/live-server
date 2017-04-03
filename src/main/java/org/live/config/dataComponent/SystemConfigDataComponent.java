@@ -32,19 +32,19 @@ public class SystemConfigDataComponent {
     private int passwordRetryCount ;
 
     /**
-     * 设置系统文件保存目录
+     * window系统上传文件根目录
      */
-    private String projectFileDirectory ;
+    private String windowsUploadFileRootPath ;
 
     /**
-     * 设置上传文件保存目录
+     * linux系统上传文件根目录
      */
-    private String projectUploadFileDirectory ;
+    private String linuxUploadFileRootPath ;
 
     /**
-     *  文件存储在数据库中的前缀
+     *  上传文件路径的前缀
      */
-    private String dbUploadFilePrefix ;
+    private String uploadFilePathPrefix  ;
 
     public String getTitle() {
         return title;
@@ -52,22 +52,6 @@ public class SystemConfigDataComponent {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getProjectFileDirectory() {
-        return projectFileDirectory;
-    }
-
-    public void setProjectFileDirectory(String projectFileDirectory) {
-        this.projectFileDirectory = projectFileDirectory;
-    }
-
-    public String getProjectUploadFileDirectory() {
-        return projectUploadFileDirectory;
-    }
-
-    public void setProjectUploadFileDirectory(String projectUploadFileDirectory) {
-        this.projectUploadFileDirectory = projectUploadFileDirectory;
     }
 
     public String getLogLevel() {
@@ -86,11 +70,27 @@ public class SystemConfigDataComponent {
         this.passwordRetryCount = passwordRetryCount;
     }
 
-    public String getDbUploadFilePrefix() {
-        return dbUploadFilePrefix;
+    public String getWindowsUploadFileRootPath() {
+        return windowsUploadFileRootPath;
     }
 
-    public void setDbUploadFilePrefix(String dbUploadFilePrefix) {
-        this.dbUploadFilePrefix = dbUploadFilePrefix;
+    public void setWindowsUploadFileRootPath(String windowsUploadFileRootPath) {
+        this.windowsUploadFileRootPath = windowsUploadFileRootPath;
+    }
+
+    public String getLinuxUploadFileRootPath() {
+        return linuxUploadFileRootPath;
+    }
+
+    public void setLinuxUploadFileRootPath(String linuxUploadFileRootPath) {
+        this.linuxUploadFileRootPath = linuxUploadFileRootPath;
+    }
+
+    public String getUploadFilePathPrefix() {
+        return uploadFilePathPrefix;
+    }
+
+    public void setUploadFilePathPrefix(String uploadFilePathPrefix) {
+        this.uploadFilePathPrefix = uploadFilePathPrefix;
     }
 }

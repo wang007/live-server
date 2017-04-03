@@ -7,10 +7,9 @@ import org.apache.shiro.authc.*;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.live.common.constants.Constants;
-import org.live.common.constants.SystemConfigConstants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
-import org.live.common.support.ServletContextHolder;
+import org.live.common.support.UploadFilePathConfig;
 import org.live.common.utils.HttpServletUtils;
 import org.live.sys.entity.User;
 import org.live.sys.service.MenuService;
@@ -52,6 +51,9 @@ public class IndexController {
 
 	@Resource
 	private ResourceLoader resourceLoader;
+
+	@Resource
+	private UploadFilePathConfig pathConfig ;
 
 	/**
 	 * 跳转到主界面
@@ -172,17 +174,8 @@ public class IndexController {
 	@ResponseBody
 	public ResponseEntity<?> fileDownload(HttpServletRequest request, HttpServletResponse response) {
 		try {
-
-			//response.addHeader("Cache-Control","max-age=86400") ;	//缓存一天
-			//文件下载的前缀
-			String uploadPreifx = ServletContextHolder.getAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY) ;
-			//本地系统存储文件的前缀
-			String realUploadFilePrefix = ServletContextHolder.getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ;
-
 			String path = request.getRequestURI() ;
-			//去掉前缀upload
-			path = path.replaceFirst(uploadPreifx, "") ;
-			return ResponseEntity.ok(resourceLoader.getResource("file:"+ Paths.get(realUploadFilePrefix, path))) ;
+			return ResponseEntity.ok(resourceLoader.getResource("file:"+ Paths.get(pathConfig.getUploadFileRootPath(), path))) ;
 		} catch (Exception e) {
 			LOGGER.error("文件下载异常", e);
 		}

@@ -2,8 +2,7 @@ package org.live.live.service.impl;
 
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
-import org.live.common.constants.SystemConfigConstants;
-import org.live.common.support.ServletContextHolder;
+import org.live.common.support.UploadFilePathConfig;
 import org.live.live.entity.LiveCategory;
 import org.live.live.repository.LiveCategoryRepository;
 import org.live.live.repository.LiveRoomRepository;
@@ -25,6 +24,9 @@ public class LiveCategoryServiceImpl extends BaseServiceImpl<LiveCategory, Strin
 
     @Resource
     private LiveRoomRepository liveRoomRepository ;
+
+    @Resource
+    private UploadFilePathConfig pathConfig ;
 
     @Override
     protected BaseRepository<LiveCategory, String> getRepository() {
@@ -50,8 +52,7 @@ public class LiveCategoryServiceImpl extends BaseServiceImpl<LiveCategory, Strin
         if(liveRoomCount > 0) return false ;
         LiveCategory category = findOne(id) ;
         String coverUrl = category.getCoverUrl() ;
-        String realProjectDir = ServletContextHolder.getAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY) ;
-        File file = new File(realProjectDir, coverUrl) ;
+        File file = new File(pathConfig.getUploadFileRootPath(), coverUrl) ;
         if(file.exists()) file.delete() ;
         delete(category) ;
         return  true ;

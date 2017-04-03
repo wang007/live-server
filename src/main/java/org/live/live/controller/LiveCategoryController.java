@@ -1,9 +1,8 @@
 package org.live.live.controller;
 
-import org.live.common.constants.SystemConfigConstants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
-import org.live.common.support.ServletContextHolder;
+import org.live.common.support.UploadFilePathConfig;
 import org.live.common.utils.CopyPropertiesUtils;
 import org.live.common.utils.CreateOrderNoUtils;
 import org.live.common.utils.UploadUtils;
@@ -33,6 +32,9 @@ public class LiveCategoryController {
 
     @Resource
     private LiveCategoryService categoryService ;
+
+    @Resource
+    private UploadFilePathConfig pathConfig ;
 
 
     /**
@@ -108,22 +110,19 @@ public class LiveCategoryController {
             }
 
             if(enabledNum == null || enabledNum == 0) liveCategory.setEnabled(false) ;    //启用状态
-                //本地文件储存的路径前缀
-                String prefixUpload = ServletContextHolder.getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ;
-                LOGGER.debug("文件上传路径的前缀：---> "+ prefixUpload) ;
 
                 String fileSuffix = UploadUtils.getFileSuffix(file.getOriginalFilename()) ; //文件后缀
+
                 //路径： 相对于项目的 /projectDir/upload/系统日期/系统时间+6位随机数.xxx
+                String dateStr = CreateOrderNoUtils.getDate() ;
+                String fileName = CreateOrderNoUtils.getCreateOrderNo()+fileSuffix ;
 
-                String targetPathSuffix = CreateOrderNoUtils.getDate()+File.separator+CreateOrderNoUtils.getCreateOrderNo()+fileSuffix ;
+                String targetPathSuffix = dateStr + File.separator + fileName ;
 
-                File targetFile = UploadUtils.createFile(prefixUpload, targetPathSuffix) ;
+                File targetFile = UploadUtils.createFile(pathConfig.getUploadFilePath(), targetPathSuffix) ;
                 file.transferTo(targetFile);
 
-                String dbFilePrefix = ServletContextHolder.getAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY) ;
-                targetPathSuffix = targetPathSuffix.replace(File.separator, "/") ;  //替换分隔符
-
-                liveCategory.setCoverUrl(dbFilePrefix + "/" + targetPathSuffix) ;
+                liveCategory.setCoverUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName) ;
 
                 categoryService.save(liveCategory) ;
 
@@ -157,28 +156,24 @@ public class LiveCategoryController {
             model.error() ;
             return model ;
         }
-
-        String projectDirPath = ServletContextHolder.getAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY) ;
         try {
             LiveCategory liveCategory = categoryService.findOne(id) ;
             String coverUrl = liveCategory.getCoverUrl() ;
-            File oldFile = new File(projectDirPath, coverUrl) ;
+            File oldFile = new File(pathConfig.getUploadFileRootPath(), coverUrl) ;
             if(oldFile.exists()) oldFile.delete() ; //删除之前的图片
 
-            //本地文件储存的路径前缀
-            String prefixUpload = ServletContextHolder.getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ;
             String fileSuffix = UploadUtils.getFileSuffix(file.getOriginalFilename()) ; //文件后缀
             //路径： 相对于项目的 /projectDir/upload/系统日期/系统时间+6位随机数.xxx
 
-            String targetPathSuffix = CreateOrderNoUtils.getDate()+File.separator+CreateOrderNoUtils.getCreateOrderNo()+fileSuffix ;
+            String dateStr = CreateOrderNoUtils.getDate() ;
+            String fileName = CreateOrderNoUtils.getCreateOrderNo()+fileSuffix ;
 
-            File targetFile = UploadUtils.createFile(prefixUpload, targetPathSuffix) ;
+            String targetPathSuffix = dateStr + File.separator + fileName ;
+
+            File targetFile = UploadUtils.createFile(pathConfig.getUploadFilePath(), targetPathSuffix) ;
             file.transferTo(targetFile);
 
-            String dbFilePrefix = ServletContextHolder.getAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY) ;
-            targetPathSuffix = targetPathSuffix.replace(File.separator, "/") ;  //替换分隔符
-
-            liveCategory.setCoverUrl(dbFilePrefix + "/" + targetPathSuffix) ;
+            liveCategory.setCoverUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr + "/"+ fileName) ;
 
             categoryService.save(liveCategory) ;
 

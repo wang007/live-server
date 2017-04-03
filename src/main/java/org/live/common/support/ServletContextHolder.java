@@ -11,8 +11,7 @@ import org.springframework.web.context.ServletContextAware;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
-import java.util.Arrays;
-import java.util.List;
+import java.io.File;
 
 /**
  *  获取serlvet容器
@@ -30,6 +29,9 @@ public class ServletContextHolder implements ServletContextAware {
      */
     @Resource
     private SystemConfigDataComponent systemConfig ;
+
+    @Resource
+    private UploadFilePathConfig pathConfig ;
 
     @Resource
     private Environment env ;
@@ -61,17 +63,6 @@ public class ServletContextHolder implements ServletContextAware {
         servletContext.setAttribute(name,value);
     }
 
-
-    /**
-     *  获取项目的文件上传路径
-     * @return
-     */
-    public static String getRealUploadFilePath() {
-
-       return getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ;
-    }
-
-
     /**
      *  初始化一些属性到servlet容器中
      *  并初始化SystemConfig.properties中的 系统文件保存目录、上传文件保存的目录、项目中前端页面的title
@@ -79,28 +70,34 @@ public class ServletContextHolder implements ServletContextAware {
      */
     private void initProperties(ServletContext servletContext) {
 
-        LOGGER.debug("执行常量的serlvetContext属性的初始化操作") ;
-        String realProjectDirPath = servletContext.getRealPath(systemConfig.getProjectFileDirectory()) ;    //projectDir真实路径
-        String realUploadFileDirPath = servletContext.getRealPath(systemConfig.getProjectUploadFileDirectory()) ;   //文件上传的真实路径
+        LOGGER.info("执行常量的serlvetContext属性的初始化操作") ;
 
-        String[] activeProfilsStr = env.getActiveProfiles() ;
-        List activeProfiles = Arrays.asList(activeProfilsStr) ;
-
-        servletContext.setAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY, realProjectDirPath) ;   //保存到servlet容器中
-        servletContext.setAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY, realUploadFileDirPath) ;
-        servletContext.setAttribute(SystemConfigConstants.SYSTEM_TITLE_KEY, systemConfig.getTitle()) ;
-        servletContext.setAttribute(SystemConfigConstants.DB_UPLOAD_FILE_PREFIX_KEY, systemConfig.getDbUploadFilePrefix()) ;
-
-        if(activeProfiles.contains("dev")) {    //查看当前开发环境
-            LOGGER.info("当前环境："+activeProfiles+" , 开发环境，设置开发环境的文件上传目录")  ;
-            servletContext.setAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY, "c:\\projectDir") ;   //保存到servlet容器中
-            servletContext.setAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY, "c:\\projectDir\\upload") ;
+        String currentOS = System.getProperty("os.name").toLowerCase() ;
+        LOGGER.info("current os ---> {}", currentOS) ;
+        String uploadFileRootPath = null ;  //文件上传的根路径
+        if(currentOS.contains("windows")) {
+            uploadFileRootPath = systemConfig.getWindowsUploadFileRootPath();
+        } else {
+            uploadFileRootPath = systemConfig.getLinuxUploadFileRootPath() ;
         }
+        String uploadFilePrefix = "/" + systemConfig.getUploadFilePathPrefix();   //文件上传的路径前缀
+        String uploadFilePath = uploadFileRootPath + File.separator + systemConfig.getUploadFilePathPrefix() ;    //文件上传路径
 
-        LOGGER.info(" real project Directory --> {}", servletContext.getAttribute(SystemConfigConstants.REAL_PROJECT_DIR_KEY) ) ;
-        LOGGER.info(" real uploadFile Directory --> {}", servletContext.getAttribute(SystemConfigConstants.REAL_UPLOAD_FILE_DIR_KEY) ) ;
-        LOGGER.info(" system title --> {}", systemConfig.getTitle()) ;
-        LOGGER.info("db upload file prefix---> {}", systemConfig.getDbUploadFilePrefix()) ;
+        pathConfig.setUploadFileRootPath(uploadFileRootPath) ;
+        pathConfig.setUploadFilePathPrefix(uploadFilePrefix) ;
+        pathConfig.setUploadFilePath(uploadFilePath) ;
+
+        //系统标题
+        servletContext.setAttribute(SystemConfigConstants.SYSTEM_TITLE_KEY, systemConfig.getTitle()) ;
+
+        servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_ROOT_PATH_KEY, uploadFileRootPath) ;
+        servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_PATH_PREFIX_KEY, uploadFilePrefix) ;
+        servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_PATH_KEY, uploadFilePath) ;
+
+        LOGGER.info("system title ---> {}", systemConfig.getTitle());
+        LOGGER.info("uplaodFileRootPath ---> {}", uploadFileRootPath) ;
+        LOGGER.info("uploadFilePathPrefix ---> {}", uploadFilePrefix) ;
+        LOGGER.info("uploadFilePath ---> {}", uploadFilePath) ;
     }
 
 
