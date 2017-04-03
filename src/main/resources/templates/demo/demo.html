@@ -2,24 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <meta charset="UTF-8"></meta>
 <title>demo</title>
+<link rel="stylesheet" href="static/ace/assets/css/font-awesome.css" />
 <style>
-    .switch {
-        min-height: 27px;
-        margin-top: 0;
-        margin-bottom: 0;
-        padding-top: 7px;
-        position: relative;
-        display: block;
-    }
-
-    .spinner {
-        min-height: 27px;
-        margin-top: 0;
-        margin-bottom: 0;
-        padding-top: 5px;
-        position: relative;
-        display: block;
-    }
 </style>
 </head>
 <body>
@@ -68,13 +52,13 @@
     </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" id="datatable_edit_modal">
+<div class="modal fade" tabindex="-1" role="dialog" id="edit_modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header table-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="datatable_edit_modal_title">添加数据</h4>
+                <h4 class="modal-title">添加数据</h4>
             </div>
             <div class="modal-body">
                 <!-- PAGE CONTENT BEGINS -->
@@ -85,25 +69,25 @@
                             with error</label>
 
                         <div class="col-xs-12 col-sm-5">
-																	<span class="block input-icon input-icon-right">
-																 <select class="chosen-select form-control"
-                                                                         id="form-field-select-5"
-                                                                         data-placeholder="请选择...">
-                                <option value=""></option>
-                                <option value="AL">Alabama</option>
-                                <option value="AK">Alaska</option>
-                                <option value="AZ">Arizona</option>
-                                <option value="AR">Arkansas</option>
-                                <option value="CA">California</option>
-                                <option value="CO">Colorado</option>
-                                <option value="CT">Connecticut</option>
-                                <option value="DE">Delaware</option>
-                                <option value="FL">Florida</option>
-                                <option value="GA">Georgia</option>
-                                <option value="HI">Hawaii</option>
-                            </select>
+                                                                     <span class="block input-icon input-icon-right">
+                                                                  <select class="chosen-select form-control"
+                                                                          id="form-field-select-5"
+                                                                          data-placeholder="请选择...">
+                                 <option value=""></option>
+                                 <option value="AL">Alabama</option>
+                                 <option value="AK">Alaska</option>
+                                 <option value="AZ">Arizona</option>
+                                 <option value="AR">Arkansas</option>
+                                 <option value="CA">California</option>
+                                 <option value="CO">Colorado</option>
+                                 <option value="CT">Connecticut</option>
+                                 <option value="DE">Delaware</option>
+                                 <option value="FL">Florida</option>
+                                 <option value="GA">Georgia</option>
+                                 <option value="HI">Hawaii</option>
+                             </select>
 
-																	</span>
+                                                                     </span>
                         </div>
                         <div class="help-block col-xs-12 col-sm-reset inline"><i
                                 class="ace-icon fa fa-times-circle"></i> <span>Error tip help!</span></div>
@@ -113,11 +97,11 @@
                             with error</label>
 
                         <div class="col-xs-12 col-sm-5">
-																	<span class="block input-icon input-icon-right">
-																		<input type="text" id="inputError2"
-                                                                               class="width-100"/>
+                                                                     <span class="block input-icon input-icon-right">
+                                                                         <input type="text" id="inputError2"
+                                                                                class="width-100"/>
 
-																	</span>
+                                                                     </span>
                         </div>
                         <div class="help-block col-xs-12 col-sm-reset inline" id="username_span"><span
                                 class="middle red">*</span></div>
@@ -130,7 +114,7 @@
                                    required/>
                             <span class="help-inline col-xs-6 col-sm-7">
 
-                                </span>
+                                 </span>
                         </div>
                     </div>
 
@@ -141,8 +125,8 @@
                         <div class="col-sm-9">
                             <input type="password" id="form-field-2" placeholder="Password" class="col-xs-10 col-sm-5"/>
                             <span class="help-inline col-xs-6 col-sm-7">
-                                    <span class="middle red">*</span>
-                                </span>
+                                     <span class="middle red">*</span>
+                                 </span>
                         </div>
                     </div>
                     <div class="form-group has-error">
@@ -242,8 +226,8 @@
                                 <input class="form-control date-picker" id="id-date-picker-1" type="text"
                                        data-date-format="yyyy-mm-dd"/>
                                 <span class="input-group-addon">
-																		<i class="fa fa-calendar bigger-110"></i>
-																	</span>
+                                                                         <i class="fa fa-calendar bigger-110"></i>
+                                                                     </span>
                             </div>
                         </div>
                     </div>
@@ -251,7 +235,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
-                <button type="button" class="btn btn-success" id="datatable_edit_modal_btn"><i class="fa fa-plus"></i> 添
+                <button type="button" class="btn btn-success"><i class="fa fa-plus"></i> 添
                     加
                 </button>
             </div>
@@ -259,30 +243,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="modal fade" tabindex="-1" role="dialog" id="datatable_info_modal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header table-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">详情查看</h4>
-            </div>
-            <div class="modal-body">
-                <ul class="list-unstyled list-striped pricing-table-header" id="datatable_info_modal_list">
-                    <li>Disk Space </li>
-                    <li>Bandwidth </li>
-                    <li>Email Accounts </li>
-                    <li>MySQL Databases </li>
-                    <li>Ad Credit </li>
-                    <li>Free Domain </li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+
 </body>
 </html>
 <script type="text/javascript">
@@ -290,7 +251,293 @@
     $.ace_ajax_finish(function () {
         jQuery(function ($) {
 
-            $("#create_form").validate();
+            /*function buildFormElement(columns, modalBodyId) {
+             var buffer = new StringBuffer();
+             var specialEls = [];
+             var el = {
+             'form': '<form class="form-horizontal" role="form" id="datatable_edit_form">',
+             '/form': '</form>',
+             'group': '<div class="form-group">',
+             '/group': '</div>',
+             'label': '<label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right">',
+             '/label': '</label>',
+             'span': '<div class="help-block col-xs-12 col-sm-reset inline"><span class="middle red">',
+             '/span': '</span></div>',
+             'col5': '<div class="col-xs-12 col-sm-5">',
+             '/col5': '</div>',
+             'col6': '<div class="col-sm-6">',
+             '/col6': '</div>'
+             };
+             buffer.append(el['form']);
+             for (var i = 0; i < columns.length; i++) {
+             var column = columns[i];
+             var inputType = column['inputType'];
+             var title = column['title'];
+             var name = column['name'];
+             buffer.append(el['group']);
+             buffer.append(el['label']);
+             buffer.append(title);
+             buffer.append(el['/label']);
+             switch (inputType) {
+             case 'text' :
+             buffer.append(el['col5']);
+             buffer.append('<input type="text" class="width-100" name="' + name + '">');
+             buffer.append(el['/col5']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+             break;
+             case 'password' :
+             buffer.append(el['col5']);
+             buffer.append('<input type="password" class="width-100" name="' + name + '">');
+             buffer.append(el['/col5']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+             break;
+             case 'url' :
+             buffer.append(el['col5']);
+             buffer.append('<input type="url" class="width-100" name="' + name + '">');
+             buffer.append(el['/col5']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+             break;
+             case 'email' :
+             buffer.append(el['col5']);
+             buffer.append('<input type="email" class="width-100" name="' + name + '">');
+             buffer.append(el['/col5']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+             break;
+             case 'textarea' :
+             buffer.append(el['col6']);
+             buffer.append('<textarea class="form-control limited" id="form-field-3" maxlength="' + column['maxLength'] + '" name="' + name + '"></textarea>');
+             buffer.append(el['/col6']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+             break;
+             case 'select' :
+             var data = column['data'];
+             buffer.append(el['col6']);
+             buffer.append('<select class="chosen-select form-control" name="' + name + '"data-placeholder="请选择...">');
+             buffer.append('<option value=""></option>');
+             for (var j = 0; j < data.length; j++) {
+             buffer.append('<option value="' + data[j]['value'] + '">' + data[j]['name'] + '</option>');
+             }
+             buffer.append('</select>');
+             buffer.append(el['/col6']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+
+             break;
+             case 'checkbox' :
+             var data = column['data'];
+             buffer.append(el['col6']);
+             for (var j = 0; j < data.length; j++) {
+             var isChecked = data[j]['checked'] || false;
+             var $checked = '';
+             if (isChecked) {
+             $checked = 'checked="checked"';
+             }
+             buffer.append('<div class="checkbox"><label>');
+             buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="checkbox"/>');
+             buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
+             buffer.append('</label></div>');
+             }
+             buffer.append(el['/col6']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+
+             specialEls.push(column);
+             break;
+             case 'radio' :
+             var data = column['data'];
+             buffer.append(el['col6']);
+             for (var j = 0; j < data.length; j++) {
+             var isChecked = data[j]['checked'] || false;
+             var $checked = '';
+             if (isChecked) {
+             $checked = 'checked="checked"';
+             }
+             buffer.append('<div class="radio"><label>');
+             buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="radio"/>');
+             buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
+             buffer.append('</label></div>');
+             }
+             buffer.append(el['/col6']);
+             buffer.append(el['span']);
+             buffer.append(el['/span']);
+
+             specialEls.push(column);
+             break;
+             case 'switch' :
+             var isChecked = column['checked'] || false;
+             var $checked = '';
+             if (isChecked) {
+             $checked = 'checked="checked"';
+             }
+             buffer.append(el['col6']);
+             buffer.append('<div class="switch"><label>');
+             buffer.append('<input name="' + name + '" ' + $checked + ' class="ace ace-switch ace-switch-4 btn-rotate" type="checkbox">');
+             buffer.append('<span class="lbl"></span>');
+             buffer.append('</label></div>');
+             buffer.append(el['/col6']);
+             break;
+             case 'spinner' :
+             buffer.append(el['col6']);
+             buffer.append('<div class="spinner">');
+             buffer.append('<input type="text" name="' + name + '" class="input-mini" id="spinner"/>');
+             buffer.append('</div>');
+             buffer.append(el['/col6']);
+
+             specialEls.push(column);
+             break;
+             case 'datepicker':
+             buffer.append(el['col6']);
+             buffer.append('<div class="input-group">');
+             buffer.append('<input class="form-control date-picker" name="' + name + '" type="text" data-date-format="yyyy-mm-dd"/>');
+             buffer.append('<span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>');
+             buffer.append('</div>');
+             buffer.append(el['/col6']);
+             break;
+             }
+             buffer.append(el['/group']);
+             }
+             buffer.append(el['/form']);
+             $("#" + modalBodyId).empty(); // 清空元素，若有的话
+             $("#" + modalBodyId).append(buffer.toString()); // 构建表单
+
+             for (var k = 0; k < specialEls.length; k++) {
+             var column = specialEls[k];
+             var inputType = column['inputType'];
+             var name = column['name'];
+             switch (inputType) {
+             case 'checkbox' :
+             $("input[name='" + name + "']").iCheck({
+             checkboxClass: 'icheckbox_flat-blue'
+             }); // 为选择框添加样式
+             break;
+             case 'radio' :
+             $("input[name='" + name + "']").iCheck({
+             radioClass: 'iradio_flat-blue'
+             }); // 为单选框添加样式
+             break;
+             case 'spinner' :
+             $("input[name='" + name + "']").ace_spinner({
+             value: column['value'],
+             min: column['min'],
+             max: column['max'],
+             step: column['step'],
+             btn_up_class: 'btn-info',
+             btn_down_class: 'btn-info'
+             })
+             .closest('.ace-spinner')
+
+             .on('changed.fu.spinbox', function () {
+             //alert($('#spinner1').val())
+             });
+             break;
+             }
+             }
+
+             /!*$("#datatable_edit_form")*!/
+             }*/
+
+            /*      buildFormElement([
+             {'name': 'text', 'title': 'TextInput：', 'inputType': 'text'},
+             {'name': 'textarea', 'title': 'TextArea', 'inputType': 'textarea', 'maxLength': 50},
+             {
+             'name': 'select', 'title': 'Select', 'inputType': 'select', 'data': [
+             {'name': 'option1', 'value': 'option1'},
+             {'name': 'option2', 'value': 'option1'},
+             {'name': 'option3', 'value': 'option3'},
+             {'name': 'option4', 'value': 'option4'},
+             {'name': 'option5', 'value': 'option5'},
+             {'name': 'option6', 'value': 'option6'}
+             ]
+             },
+             {
+             'name': 'checkbox-group', 'title': 'CheckBox', 'inputType': 'checkbox', 'data': [
+             {'label': 'chice1', 'value': 'checkbox1', 'checked': true},
+             {'label': 'chice2', 'value': 'checkbox2'},
+             {'label': 'chice3', 'value': 'checkbox3'},
+             {'label': 'chice4', 'value': 'checkbox4'}
+             ]
+             },
+             {
+             'name': 'radio-group', 'title': 'Radio', 'inputType': 'radio', 'data': [
+             {'label': 'chice1', 'value': 'radio1', 'checked': true},
+             {'label': 'chice2', 'value': 'radio2'}
+             ]
+             }, {
+             'name': 'switch',
+             'title': 'Switch',
+             'inputType': 'switch',
+             'checked': true
+             },
+             {
+             'name': 'spinner',
+             'title': 'Spinner',
+             'inputType': 'spinner',
+             'value': 0,
+             'min': 0,
+             'max': 10,
+             'step': 1
+             },{
+             'name':'datepicker',
+             'title':'DatePicker',
+             'inputType': 'datepicker'
+             }
+             ], "datatable_edit_modal_body");*/
+
+            /* $("#create_form").validate();
+
+             $("input[name='form-field-checkbox']").iCheck({
+             checkboxClass: 'icheckbox_flat-blue'
+             }); // 为选择框添加样式
+
+             $("input[name='form-field-radio']").iCheck({
+             radioClass: 'iradio_flat-blue'
+             }); // 为单选框添加样式*/
+
+            /*           $('.date-picker').datepicker({
+             autoclose: true,
+             todayHighlight: true
+             });
+
+             $('#spinner').ace_spinner({
+             value: 0,
+             min: 0,
+             max: 100,
+             step: 1,
+             btn_up_class: 'btn-info',
+             btn_down_class: 'btn-info'
+             })
+             .closest('.ace-spinner')
+
+             .on('changed.fu.spinbox', function () {
+             //alert($('#spinner1').val())
+             });
+
+             if (!ace.vars['touch']) {
+             $('.chosen-select').chosen({allow_single_deselect: true});
+             //resize the chosen on window resize
+
+             $(window)
+             .off('resize.chosen')
+             .on('resize.chosen', function () {
+             $('.chosen-select').each(function () {
+             var $this = $(this);
+             $this.next().css({'width': '100%'});
+             })
+             }).trigger('resize.chosen');
+             //resize chosen on sidebar collapse/expand
+             $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+             if (event_name != 'sidebar_collapsed') return;
+             $('.chosen-select').each(function () {
+             var $this = $(this);
+             $this.next().css({'width': '100%'});
+             })
+             });
+             }*/
 
             $("input[name='form-field-checkbox']").iCheck({
                 checkboxClass: 'icheckbox_flat-blue'
@@ -300,45 +547,20 @@
                 radioClass: 'iradio_flat-blue'
             }); // 为单选框添加样式
 
-            $('.date-picker').datepicker({
-                autoclose: true,
-                todayHighlight: true
-            });
-
-            $('#spinner').ace_spinner({
+            $("#spinner").ace_spinner({
                 value: 0,
                 min: 0,
-                max: 100,
+                max: 10,
                 step: 1,
                 btn_up_class: 'btn-info',
                 btn_down_class: 'btn-info'
             })
                 .closest('.ace-spinner')
+
                 .on('changed.fu.spinbox', function () {
                     //alert($('#spinner1').val())
                 });
 
-            if (!ace.vars['touch']) {
-                $('.chosen-select').chosen({allow_single_deselect: true});
-                //resize the chosen on window resize
-
-                $(window)
-                    .off('resize.chosen')
-                    .on('resize.chosen', function () {
-                        $('.chosen-select').each(function () {
-                            var $this = $(this);
-                            $this.next().css({'width': '100%'});
-                        })
-                    }).trigger('resize.chosen');
-                //resize chosen on sidebar collapse/expand
-                $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
-                    if (event_name != 'sidebar_collapsed') return;
-                    $('.chosen-select').each(function () {
-                        var $this = $(this);
-                        $this.next().css({'width': '100%'});
-                    })
-                });
-            }
 
             var dataTable = new DataTablePlus({
                 'targetId': 'datatable',
@@ -346,58 +568,68 @@
                     {
                         'name': 'name',
                         'title': '名称',
-                        'show' : true,
-                        'detail' : true
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
                     }, {
                         'name': 'age',
                         'title': '年龄',
-                        'show' : true,
-                        'detail' : true
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
                     }, {
                         'name': 'username',
                         'title': '昵称',
-                        'show' : true,
-                        'detail' : true
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
                     }, {
                         'name': 'address',
                         'title': '地址',
-                        'show' : true,
-                        'detail' : true
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
                     }, {
                         'name': 'other',
                         'title': '其他',
-                        'show' : true,
-                        'detail' : true
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'textarea'
                     }
                 ],
-                'dataUrl': 'demo/data',
-                'serverResponseCode': 1001,
+                'responseArguments': {
+                    'successMsgCode': 'serverResponseCode',
+                    'successCode': 1001,
+                    'errorMsgName': 'errorMsg'
+                }, // 服务器响应参数
+                'url': {
+                    'delete': 'demo/data', // 删除提交地址
+                    'edit': 'demo/record', // 新增与修改提交地址
+                    'data': 'demo/data' // 数据拉取地址
+                },
                 'modal': {
-                    'modalId': 'datatable_edit_modal',
-                    'modalCallback': function (result) {
-                        var btnType = result['btnType'];
-                        var $btn = $("#datatable_edit_modal_btn");
-                        if ($btn.is('.btn-success') && btnType == 'update') {
-                            $btn.removeClass('btn-success')
-                            $btn.addClass('btn-primary');
-                            $btn.html('<i class="fa fa-edit"></i> 修改');
-                            $("#datatable_edit_modal_title").text('修改数据');
-                        } // 调整样式
-                        if ($btn.is('.btn-primary') && btnType == 'create') {
-                            $btn.removeClass('btn-primary')
-                            $btn.addClass('btn-success');
-                            $btn.html('<i class="fa fa-plus"></i> 添加');
-                            $("#datatable_edit_modal_title").text('新增数据');
-                        }// 调整样式
-                        if (btnType == 'create') {
-                            console.log("create something.");
-                        } else {
-                            console.log(JSON.stringify(result.data));
-                            console.log("edit something.");
-                        }
+                    'auto': true /*, // 关闭自动模式
+                     'modalId':'edit_modal', // 绑定自定义modal id
+                     'clickCallBack':function(call){
+                     var btnType = call['btnType'];
+                     if(btnType == "create"){
+                     console.log("当前点击的是添加按钮");
+                     }else{
+                     console.log("当前点击的是修改按钮");
+                     console.log("data:" + JSON.stringify(call['data']));
+                     }
+                     }*/ // 定义回调方法
+                }, 'rules': {
+                    'name': {
+                        required:true
                     }
                 }
-        }); // 设置参数
+            }); // 设置参数
             dataTable.build(); // 创建表格
 
             /**
@@ -431,7 +663,7 @@
              * 绑定新增模态框
              */
             $("#btn_create_modal").click(function () {
-                $("#datatable_edit_modal").modal();
+                $("#edit_modal").modal();
             });
 
         })

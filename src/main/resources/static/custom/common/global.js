@@ -88,9 +88,13 @@ var Global = (function () {
 })();
 
 /**
- * dataTable强化类
- * @description 对原生table进行功能强化,默认提供删除、详情查看功能。添加和更改功能需额外通过绑定用户提供的modalId和callback方法来启用
- * 注意事项：默认启用springmvc @RestController，后台需使用对应的RequestMethod.delete来映射删除功能即数据请求和删除请求的地址为同一个，用delete和post来区分
+ * dataTable强化插件
+ * @description 对原生table进行功能强化,默认提供删除、详情查看、添加、修改、刷新、搜索等功能。
+ * 注意事项：默认启用Restful风格，本插件请求类型与springmvc请求类型比对
+ *           删除请求 : RequestMethod.DELETE
+ *           数据请求 : RequestMethod.POST
+ *           新增请求 : RequestMethod.POST
+ *           修改请求 : RequestMethod.PUT
  * 使用方式:
  *          var table = new DataTablePlus({'targetId':'#xxx','columns':[{'name':'xxx','title':'xxxx'},{...},...],'dataUrl':'xxxUrl'});
  *          var dataTable = table.build(); // 返回原生dataTable API
@@ -100,16 +104,31 @@ var Global = (function () {
  *              columns[i].name : 用于获取数据key值
  *              columns[i].title : 列标题
  *              columns[i].detail : {true, false} 是否用于详情查看
- *              columns[i].show : {true, faluse} 是否用于表格数据显示
- *          dataUrl : 数据请求地址
- *          serverResponseCode : 服务器后台操作成功的响应标志，注意后台返回的响应标志名约定为'serverResponseCode'
- *          modal:{modalId:'xxid', modalCallback:function(result){..}}
- *              modal.modalId : 需要绑定至新增按钮和修改按钮的modalId
- *              modal.modalCallback : 用于绑定新增和修改按钮的响应逻辑
- *                  result : 携带按钮参数和当前选中行的所有数据，若有数据的话。
- *                      result.data : 当前选中行的所有数据
- *                      result.btnType : {'create'|'update'}按钮类型
- * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'dataUrl':'数据请求地址'}
+ *              columns[i].show : {true, false} 是否用于表格数据显示
+ *              columns[i].edit : {true, false} 是否可编辑
+ *              columns[i].inputType : {text|password|url|email|textarea|select|checkbox|radio|switch|spinner|datapicker} 若可编辑，设置对应的控件类型
+ *              columns[i].type : {int|float|string} 字段类型
+ *              columns[i].data : 若控件为select、checkbox、radio 需要指定数据源数组
+ *                  data[i].label : 对应的便签名称
+ *                  data[i].value : 对应的选择值
+ *                  data[i].checked : {true, false} 是否默认选中，控件类型select、radio仅可指定一个，控件类型为checkbox可指定多个
+ *          url : 数据请求地址
+ *              url.edit : 添加和修改提交地址，提交类型以post和push区分,若指定modal的工作模式为非自动，则无需填写此项
+ *              url.delete : 删除提交地址，提交类型为delete
+ *              url.data : 数据拉取地址, 提交类型为post
+ *          responseArguments : 服务器响应参数，注意直接返回单一json数据，不予许嵌套
+ *              responseArguments.successMsgName : 响应成功标志的key值
+ *              responseArguments.successCode : 响应成功的状态码
+ *              responseArguments.errorMsgName : 响应失败返回的错误信息对应的key值
+ *          modal : 用于指定edit modal,即添加数据和修改数据用的modal
+ *              auto : {true|false} 是否启用自动modal模式，默认为true,若不启用需要为插件指定自定义modal id 和 一个回调方法用于绑定按钮的点击事件
+ *              modalId : 指定需要与插件按钮绑定的modal id
+ *              clickCallBack : function(call){} 按钮点击回调方法
+ *                  call : 回调相关参数
+ *                      call.btnType : {create|update} 当前按钮类型、
+ *                      call.data : 若按钮类型为update,提供用于修改的当前行的全部数据
+ *         rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
+ * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
 var DataTablePlus = function (option) {
@@ -117,11 +136,14 @@ var DataTablePlus = function (option) {
     this.build = function () {
         var targetId = option['targetId']; // 目标dom元素id
         var columns = option['columns']; // 列表基础信息
-        var dataUrl = option['dataUrl']; // 数据请求地址
-        var serverResponseCode = option['serverResponseCode']; // 服务器响应状态码
-        var modalId = option['modalId'];
-        var modal = option['modal']; // 新增和更改启用的modal
+        var dataUrl = option['url']['data']; // 数据请求地址
+        var delUrl = option['url']['delete']; // 删除提交地址
+        var editUrl = option['url']['edit'] || null; // 添加或修改提交地址
+        var responseArguments = option['responseArguments']; // 服务器响应状态信息
+        var modal = option['modal']; // modal相关参数，用于指定modal的工作方式
+        var rules = option['rules']; // 检验规制，默认启用jquery.validate
         var data; // 当前表格的全部数据
+        var validator; // 表单检验器
         var defaultColumns = [
             {
                 "data": "id",
@@ -229,7 +251,7 @@ var DataTablePlus = function (option) {
                     '<button type="button" id="btn_datatable_search" name="datatable_btn_group" class="btn btn-purple btn-sm" data-placement="top" title="搜索"><span class="ace-icon fa fa-search icon-on-right bigger-110"></span></button>' +
                     '</span>' +
                     '</div>');
-
+                buildFormElement(columns); // 构建表单
                 /**
                  * 绑定按钮组
                  */
@@ -247,10 +269,63 @@ var DataTablePlus = function (option) {
                             }
                             break; // 搜索
                         case "btn_datatable_create":
-                            $("#" + modal['modalId']).modal(); // 显示modal
-                            modal.modalCallback({'btnType': 'create', 'data': null});
+                            var isAuto = modal['auto'];
+                            if (isAuto) {
+                                // 自动模式
+                                showEditModal("create"); // 显示modal
+                                for (var k = 0; k < columns.length; k++) {
+                                    var column = columns[k];
+                                    var isEdit = column['edit'] || false;
+                                    if (isEdit) {
+                                        var inputType = column['inputType'];
+                                        var name = column['name'];
+                                        var rule = rules[name] || null;
+                                        if (rule != null) {
+                                            var isRequired = rules[name]['required'] || false;
+                                            if (isRequired) {
+                                                $("span").detach("#required_hint"); // 去重
+                                                $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
+                                            }
+                                        }
+                                        switch (inputType) {
+                                            case 'textarea':
+                                                $("textarea[name='" + name + "']").val("");
+                                                var $div = $("div[name='" + name + "']");
+                                                if ($div.is(".has-success")) {
+                                                    $div.removeClass("has-success");
+                                                    $("i").remove(".glyphicon-ok");
+                                                }// 清除残留样式
+                                                if ($div.is(".has-error")) {
+                                                    $div.removeClass("has-error");
+                                                    $("i").remove(".glyphicon-remove");
+                                                    $("label[class='error']").text("");
+                                                } // 清除残留样式
+                                                break;
+                                            default:
+                                                $("input[name='" + name + "']").val("");
+                                                var $div = $("div[name='" + name + "']");
+                                                if ($div.is(".has-success")) {
+                                                    $div.removeClass("has-success");
+                                                    $("i").remove(".glyphicon-ok");
+                                                }// 清除残留样式
+                                                if ($div.is(".has-error")) {
+                                                    $div.removeClass("has-error");
+                                                    $("i").remove(".glyphicon-remove");
+                                                    $("label[class='error']").text("");
+                                                } // 清除残留样式
+                                                break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                // 非自动模式
+
+                                $("#" + modal['modalId']).modal(); // 显示modal
+                                modal['clickCallBack']({'btnType': 'create'}); // 执行回调
+                            }
                             break; // 新增
                         case "btn_datatable_update":
+
                             var ids = [];
                             var index;
                             var i = 0;
@@ -264,8 +339,62 @@ var DataTablePlus = function (option) {
                             });
 
                             if (ids.length == 1) {
-                                $("#" + modal['modalId']).modal(); // 显示modal
-                                modal.modalCallback({'btnType': 'update', 'data': data[index]});
+                                var originData = data[index];
+                                var isAuto = modal['auto'];
+                                if (isAuto) {
+                                    // 自动模式
+                                    for (var k = 0; k < columns.length; k++) {
+                                        var column = columns[k];
+                                        var isEdit = column['edit'] || false;
+                                        if (isEdit) {
+                                            var name = column['name'];
+                                            var value = originData[name];
+                                            var inputType = column['inputType'];
+                                            var rule = rules[name] || null;
+                                            if (rule != null) {
+                                                var isRequired = rules[name]['required'] || false;
+                                                if (isRequired) {
+                                                    $("span").detach("#required_hint"); // 去重
+                                                    $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
+                                                }
+                                            }
+                                            switch (inputType) {
+                                                case 'textarea':
+                                                    $("textarea[name='" + name + "']").val(value);
+                                                    var $div = $("div[name='" + name + "']");
+                                                    if ($div.is(".has-success")) {
+                                                        $div.removeClass("has-success");
+                                                        $("i").remove(".glyphicon-ok");
+                                                    }// 清除残留样式
+                                                    if ($div.is(".has-error")) {
+                                                        $div.removeClass("has-error");
+                                                        $("i").remove(".glyphicon-remove");
+                                                        $("label[class='error']").text("");
+                                                    } // 清除残留样式
+                                                    break;
+                                                default:
+                                                    $("input[name='" + name + "']").val(value);
+                                                    var $div = $("div[name='" + name + "']");
+                                                    if ($div.is(".has-success")) {
+                                                        $div.removeClass("has-success");
+                                                        $("i").remove(".glyphicon-ok");
+                                                    }// 清除残留样式
+                                                    if ($div.is(".has-error")) {
+                                                        $div.removeClass("has-error");
+                                                        $("i").remove(".glyphicon-remove");
+                                                        $("label[class='error']").text("");
+                                                    } // 清除残留样式
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                    showEditModal("update"); // 显示modal
+                                } else {
+                                    // 非自动模式
+                                    $("#" + modal['modalId']).modal(); // 显示modal
+                                    modal['clickCallBack']({'btnType': 'update', 'data': originData}); // 执行回调
+                                }
+
                             } else {
                                 Global.notify("修改操作提醒", "未选取有效数据或选中多条数据！", "warning");
                             }
@@ -282,20 +411,21 @@ var DataTablePlus = function (option) {
                                 Global.warning("删除警告", "确定要删除选中的记录吗？", "danger", function () {
                                     $.ajax({
                                         type: "POST",
-                                        url: dataUrl,
+                                        url: delUrl,
                                         dataType: "json",
                                         data: {
                                             '_method': 'delete',
                                             'ids': ids
                                         },
                                         success: function (data) {
-                                            var code = data['serverResponseCode'];
-                                            if (code == 1001) {
+                                            // responseCode
+                                            var code = data[responseArguments['successMsgCode']];
+                                            if (code == responseArguments['successCode']) {
                                                 reloadTable(); // 刷新表格
-                                                Global.notify("操作提示：", "删除成功！", "success");
+                                                Global.notify("操作提示：", "删除成功!", "success");
 
                                             } else {
-                                                Global.notify("操作提示：", "删除失败！", "error");
+                                                Global.notify("操作提示：", "删除失败!", "error");
                                             }
                                         }
                                     });
@@ -322,7 +452,7 @@ var DataTablePlus = function (option) {
                                 $ul.empty();
                                 for (var i = 0; i < columns.length; i++) {
                                     var column = columns[i];
-                                    var isDetail = column['detail']; // 该字段是否用于详情查看
+                                    var isDetail = column['detail'] || false; // 该字段是否用于详情查看
                                     if (isDetail) {
                                         var name = column['name'];
                                         var title = column['title'];
@@ -337,10 +467,138 @@ var DataTablePlus = function (option) {
                                 Global.notify("详情操作提醒", "未选取有效数据或选中了多条数据！", "warning");
                             }
                             break; // 详情
+                        case "datatable_edit_modal_btn":
+                            var $btn = $("#datatable_edit_modal_btn");
+                            if (!$("#datatable_edit_form").valid()) {
+                                Global.notify(" 错误提醒：", "请修改好表单错误项！", "error");
+                                return false;
+                            }
+
+                            if ($btn.is('.btn-success')) {
+                                // 新增
+                                var postData = {};
+                                for (var j = 0; j < columns.length; j++) {
+                                    var column = columns[j];
+                                    var isEdit = column['edit'] || false; // 该字段是否用于编辑
+                                    if (isEdit) {
+                                        var name = column['name'];
+                                        var inputType = column['inputType'];
+                                        var type = column['type'] || "string";
+                                        var val;
+                                        switch (inputType) {
+                                            case 'textarea':
+                                                val = $("textarea[name='" + name + "']").val();
+                                                break;
+                                            default:
+                                                val = $("input[name='" + name + "']").val();
+                                                break;
+                                        }
+                                        if (type == "int") {
+                                            postData[name] = parseInt(val);
+                                        } else if (type == "float") {
+                                            postData[name] = parseFloat(val);
+                                        } else {
+                                            postData[name] = val;
+                                        }
+                                    }
+                                }
+                                postModalData(editUrl, postData, "post") // 提交postData
+                            } else {
+                                // 修改
+                                var _index;
+                                var i = 0;
+                                $("input[name='iCheckGroup']").each(function () {
+                                    i++; // 定位选择框所在的行索引
+                                    var val = $(this).val();
+                                    if (val != "all" && $(this).is(':checked')) {
+                                        _index = i - 2;
+                                    }
+                                });
+                                var postData = data[_index];
+                                for (var j = 0; j < columns.length; j++) {
+                                    var column = columns[j];
+                                    var isEdit = column['edit'] || false; // 该字段是否用于编辑
+                                    if (isEdit) {
+                                        var name = column['name'];
+                                        var inputType = column['inputType'];
+                                        var type = column['type'] || "string";
+                                        var val;
+                                        switch (inputType) {
+                                            case 'textarea':
+                                                val = $("textarea[name='" + name + "']").val();
+                                                break;
+                                            default:
+                                                val = $("input[name='" + name + "']").val();
+                                                break;
+                                        }
+                                        if (type == "int") {
+                                            postData[name] = parseInt(val);
+                                        } else if (type == "float") {
+                                            postData[name] = parseFloat(val);
+                                        } else {
+                                            postData[name] = val;
+                                        }
+                                    }
+                                }
+                                // 提交postData
+                                postModalData(editUrl, postData, "put") // 提交postData
+                            }
+                            $("#datatable_edit_modal").modal('hide'); // 关闭模态框
+                            break; // 编辑modal提交按钮
                     }
                 });
             }
         }).api();
+
+        /**
+         * 显示编辑模态框
+         * @param btnType
+         */
+        function showEditModal(btnType) {
+            $("#datatable_edit_modal").modal();
+            var $btn = $("#datatable_edit_modal_btn");
+            if ($btn.is('.btn-success') && btnType == 'update') {
+                $btn.removeClass('btn-success')
+                $btn.addClass('btn-primary');
+                $btn.html('<i class="fa fa-edit"></i> 修改');
+                $("#datatable_edit_modal_title").text('修改数据');
+            } // 调整样式
+            if ($btn.is('.btn-primary') && btnType == 'create') {
+                $btn.removeClass('btn-primary')
+                $btn.addClass('btn-success');
+                $btn.html('<i class="fa fa-plus"></i> 添加');
+                $("#datatable_edit_modal_title").text('新增数据');
+            }// 调整样式
+
+        }
+
+        /**
+         * 提交编辑模态框的数据
+         * @param url 提交地址
+         * @param data 提交数据
+         * @param type 提交类型
+         */
+        function postModalData(url, data, type) {
+            if (type == 'put') {
+                data['_method'] = 'put'
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: $.param(data),
+                success: function (msg) {
+                    var successMsgCode = responseArguments['successMsgCode'];
+                    var successCode = responseArguments['successCode'];
+                    var errorMsgName = responseArguments['successCode'];
+                    if (msg[successMsgCode] == successCode) {
+                        var option = (type == "post") ? "添加" : "修改";
+                        Global.notify("操作提示：", option + "成功！", "success");
+                    } else {
+                        Global.notify("操作提示：", option + "失败，" + msg[errorMsgName], "error");
+                    }
+                }
+            });
+        }
 
         /**
          * 刷新表格
@@ -358,8 +616,312 @@ var DataTablePlus = function (option) {
             return table.ajax.json();
         }
 
+        /**
+         * 构建表单元素
+         * @param columns
+         */
+        function buildFormElement(columns) {
+            var buffer = new StringBuffer();
+            var specialEls = [];
+            var el = {
+                'form': '<form class="form-horizontal" role="form" id="datatable_edit_form">',
+                '/form': '</form>',
+                'label': '<label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right">',
+                '/label': '</label>',
+                'span': '<div class="help-block col-xs-12 col-sm-reset inline">',
+                '/span': '</div>',
+                'col5': '<div class="col-xs-12 col-sm-5">',
+                '/col5': '</div>',
+                'col6': '<div class="col-sm-6">',
+                '/col6': '</div>'
+            };
+            buffer.append(el['form']);
+            for (var i = 0; i < columns.length; i++) {
+                var column = columns[i];
+                var isEdit = column['edit'] || false; // 该字段是否用于编辑
+                if (isEdit) {
+                    var inputType = column['inputType'];
+                    var title = column['title'];
+                    var name = column['name'];
+                    var hint = "";
+                    var rule = rules[name] || null;
+                    if (rule != null) {
+                        var isRequired = rules[name]['required'] || false;
+                        if (isRequired) {
+                            hint = '<span class="red" id="required_hint">*</span>';
+                        }
+                    }
+                    buffer.append('<div class="form-group" name="' + name + '">');
+                    buffer.append(el['label']);
+                    buffer.append(title);
+                    buffer.append(el['/label']);
+                    switch (inputType) {
+                        case 'text' :
+                            buffer.append(el['col5']);
+                            buffer.append('<input type="text" id="_' + name + '" class="width-100" name="' + name + '">');
+                            buffer.append(el['/col5']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+                            break;
+                        case 'password' :
+                            buffer.append(el['col5']);
+                            buffer.append('<input type="password" id="_' + name + '" class="width-100" name="' + name + '">');
+                            buffer.append(el['/col5']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+                            break;
+                        case 'url' :
+                            buffer.append(el['col5']);
+                            buffer.append('<input type="url" id="_' + name + '" class="width-100" name="' + name + '">');
+                            buffer.append(el['/col5']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+                            break;
+                        case 'email' :
+                            buffer.append(el['col5']);
+                            buffer.append('<input type="email" id="_' + name + '" class="width-100" name="' + name + '">');
+                            buffer.append(el['/col5']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+                            break;
+                        case 'textarea' :
+                            buffer.append(el['col6']);
+                            buffer.append('<textarea class="form-control limited" id="_' + name + '" maxlength="' + column['maxLength'] + '" name="' + name + '"></textarea>');
+                            buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+                            break;
+                        case 'select' :
+                            var data = column['data'];
+                            buffer.append(el['col6']);
+                            buffer.append('<select class="chosen-select form-control" id="_' + name + '" name="' + name + '"data-placeholder="请选择...">');
+                            buffer.append('<option value=""></option>');
+                            for (var j = 0; j < data.length; j++) {
+                                buffer.append('<option value="' + data[j]['value'] + '">' + data[j]['label'] + '</option>');
+                            }
+                            buffer.append('</select>');
+                            buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+
+                            break;
+                        case 'checkbox' :
+                            var data = column['data'];
+                            buffer.append(el['col6']);
+                            for (var j = 0; j < data.length; j++) {
+                                var isChecked = data[j]['checked'] || false;
+                                var $checked = '';
+                                if (isChecked) {
+                                    $checked = 'checked="checked"';
+                                }
+                                buffer.append('<div class="checkbox" id="_' + name + '"><label>');
+                                buffer.append('<input  name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="checkbox"/>');
+                                buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
+                                buffer.append('</label></div>');
+                            }
+                            buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+
+                            specialEls.push(column);
+                            break;
+                        case 'radio' :
+                            var data = column['data'];
+                            buffer.append(el['col6']);
+                            for (var j = 0; j < data.length; j++) {
+                                var isChecked = data[j]['checked'] || false;
+                                var $checked = '';
+                                if (isChecked) {
+                                    $checked = 'checked="checked"';
+                                }
+                                buffer.append('<div class="radio" id="_' + name + '"><label>');
+                                buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="radio"/>');
+                                buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
+                                buffer.append('</label></div>');
+                            }
+                            buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+
+                            specialEls.push(column);
+                            break;
+                        case 'switch' :
+                            var isChecked = column['checked'] || false;
+                            var $checked = '';
+                            if (isChecked) {
+                                $checked = 'checked="checked"';
+                            }
+                            buffer.append(el['col6']);
+                            buffer.append('<div class="switch"><label>');
+                            buffer.append('<input id="_' + name + '" name="' + name + '" ' + $checked + ' class="ace ace-switch ace-switch-4 btn-rotate" type="checkbox">');
+                            buffer.append('<span class="lbl"></span>');
+                            buffer.append('</label></div>');
+                            buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+                            break;
+                        case 'spinner' :
+                            buffer.append(el['col6']);
+                            buffer.append('<div class="spinner">');
+                            buffer.append('<input id="_' + name + '" type="text" name="' + name + '" class="input-mini" id="spinner"/>');
+                            buffer.append('</div>');
+                            buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+
+                            specialEls.push(column);
+                            break;
+                        case 'datepicker':
+                            buffer.append(el['col6']);
+                            buffer.append('<div class="input-group">');
+                            buffer.append('<input id="_' + name + '" class="form-control date-picker" name="' + name + '" type="text" data-date-format="yyyy-mm-dd"/>');
+                            buffer.append('<span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>');
+                            buffer.append('</div>');
+                            buffer.append(el['/col6']);
+                            buffer.append(el['span']);
+                            buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
+                            buffer.append(el['/span']);
+                            break;
+                    }
+                    buffer.append('</div>');
+                }
+            }
+            buffer.append(el['/form']);
+            $("#datatable_edit_modal_body").empty(); // 清空元素，若有的话
+            $("#datatable_edit_modal_body").append(buffer.toString()); // 构建表单
+
+            $('.date-picker').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            if (!ace.vars['touch']) {
+                $('.chosen-select').chosen({allow_single_deselect: true});
+                //resize the chosen on window resize
+
+                $(window)
+                    .off('resize.chosen')
+                    .on('resize.chosen', function () {
+                        $('.chosen-select').each(function () {
+                            var $this = $(this);
+                            $this.next().css({'width': '100%'});
+                        })
+                    }).trigger('resize.chosen');
+                //resize chosen on sidebar collapse/expand
+                $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+                    if (event_name != 'sidebar_collapsed') return;
+                    $('.chosen-select').each(function () {
+                        var $this = $(this);
+                        $this.next().css({'width': '100%'});
+                    })
+                });
+            }
+
+            for (var k = 0; k < specialEls.length; k++) {
+                var column = specialEls[k];
+                var inputType = column['inputType'];
+                var name = column['name'];
+                switch (inputType) {
+                    case 'checkbox' :
+                        $("input[name='" + name + "']").iCheck({
+                            checkboxClass: 'icheckbox_flat-blue'
+                        }); // 为选择框添加样式
+                        break;
+                    case 'radio' :
+                        $("input[name='" + name + "']").iCheck({
+                            radioClass: 'iradio_flat-blue'
+                        }); // 为单选框添加样式
+                        break;
+                    case 'spinner' :
+                        $("input[name='" + name + "']").ace_spinner({
+                            value: column['value'],
+                            min: column['min'],
+                            max: column['max'],
+                            step: column['step'],
+                            btn_up_class: 'btn-info',
+                            btn_down_class: 'btn-info'
+                        })
+                            .closest('.ace-spinner')
+
+                            .on('changed.fu.spinbox', function () {
+                                //alert($('#spinner1').val())
+                            });
+                        break;
+                }
+            }
+
+            // 开启检验
+            validator = $("#datatable_edit_form").validate({
+                rules: rules,
+                //onsubmit: true,
+                debug: false, // 关闭表单提交功能
+                errorPlacement: function (error, element) {
+                    var name = element.attr("name");
+                    var $span = $("span[name='" + name + "']");
+                    error.appendTo($span);
+                }, // 指定错误信息提示位置
+                success: function (label) {
+                    var $span = label.parent();
+                    var name = $span.attr("name");
+                    var $div = $("div[name='" + name + "']");
+                    $("i").remove(".glyphicon-ok"); // 去重
+                    $("span").detach("#required_hint"); // 清除*字符
+                    $span.prepend('<i class="glyphicon glyphicon-ok green"></i> ');
+                    $div.addClass("has-success");
+                },// 指定检验完成后的样式
+                highlight: function (element, errorClass, validClass) {
+                    var name = element.name;
+                    var $span = $("span[name='" + name + "']");
+                    $("i").remove(".glyphicon-remove"); // 去重
+                    $("span").detach("#required_hint"); // 清除*字符
+                    $span.prepend('<i class="glyphicon glyphicon-remove red"></i> ');
+                    var $div = $("div[name='" + name + "']");
+                    if ($div.is(".has-success")) {
+                        $div.removeClass("has-success"); // 清除样式
+                        $("i").remove(".glyphicon-ok"); // 清除图标
+                    }
+                    $div.addClass("has-error");
+                }, // 检验出错
+                unhighlight: function (element, errorClass, validClass) {
+                    var name = element.name;
+                    var $div = $("div[name='" + name + "']");
+                    $("i").remove(".glyphicon-remove"); // 清除图标
+                    $div.removeClass("has-error"); // 清除样式
+                } // 检验正常
+            });
+
+        }
+
         return table;
     }; // 构建表格
 };
+
+/**
+ * 字符串缓存类，方便陪拼接字符串
+ * @constructor
+ */
+function StringBuffer() {
+    this.__strings__ = new Array();
+}
+
+StringBuffer.prototype.append = function (str) {
+    this.__strings__.push(str);
+    return this;    //方便链式操作
+}
+StringBuffer.prototype.toString = function () {
+    return this.__strings__.join("");
+}
+
+
 Global.init(); // 相关方法初始化
 

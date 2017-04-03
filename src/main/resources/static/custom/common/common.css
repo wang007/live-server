@@ -43,3 +43,21 @@
     border-color: rgba(52, 73, 94, .88)
 }
 
+
+.switch {
+    min-height: 27px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 7px;
+    position: relative;
+    display: block;
+}
+
+.spinner {
+    min-height: 27px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 5px;
+    position: relative;
+    display: block;
+}
