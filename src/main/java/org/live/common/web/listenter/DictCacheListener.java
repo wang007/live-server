@@ -34,7 +34,7 @@ public class DictCacheListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 
-		dictService.getCacheDic(); // 缓存数据字典
+		//dictService.getCacheDic(); // 缓存数据字典
 
 		LOGGER.info("执行数据字典读取");
 

@@ -4,8 +4,12 @@ package org.live.dictionary.repository;
 import org.live.common.base.BaseRepository;
 import org.live.dictionary.entity.DictType;
 import org.live.dictionary.entity.Dictionary;
+import org.live.dictionary.entity.DictionaryVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 字典持久层
@@ -14,11 +18,5 @@ import java.util.List;
  *
  */
 public interface DictRepository extends BaseRepository<Dictionary, String> {
-	/**
-	 * 根据字典类型查询所有字典
-	 * 
-	 * @param dictType
-	 * @return
-	 */
-	public List<Dictionary> findByDictType(DictType dictType);
+	Page<DictionaryVo> find(PageRequest pageRequest, Map<String, Object> filter);
 }

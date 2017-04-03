@@ -31,11 +31,7 @@
                 for (var i = 0; i < dictTypes.length; i++) {
                     var typeName = dictTypes[i]['typeName'];
                     var id = dictTypes[i]['id'];
-                    /*     if (i == 0) {
-                     _dictTypes.push({'label': typeName, 'value': id, 'checked': true});
-                     } else {*/
-                    _dictTypes.push({'label': typeName, 'value': id});
-                    //}
+                    _dictTypes.push({'text': typeName, 'value': id});
                 }
             } // 构建数据源
 

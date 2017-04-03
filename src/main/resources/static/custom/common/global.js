@@ -109,9 +109,11 @@ var Global = (function () {
  *              columns[i].inputType : {text|password|url|email|textarea|select|checkbox|radio|switch|spinner|datapicker} 若可编辑，设置对应的控件类型
  *              columns[i].type : {int|float|string} 字段类型
  *              columns[i].data : 若控件为select、checkbox、radio 需要指定数据源数组
- *                  data[i].label : 对应的便签名称
- *                  data[i].value : 对应的选择值
- *                  data[i].checked : {true, false} 是否默认选中，控件类型select、radio仅可指定一个，控件类型为checkbox可指定多个
+ *                  data[i].text : 对应的选项名称
+ *                  data[i].value : 对应的选项值
+ *                  data[i].checked : {true, false} 是否默认选中，控件类型为radio仅可指定一个，控件类型为checkbox可指定多个
+ *                  data[i].selected : {true, false} 是否默认选中，控件类型为select专用，仅可指定一个
+ *              columns[i].editName : 控件为select专用，用于提交添加参数和修改参数时指定别名，往往select相关的显示属性名和提交属性名是不一致的，如显示属性名为xxxTypeName,提交属性名为xxxType.id
  *          url : 数据请求地址
  *              url.edit : 添加和修改提交地址，提交类型以post和push区分,若指定modal的工作模式为非自动，则无需填写此项
  *              url.delete : 删除提交地址，提交类型为delete
@@ -208,7 +210,7 @@ var DataTablePlus = function (option) {
                     } else {
                         d.search["value"] = "";
                     }
-                    if(ajax != null){
+                    if (ajax != null) {
                         d = ajax(d);
                     }
                     return JSON.stringify(d);
@@ -302,6 +304,11 @@ var DataTablePlus = function (option) {
                                                     $("label[class='error']").text("");
                                                 } // 清除残留样式
                                                 break;
+                                            case 'select':
+                                                $("select[name='" + name + "']").select2("val", "");
+                                                // $("select[name='" + name + "'] > option[selected = 'selected'] ").removeAttr("selected"); // 取消选中
+                                                //   $("select[name='" + name + "']").trigger("change"); // 触发change事件
+                                                break;
                                             default:
                                                 $("input[name='" + name + "']").val("");
                                                 var $div = $("div[name='" + name + "']");
@@ -364,6 +371,19 @@ var DataTablePlus = function (option) {
                                                         $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
                                                         $("label[class='error']").text("");
                                                     } // 清除残留样式
+                                                    break;
+                                                case 'select':
+                                                    var optionInfos = column['data'];
+                                                    for (var j = 0; j < optionInfos.length; j++) {
+                                                        var optionInfo = optionInfos[j];
+                                                        var txt = optionInfo['text'];
+                                                        if (txt == value) {
+                                                            value = optionInfo['value'];
+                                                        }
+                                                    }
+                                                    $("select[name='" + name + "']").select2("val", value);
+                                                    //$("select[name='" + name + "'] > option[value = '" + value + "'] ").attr("selected", true); // 设置为选中
+                                                    //$("select[name='" + name + "']").trigger("change"); // 触发change事件
                                                     break;
                                                 default:
                                                     $("input[name='" + name + "']").val(value);
@@ -478,6 +498,10 @@ var DataTablePlus = function (option) {
                                             case 'textarea':
                                                 val = $("textarea[name='" + name + "']").val();
                                                 break;
+                                            case 'select' :
+                                                val = $("select[name='" + name + "']").val();
+                                                name = column['editName'];
+                                                break;
                                             default:
                                                 val = $("input[name='" + name + "']").val();
                                                 break;
@@ -515,6 +539,10 @@ var DataTablePlus = function (option) {
                                         switch (inputType) {
                                             case 'textarea':
                                                 val = $("textarea[name='" + name + "']").val();
+                                                break;
+                                            case 'select' :
+                                                val = $("select[name='" + name + "']").val();
+                                                name = column['editName'];
                                                 break;
                                             default:
                                                 val = $("input[name='" + name + "']").val();
@@ -689,10 +717,10 @@ var DataTablePlus = function (option) {
                         case 'select' :
                             var data = column['data'];
                             buffer.append(el['col6']);
-                            buffer.append('<select class="chosen-select form-control" id="_' + name + '" name="' + name + '"data-placeholder="请选择...">');
+                            buffer.append('<select class="select2" style="width: 100%" id="_' + name + '" name="' + name + '"data-placeholder="请选择...">');
                             buffer.append('<option value=""></option>');
                             for (var j = 0; j < data.length; j++) {
-                                buffer.append('<option value="' + data[j]['value'] + '">' + data[j]['label'] + '</option>');
+                                buffer.append('<option value="' + data[j]['value'] + '">' + data[j]['text'] + '</option>');
                             }
                             buffer.append('</select>');
                             buffer.append(el['/col6']);
@@ -700,6 +728,7 @@ var DataTablePlus = function (option) {
                             buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
 
+                            specialEls.push(column);
                             break;
                         case 'checkbox' :
                             var data = column['data'];
@@ -781,6 +810,8 @@ var DataTablePlus = function (option) {
                             buffer.append(el['span']);
                             buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
+
+                            specialEls.push(column);
                             break;
                     }
                     buffer.append('</div>');
@@ -790,32 +821,6 @@ var DataTablePlus = function (option) {
             $("#datatable_edit_modal_body").empty(); // 清空元素，若有的话
             $("#datatable_edit_modal_body").append(buffer.toString()); // 构建表单
 
-            $('.date-picker').datepicker({
-                autoclose: true,
-                todayHighlight: true
-            });
-
-            if (!ace.vars['touch']) {
-                $('.chosen-select').chosen({allow_single_deselect: true});
-                //resize the chosen on window resize
-
-                $(window)
-                    .off('resize.chosen')
-                    .on('resize.chosen', function () {
-                        $('.chosen-select').each(function () {
-                            var $this = $(this);
-                            $this.next().css({'width': '100%'});
-                        })
-                    }).trigger('resize.chosen');
-                //resize chosen on sidebar collapse/expand
-                $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
-                    if (event_name != 'sidebar_collapsed') return;
-                    $('.chosen-select').each(function () {
-                        var $this = $(this);
-                        $this.next().css({'width': '100%'});
-                    })
-                });
-            }
 
             for (var k = 0; k < specialEls.length; k++) {
                 var column = specialEls[k];
@@ -846,6 +851,16 @@ var DataTablePlus = function (option) {
                             .on('changed.fu.spinbox', function () {
                                 //alert($('#spinner1').val())
                             });
+                        break;
+                    case 'select':
+                        $("select[name='" + name + "']").select2();
+                        break;
+
+                    case 'datepicker':
+                        $("input[name='" + name + "']").datepicker({
+                            autoclose: true,
+                            todayHighlight: true
+                        });
                         break;
                 }
             }

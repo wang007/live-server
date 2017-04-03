@@ -2,6 +2,7 @@ package org.live.module.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import org.live.common.response.DataTableModel;
+import org.live.module.demo.entity.Demo;
 import org.live.module.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,4 +45,17 @@ public class DemoController {
         }
         return jsonObject.toString();
     }
+    @RequestMapping(value="/record", method = RequestMethod.PUT)
+    @ResponseBody
+    public String edit(Demo demo){
+        System.out.println(demo.getName());
+        return "success";
+    }
+    @RequestMapping(value="/record", method = RequestMethod.POST)
+    @ResponseBody
+    public String insert(Demo demo){
+        System.out.println(demo.getName());
+        return "success";
+    }
+
 }
