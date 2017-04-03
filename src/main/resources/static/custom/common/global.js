@@ -283,7 +283,7 @@ var DataTablePlus = function (option) {
                                         if (rule != null) {
                                             var isRequired = rules[name]['required'] || false;
                                             if (isRequired) {
-                                                $("span").detach("#required_hint"); // 去重
+                                                $("span[name='" + name + "'] > span").detach("#required_hint"); // 去重
                                                 $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
                                             }
                                         }
@@ -291,26 +291,18 @@ var DataTablePlus = function (option) {
                                             case 'textarea':
                                                 $("textarea[name='" + name + "']").val("");
                                                 var $div = $("div[name='" + name + "']");
-                                                if ($div.is(".has-success")) {
-                                                    $div.removeClass("has-success");
-                                                    $("i").remove(".glyphicon-ok");
-                                                }// 清除残留样式
                                                 if ($div.is(".has-error")) {
                                                     $div.removeClass("has-error");
-                                                    $("i").remove(".glyphicon-remove");
+                                                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
                                                     $("label[class='error']").text("");
                                                 } // 清除残留样式
                                                 break;
                                             default:
                                                 $("input[name='" + name + "']").val("");
                                                 var $div = $("div[name='" + name + "']");
-                                                if ($div.is(".has-success")) {
-                                                    $div.removeClass("has-success");
-                                                    $("i").remove(".glyphicon-ok");
-                                                }// 清除残留样式
                                                 if ($div.is(".has-error")) {
                                                     $div.removeClass("has-error");
-                                                    $("i").remove(".glyphicon-remove");
+                                                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
                                                     $("label[class='error']").text("");
                                                 } // 清除残留样式
                                                 break;
@@ -354,7 +346,7 @@ var DataTablePlus = function (option) {
                                             if (rule != null) {
                                                 var isRequired = rules[name]['required'] || false;
                                                 if (isRequired) {
-                                                    $("span").detach("#required_hint"); // 去重
+                                                    $("span[name='" + name + "'] > span").detach("#required_hint"); // 去重
                                                     $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
                                                 }
                                             }
@@ -362,26 +354,18 @@ var DataTablePlus = function (option) {
                                                 case 'textarea':
                                                     $("textarea[name='" + name + "']").val(value);
                                                     var $div = $("div[name='" + name + "']");
-                                                    if ($div.is(".has-success")) {
-                                                        $div.removeClass("has-success");
-                                                        $("i").remove(".glyphicon-ok");
-                                                    }// 清除残留样式
                                                     if ($div.is(".has-error")) {
                                                         $div.removeClass("has-error");
-                                                        $("i").remove(".glyphicon-remove");
+                                                        $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
                                                         $("label[class='error']").text("");
                                                     } // 清除残留样式
                                                     break;
                                                 default:
                                                     $("input[name='" + name + "']").val(value);
                                                     var $div = $("div[name='" + name + "']");
-                                                    if ($div.is(".has-success")) {
-                                                        $div.removeClass("has-success");
-                                                        $("i").remove(".glyphicon-ok");
-                                                    }// 清除残留样式
                                                     if ($div.is(".has-error")) {
                                                         $div.removeClass("has-error");
-                                                        $("i").remove(".glyphicon-remove");
+                                                        $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
                                                         $("label[class='error']").text("");
                                                     } // 清除残留样式
                                                     break;
@@ -863,8 +847,9 @@ var DataTablePlus = function (option) {
             // 开启检验
             validator = $("#datatable_edit_form").validate({
                 rules: rules,
-                //onsubmit: true,
-                debug: false, // 关闭表单提交功能
+                onkeyup: false,
+                onclick: false,
+                debug: false, // 是否关闭表单提交功能
                 errorPlacement: function (error, element) {
                     var name = element.attr("name");
                     var $span = $("span[name='" + name + "']");
@@ -874,28 +859,24 @@ var DataTablePlus = function (option) {
                     var $span = label.parent();
                     var name = $span.attr("name");
                     var $div = $("div[name='" + name + "']");
-                    $("i").remove(".glyphicon-ok"); // 去重
-                    $("span").detach("#required_hint"); // 清除*字符
-                    $span.prepend('<i class="glyphicon glyphicon-ok green"></i> ');
-                    $div.addClass("has-success");
+                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove"); // 清除图标
+                    $div.removeClass("has-error"); // 清除样式
+                    $("span[name='" + name + "'] > span").detach("#required_hint"); // 去重
+                    $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
                 },// 指定检验完成后的样式
                 highlight: function (element, errorClass, validClass) {
                     var name = element.name;
                     var $span = $("span[name='" + name + "']");
-                    $("i").remove(".glyphicon-remove"); // 去重
-                    $("span").detach("#required_hint"); // 清除*字符
-                    $span.prepend('<i class="glyphicon glyphicon-remove red"></i> ');
                     var $div = $("div[name='" + name + "']");
-                    if ($div.is(".has-success")) {
-                        $div.removeClass("has-success"); // 清除样式
-                        $("i").remove(".glyphicon-ok"); // 清除图标
-                    }
-                    $div.addClass("has-error");
+                    $("span[name='" + name + "'] > span").detach("#required_hint"); // 清除*字符
+                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove"); // 去重
+                    $span.prepend('<i class="glyphicon glyphicon-remove red"></i> ');
+                    $div.addClass("has-error"); // 添加错误样式
                 }, // 检验出错
                 unhighlight: function (element, errorClass, validClass) {
                     var name = element.name;
                     var $div = $("div[name='" + name + "']");
-                    $("i").remove(".glyphicon-remove"); // 清除图标
+                    $("span[name='" + name + "] > i").remove(".glyphicon-remove"); // 清除图标
                     $div.removeClass("has-error"); // 清除样式
                 } // 检验正常
             });
