@@ -281,7 +281,7 @@ var DataTablePlus = function (option) {
                                         var name = column['name'];
                                         var rule = rules[name] || null;
                                         if (rule != null) {
-                                            var isRequired = rules[name]['required'] || false;
+                                            var isRequired = rule['required'] || false;
                                             if (isRequired) {
                                                 $("span[name='" + name + "'] > span").detach("#required_hint"); // 去重
                                                 $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
@@ -344,7 +344,7 @@ var DataTablePlus = function (option) {
                                             var inputType = column['inputType'];
                                             var rule = rules[name] || null;
                                             if (rule != null) {
-                                                var isRequired = rules[name]['required'] || false;
+                                                var isRequired = rule['required'] || false;
                                                 if (isRequired) {
                                                     $("span[name='" + name + "'] > span").detach("#required_hint"); // 去重
                                                     $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
@@ -401,15 +401,15 @@ var DataTablePlus = function (option) {
                                             '_method': 'delete',
                                             'ids': ids
                                         },
-                                        success: function (data) {
-                                            // responseCode
-                                            var code = data[responseArguments['successMsgCode']];
-                                            if (code == responseArguments['successCode']) {
-                                                reloadTable(); // 刷新表格
-                                                Global.notify("操作提示：", "删除成功!", "success");
-
+                                        success: function (msg) {
+                                            var successMsgCode = responseArguments['successMsgCode'];
+                                            var successCode = responseArguments['successCode'];
+                                            var errorMsgName = responseArguments['errorMsgName'];
+                                            if (msg[successMsgCode] == successCode) {
+                                                Global.notify("操作提示：", "删除成功！", "success");
+                                                reloadTable(); // 刷新页面
                                             } else {
-                                                Global.notify("操作提示：", "删除失败!", "error");
+                                                Global.notify("操作提示：", "删除失败，" + msg[errorMsgName], "error");
                                             }
                                         }
                                     });
@@ -573,10 +573,11 @@ var DataTablePlus = function (option) {
                 success: function (msg) {
                     var successMsgCode = responseArguments['successMsgCode'];
                     var successCode = responseArguments['successCode'];
-                    var errorMsgName = responseArguments['successCode'];
+                    var errorMsgName = responseArguments['errorMsgName'];
                     if (msg[successMsgCode] == successCode) {
                         var option = (type == "post") ? "添加" : "修改";
                         Global.notify("操作提示：", option + "成功！", "success");
+                        reloadTable(); // 刷新页面
                     } else {
                         Global.notify("操作提示：", option + "失败，" + msg[errorMsgName], "error");
                     }
@@ -630,7 +631,7 @@ var DataTablePlus = function (option) {
                     var hint = "";
                     var rule = rules[name] || null;
                     if (rule != null) {
-                        var isRequired = rules[name]['required'] || false;
+                        var isRequired = rule['required'] || false;
                         if (isRequired) {
                             hint = '<span class="red" id="required_hint">*</span>';
                         }
