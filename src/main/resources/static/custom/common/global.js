@@ -122,13 +122,14 @@ var Global = (function () {
  *              responseArguments.successMsgName : 响应成功标志的key值
  *              responseArguments.successCode : 响应成功的状态码
  *              responseArguments.errorMsgName : 响应失败返回的错误信息对应的key值
- *          modal : 用于指定edit modal,即添加数据和修改数据用的modal
- *              auto : {true|false} 是否启用自动modal模式，默认为true,若不启用需要为插件指定自定义modal id 和 一个回调方法用于绑定按钮的点击事件
- *              modalId : 指定需要与插件按钮绑定的modal id
+ *          modal : 用于指定 edit modal 和 info modal ,即添加数据和修改数据用的modal和显示详细信息用的modal
+ *              auto : {true|false} 是否启用自动modal模式，默认为true,若不启用需要为插件指定自定义editModalId、infoModalId 和 一个回调方法用于绑定按钮的点击事件
+ *              editModalId : 指定需要与插件按钮绑定的 edit modal id
+ *              infoModalId : 指定需要与插件按钮绑定的 info modal id
  *              clickCallBack : function(call){} 按钮点击回调方法
  *                  call : 回调相关参数
- *                      call.btnType : {create|update} 当前按钮类型、
- *                      call.data : 若按钮类型为update,提供用于修改的当前行的全部数据
+ *                      call.btnType : {create|update|info} 当前按钮类型、
+ *                      call.data : 若按钮类型为update和info,提供用于修改的当前行的全部数据
  *          rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
  *          ajax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  *          columnsDefs : 暴露dataTables原生columnsDefs属性以满足单元格的复杂需求，注意因列表第一项以被checkbox占据，所以列表项的索引应该从1开始
@@ -333,7 +334,7 @@ var DataTablePlus = function (option) {
                             } else {
                                 // 非自动模式
 
-                                $("#" + modal['modalId']).modal(); // 显示modal
+                                $("#" + modal['editModalId']).modal(); // 显示modal
                                 modal['clickCallBack']({'btnType': 'create'}); // 执行回调
                             }
                             break; // 新增
@@ -409,7 +410,7 @@ var DataTablePlus = function (option) {
                                     showEditModal("update"); // 显示modal
                                 } else {
                                     // 非自动模式
-                                    $("#" + modal['modalId']).modal(); // 显示modal
+                                    $("#" + modal['editModalId']).modal(); // 显示modal
                                     modal['clickCallBack']({'btnType': 'update', 'data': originData}); // 执行回调
                                 }
 
@@ -464,23 +465,30 @@ var DataTablePlus = function (option) {
                             });
 
                             if (ids.length == 1) {
-                                $("#datatable_info_modal").modal(); // 显示modal
-                                var record = data[index];
-                                var $ul = $("#datatable_info_modal_list");
-                                $ul.empty();
-                                for (var i = 0; i < columns.length; i++) {
-                                    var column = columns[i];
-                                    var isDetail = column['detail'] || false; // 该字段是否用于详情查看
-                                    if (isDetail) {
-                                        var name = column['name'];
-                                        var title = column['title'];
-                                        var val = record[name];
+                                var isAuto = modal['auto'];
+                                if (isAuto) {
+                                    $("#datatable_info_modal").modal(); // 显示modal
+                                    var record = data[index];
+                                    var $ul = $("#datatable_info_modal_list");
+                                    $ul.empty();
+                                    for (var i = 0; i < columns.length; i++) {
+                                        var column = columns[i];
+                                        var isDetail = column['detail'] || false; // 该字段是否用于详情查看
+                                        if (isDetail) {
+                                            var name = column['name'];
+                                            var title = column['title'];
+                                            var val = record[name];
 
-                                        var $li = $("<li></li>");
-                                        $li.append('<b>' + title + '：</b>' + val);
-                                        $li.appendTo($ul);
-                                    }
-                                } // 构建数据列表
+                                            var $li = $("<li></li>");
+                                            $li.append('<b>' + title + '：</b>' + val);
+                                            $li.appendTo($ul);
+                                        }
+                                    } // 构建数据列表
+                                } else {
+                                    // 非自动模式
+                                    $("#" + modal['detailModalId']).modal(); // 显示modal
+                                    modal['clickCallBack']({'btnType': 'info', 'data': originData}); // 执行回调
+                                }
                             } else {
                                 Global.notify("详情操作提醒", "未选取有效数据或选中了多条数据！", "warning");
                             }
