@@ -114,6 +114,7 @@ var Global = (function () {
  *                  data[i].checked : {true, false} 是否默认选中，控件类型为radio仅可指定一个，控件类型为checkbox可指定多个
  *                  data[i].selected : {true, false} 是否默认选中，控件类型为select专用，仅可指定一个
  *              columns[i].editName : 控件为select专用，用于提交添加参数和修改参数时指定别名，往往select相关的显示属性名和提交属性名是不一致的，如显示属性名为xxxTypeName,提交属性名为xxxType.id
+ *              columns[i].detailRender:function(data){xxx return data} 满足详情显示时对特殊字段数据的处理，如对true|false进行字符映射，注意一定要要返回data
  *          url : 数据请求地址
  *              url.edit : 添加和修改提交地址，提交类型以post和push区分,若指定modal的工作模式为非自动，则无需填写此项
  *              url.delete : 删除提交地址，提交类型为delete
@@ -319,7 +320,7 @@ var DataTablePlus = function (option) {
                                                 break;
                                             case 'switch':
                                                 $("input[name='" + name + "']").attr("value", "1");
-                                                $("input[name='" + name + "']").prop('checked',true);
+                                                $("input[name='" + name + "']").prop('checked', true);
                                                 break;
                                             default:
                                                 $("input[name='" + name + "']").val("");
@@ -398,10 +399,10 @@ var DataTablePlus = function (option) {
                                                 case 'switch':
                                                     if (value) {
                                                         $("input[name='" + name + "']").attr("value", "1");
-                                                        $("input[name='" + name + "']").prop('checked',true);
+                                                        $("input[name='" + name + "']").prop('checked', true);
                                                     } else {
                                                         $("input[name='" + name + "']").attr("value", "0");
-                                                        $("input[name='" + name + "']").prop('checked',false);
+                                                        $("input[name='" + name + "']").prop('checked', false);
                                                     }
                                                     break;
                                                 default:
@@ -483,11 +484,14 @@ var DataTablePlus = function (option) {
                                     for (var i = 0; i < columns.length; i++) {
                                         var column = columns[i];
                                         var isDetail = column['detail'] || false; // 该字段是否用于详情查看
+                                        var detailRender = column['detailRender'] || null;
                                         if (isDetail) {
                                             var name = column['name'];
                                             var title = column['title'];
                                             var val = record[name];
-
+                                            if (detailRender != null) {
+                                                val = detailRender(val);
+                                            }
                                             var $li = $("<li></li>");
                                             $li.append('<b>' + title + '：</b>' + val);
                                             $li.appendTo($ul);
@@ -911,10 +915,10 @@ var DataTablePlus = function (option) {
                             var val = $(this).val();
                             if (val == "1") {
                                 $(this).attr('value', '0');
-                                $(this).prop('checked',false);
+                                $(this).prop('checked', false);
                             } else {
                                 $(this).attr('value', '1');
-                                $(this).prop('checked',true);
+                                $(this).prop('checked', true);
                             }
                         }); // 置换按钮状态
                         break;

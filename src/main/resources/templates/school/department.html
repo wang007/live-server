@@ -62,7 +62,16 @@
                         'show': true,
                         'detail': true,
                         'edit': true,
-                        'inputType':'switch'
+                        'inputType':'switch',
+                        'detailRender':function(data){
+                            var str = '';
+                            if(data){
+                                str = "启用中";
+                            }else{
+                                str = "未启用";
+                            }
+                            return str;
+                        }
                     }
                 ],
                 'columnsDefs': [
