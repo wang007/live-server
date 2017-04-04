@@ -52,6 +52,10 @@ public class DataTableUtils {
             for (Object object : columns) {
                 JSONObject column = (JSONObject) object;
                 String name = column.getString("name");
+               int index = name.indexOf(".");
+                if (index != -1) {
+                    name = name.substring(index+1);
+                }
                 filter.put(name, searchVal);
             }
         }

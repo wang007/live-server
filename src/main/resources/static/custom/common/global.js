@@ -114,7 +114,8 @@ var Global = (function () {
  *                  data[i].checked : {true, false} 是否默认选中，控件类型为radio仅可指定一个，控件类型为checkbox可指定多个
  *                  data[i].selected : {true, false} 是否默认选中，控件类型为select专用，仅可指定一个
  *              columns[i].editName : 控件为select专用，用于提交添加参数和修改参数时指定别名，往往select相关的显示属性名和提交属性名是不一致的，如显示属性名为xxxTypeName,提交属性名为xxxType.id
- *              columns[i].detailRender:function(data){xxx return data} 满足详情显示时对特殊字段数据的处理，如对true|false进行字符映射，注意一定要要返回data
+ *              columns[i].detailRender : function(data){xxx return data} 满足详情显示时对特殊字段数据的处理，如对true|false进行字符映射，注意一定要要返回data,需启用columns[i].detail = true
+ *              columns[i].prefix : 若启用的实体中有主从表的关系，从表属性需要提供前缀让后台能够正确区分主从表属性，与hql/sql指定的实体/表名 的别名一致
  *          url : 数据请求地址
  *              url.edit : 添加和修改提交地址，提交类型以post和push区分,若指定modal的工作模式为非自动，则无需填写此项
  *              url.delete : 删除提交地址，提交类型为delete
@@ -134,6 +135,7 @@ var Global = (function () {
  *          rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
  *          ajax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  *          columnsDefs : 暴露dataTables原生columnsDefs属性以满足单元格的复杂需求，注意因列表第一项以被checkbox占据，所以列表项的索引应该从1开始
+ *          masterPrefix : 若启用的实体中有主从表的关系，需要启用前缀与从表进行区分，与hql/sql指定的实体/表名 的别名一致
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -150,6 +152,7 @@ var DataTablePlus = function (option) {
         var modal = option['modal']; // modal相关参数，用于指定modal的工作方式
         var rules = option['rules']; // 检验规制，默认启用jquery.validate
         var ajax = option['ajax'] || null; // 用于修改提交后台数据的方法
+        var masterPrefix = option['masterPrefix'] || null; // 用于区分主从表
         var data; // 当前表格的全部数据
         var validator; // 表单检验器
         var defaultColumns = [
@@ -221,6 +224,18 @@ var DataTablePlus = function (option) {
                     } else {
                         d.search["value"] = "";
                     }
+
+                    if(masterPrefix != null){
+                        for (var i = 0; i < columns.length; i++) {
+                            var column = columns[i];
+                            var name = column['name'];
+                            var prefix = column['prefix'] || masterPrefix;
+                            d['columns'][i + 1]['name'] = prefix + "." + name; // 添加前缀
+                        }
+
+                        d['columns'][0]['name'] = masterPrefix + ".id";
+                    }
+
                     if (ajax != null) {
                         d = ajax(d);
                     }
