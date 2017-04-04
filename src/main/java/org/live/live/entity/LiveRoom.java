@@ -13,10 +13,6 @@ import javax.persistence.*;
 @Table(name="live_liveroom")
 public class LiveRoom extends BaseEntity {
 
-
-
-
-
     /**
      *  主播引用
      */

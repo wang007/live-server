@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>department</title>
+</head>
+<div class="page-header">
+    <h1>
+        校园管理
+        <small> 》系部管理</small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="table-header">系部列表</div>
+        <div>
+            <table id="department_table" class="table table-striped table-bordered lTable-font">
+            </table>
+        </div>
+    </div>
+</div>
+</html>
+<script type="text/javascript">
+    var script = [null, "/static/custom/common/simple-table.js", null]
+    $.ace_ajax_finish(script, function () {
+        jQuery(function ($) {
+            var _table = new DataTablePlus({
+                'targetId': 'department_table',
+                'columns': [
+                    {
+                        'name': 'code',
+                        'title': '系部编码',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
+                    }, {
+                        'name': 'name',
+                        'title': '系部名称',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
+                    }, {
+                        'name': 'description',
+                        'title': '描述',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'textarea',
+                        'maxLength': 50
+                    }, {
+                        'name': 'createTime',
+                        'title': '创建时间',
+                        'show': true,
+                        'detail': true,
+                        'edit': false,
+                    }, {
+                        'name': 'enableFlag',
+                        'title': '启用状态',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType':'switch'
+                    }
+                ],
+                'columnsDefs': [
+                    {
+                        "targets": 5,
+                        "render": function (data, type, full, meta) {
+                            var str = (data == true)?'启用中':'未启用';
+                            return str; // 创建选择框
+                        }
+                    }
+                ],
+                'responseArguments': {
+                    'successMsgCode': 'status',
+                    'successCode': 1,
+                    'errorMsgName': 'message'
+                }, // 服务器响应参数
+                'url': {
+                    'delete': 'school/department', // 删除提交地址
+                    'edit': 'school/department', // 新增与修改提交地址
+                    'data': 'school/department/data' // 数据拉取地址
+                },
+                'modal': {
+                    'auto': true // 启用自动模式
+                }, 'rules': {
+                    'code': {
+                        required: true
+                    },
+                    'name': {
+                        required: true
+                    }
+                }
+            });
+            _table.build(); // 创建表格
+        })
+    });
+</script>

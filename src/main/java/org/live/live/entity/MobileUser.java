@@ -1,91 +1,100 @@
 package org.live.live.entity;
 
 import org.live.common.base.BaseEntity;
+import org.live.school.entity.Student;
 
 import javax.persistence.*;
 import java.util.Date;
 
 /**
- *  移动端的用户
+ * 移动端的用户
  * Created by Mr.wang on 2017/3/28.
  */
 @Entity
-@Table(name="live_mobileuser")
+@Table(name = "live_mobileuser")
 public class MobileUser extends BaseEntity {
 
     /**
-     *  账号
+     * 账号
      */
     @Column(unique = true)  //账号唯一
-    private String account ;
+    private String account;
 
     /**
-     *  密码
+     * 密码
      */
     @Column
-    private String password ;
+    private String password;
 
     /**
      * 昵称
      */
     @Column
-    private String nickname ;
+    private String nickname;
 
     /**
      * 邮箱
      */
     @Column
-    private String email ;
+    private String email;
 
     /**
-     *  注册时间
+     * 手机号码
+     */
+    @Column
+    private String mobileNumber;
+
+    /**
+     * 注册时间
      */
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    private Date registerTime ;
+    private Date registerTime;
 
     /**
-     *  性别
+     * 性别
      */
+
     @Column
-    private String sex ;
+    private String sex;
 
     /**
-     *  所属系部
+     * 对应的学生身份
      */
-    @Column
-    private String department ;
+    @OneToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
 
     /**
-     *  头像url地址
+     * 头像url地址
      */
     @Column
-    private String headImgUrl ;
+    private String headImgUrl;
 
     /**
-     *  是否是主播的标记,默认是false
+     * 是否是主播的标记,默认是false
      */
     @Column
-    private boolean anchorFlag ;
+    private boolean anchorFlag;
 
     /**
      * 是否锁定用户。默认是false
      */
     @Column
-    private boolean lockFlag ;
+    private boolean lockFlag;
 
     /**
-     *   最后登录时间
+     * 最后登录时间
      */
     @Column
     @Temporal(TemporalType.TIMESTAMP)
-    private Date lastLoginTime ;
+    private Date lastLoginTime;
 
     /**
-     *  最后登录ip
+     * 最后登录ip
      */
     @Column
-    private String lastLoginIp ;
+    private String lastLoginIp;
 
 
     public String getAccount() {
@@ -120,6 +129,14 @@ public class MobileUser extends BaseEntity {
         this.email = email;
     }
 
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
     public Date getRegisterTime() {
         return registerTime;
     }
@@ -136,12 +153,12 @@ public class MobileUser extends BaseEntity {
         this.sex = sex;
     }
 
-    public String getDepartment() {
-        return department;
+    public Student getStudent() {
+        return student;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
     public String getHeadImgUrl() {

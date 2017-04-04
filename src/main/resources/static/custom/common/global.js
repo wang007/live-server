@@ -316,8 +316,10 @@ var DataTablePlus = function (option) {
                                                 break;
                                             case 'select':
                                                 $("select[name='" + name + "']").select2("val", "");
-                                                // $("select[name='" + name + "'] > option[selected = 'selected'] ").removeAttr("selected"); // 取消选中
-                                                //   $("select[name='" + name + "']").trigger("change"); // 触发change事件
+                                                break;
+                                            case 'switch':
+                                                $("input[name='" + name + "']").attr("value", "1");
+                                                $("input[name='" + name + "']").prop('checked',true);
                                                 break;
                                             default:
                                                 $("input[name='" + name + "']").val("");
@@ -392,8 +394,15 @@ var DataTablePlus = function (option) {
                                                         }
                                                     }
                                                     $("select[name='" + name + "']").select2("val", value);
-                                                    //$("select[name='" + name + "'] > option[value = '" + value + "'] ").attr("selected", true); // 设置为选中
-                                                    //$("select[name='" + name + "']").trigger("change"); // 触发change事件
+                                                    break;
+                                                case 'switch':
+                                                    if (value) {
+                                                        $("input[name='" + name + "']").attr("value", "1");
+                                                        $("input[name='" + name + "']").prop('checked',true);
+                                                    } else {
+                                                        $("input[name='" + name + "']").attr("value", "0");
+                                                        $("input[name='" + name + "']").prop('checked',false);
+                                                    }
                                                     break;
                                                 default:
                                                     $("input[name='" + name + "']").val(value);
@@ -519,6 +528,14 @@ var DataTablePlus = function (option) {
                                                 val = $("select[name='" + name + "']").val();
                                                 name = column['editName'];
                                                 break;
+                                            case 'switch':
+                                                val = $("input[name='" + name + "']").val();
+                                                if (val == "1") {
+                                                    val = true;
+                                                } else {
+                                                    val = false;
+                                                }
+                                                break;
                                             default:
                                                 val = $("input[name='" + name + "']").val();
                                                 break;
@@ -560,6 +577,14 @@ var DataTablePlus = function (option) {
                                             case 'select' :
                                                 val = $("select[name='" + name + "']").val();
                                                 name = column['editName'];
+                                                break;
+                                            case 'switch':
+                                                val = $("input[name='" + name + "']").val();
+                                                if (val == "1") {
+                                                    val = true;
+                                                } else {
+                                                    val = false;
+                                                }
                                                 break;
                                             default:
                                                 val = $("input[name='" + name + "']").val();
@@ -797,13 +822,15 @@ var DataTablePlus = function (option) {
                             }
                             buffer.append(el['col6']);
                             buffer.append('<div class="switch"><label>');
-                            buffer.append('<input id="_' + name + '" name="' + name + '" ' + $checked + ' class="ace ace-switch ace-switch-4 btn-rotate" type="checkbox">');
+                            buffer.append('<input id="_' + name + '" name="' + name + '" ' + $checked + ' class="ace ace-switch ace-switch-4 btn-empty" type="checkbox">');
                             buffer.append('<span class="lbl"></span>');
                             buffer.append('</label></div>');
                             buffer.append(el['/col6']);
                             buffer.append(el['span']);
                             buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
+
+                            specialEls.push(column);
                             break;
                         case 'spinner' :
                             buffer.append(el['col6']);
@@ -879,6 +906,18 @@ var DataTablePlus = function (option) {
                             todayHighlight: true
                         });
                         break;
+                    case 'switch':
+                        $("input[name='" + name + "']").click(function () {
+                            var val = $(this).val();
+                            if (val == "1") {
+                                $(this).attr('value', '0');
+                                $(this).prop('checked',false);
+                            } else {
+                                $(this).attr('value', '1');
+                                $(this).prop('checked',true);
+                            }
+                        }); // 置换按钮状态
+                        break;
                 }
             }
 
@@ -899,8 +938,14 @@ var DataTablePlus = function (option) {
                     var $div = $("div[name='" + name + "']");
                     $("span[name='" + name + "'] > i").remove(".glyphicon-remove"); // 清除图标
                     $div.removeClass("has-error"); // 清除样式
-                    $("span[name='" + name + "'] > span").detach("#required_hint"); // 去重
-                    $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
+                    var rule = rules[name] || null;
+                    if (rule != null) {
+                        var isRequired = rule['required'] || false;
+                        if (isRequired) {
+                            $("span[name='" + name + "'] > span").detach("#required_hint"); // 去重
+                            $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
+                        }
+                    }
                 },// 指定检验完成后的样式
                 highlight: function (element, errorClass, validClass) {
                     var name = element.name;
