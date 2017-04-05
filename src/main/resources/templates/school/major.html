@@ -2,41 +2,62 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"></meta>
-    <title>department</title>
+    <title>major</title>
 </head>
 <div class="page-header">
     <h1>
         校园管理
-        <small> 》系部管理</small>
+        <small> 》专业管理</small>
     </h1>
 </div>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="table-header">系部列表</div>
+        <div class="table-header">专业列表</div>
         <div>
-            <table id="department_table" class="table table-striped table-bordered lTable-font">
+            <table id="major_table" class="table table-striped table-bordered lTable-font">
             </table>
         </div>
     </div>
 </div>
-</html>
-<script type="text/javascript">
-    $.ace_ajax_finish(function() {
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $.ace_ajax_finish(function () {
         jQuery(function ($) {
-            var _table3 = new DataTablePlus({
-                'targetId': 'department_table',
+
+            var departments = /*[[${departments}]]*/null; // 系部数据
+            var _departments = []; // 系部下拉框数据源
+            for (var i = 0; i < departments.length; i++) {
+                var name = departments[i]['name'];
+                var id = departments[i]['id'];
+                _departments.push({'text': name, 'value': id});
+            }
+            var _table = new DataTablePlus({
+                'masterPrefix': 'm',
+                'targetId': 'major_table',
                 'columns': [
                     {
+                        'name': 'departmentName',
+                        'title': '所属系部',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'select',
+                        'editName': 'department.id',
+                        'prefix': 'd',
+                        'data': _departments // 数据源
+                    },
+                    {
                         'name': 'code',
-                        'title': '系部编码',
+                        'title': '专业编码',
                         'show': true,
                         'detail': true,
                         'edit': true,
                         'inputType': 'text'
                     }, {
                         'name': 'name',
-                        'title': '系部名称',
+                        'title': '专业名称',
                         'show': true,
                         'detail': true,
                         'edit': true,
@@ -61,12 +82,12 @@
                         'show': true,
                         'detail': true,
                         'edit': true,
-                        'inputType':'switch',
-                        'detailRender':function(data){
+                        'inputType': 'switch',
+                        'detailRender': function (data) {
                             var str = '';
-                            if(data){
+                            if (data) {
                                 str = "启用中";
-                            }else{
+                            } else {
                                 str = "未启用";
                             }
                             return str;
@@ -75,9 +96,9 @@
                 ],
                 'columnsDefs': [
                     {
-                        "targets": 5,
+                        "targets": 6,
                         "render": function (data, type, full, meta) {
-                            var str = (data == true)?'启用中':'未启用';
+                            var str = (data == true) ? '启用中' : '未启用';
                             return str; // 创建选择框
                         }
                     }
@@ -88,9 +109,9 @@
                     'errorMsgName': 'message'
                 }, // 服务器响应参数
                 'url': {
-                    'delete': 'school/department', // 删除提交地址
-                    'edit': 'school/department', // 新增与修改提交地址
-                    'data': 'school/department/data' // 数据拉取地址
+                    'delete': 'school/major', // 删除提交地址
+                    'edit': 'school/major', // 新增与修改提交地址
+                    'data': 'school/major/data' // 数据拉取地址
                 },
                 'modal': {
                     'auto': true // 启用自动模式
@@ -100,10 +121,14 @@
                     },
                     'name': {
                         required: true
+                    },
+                    'departmentName': {
+                        required: true
                     }
                 }
             });
-            _table3.build(); // 创建表格
+            _table.build(); // 创建表格
         })
     });
+    /*]]>*/
 </script>

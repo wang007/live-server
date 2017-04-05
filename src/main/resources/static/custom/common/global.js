@@ -225,7 +225,7 @@ var DataTablePlus = function (option) {
                         d.search["value"] = "";
                     }
 
-                    if(masterPrefix != null){
+                    if (masterPrefix != null) {
                         for (var i = 0; i < columns.length; i++) {
                             var column = columns[i];
                             var name = column['name'];
@@ -288,7 +288,7 @@ var DataTablePlus = function (option) {
                 /**
                  * 绑定按钮组
                  */
-                $("button[name='datatable_btn_group']").on("click", function () {
+                $("button[name='datatable_btn_group']").unbind("click").on("click", function () {
                     var id = $(this).attr("id");
                     switch (id) {
                         case "btn_datatable_refresh":
@@ -668,8 +668,8 @@ var DataTablePlus = function (option) {
                     var successMsgCode = responseArguments['successMsgCode'];
                     var successCode = responseArguments['successCode'];
                     var errorMsgName = responseArguments['errorMsgName'];
+                    var option = (type == "post") ? "添加" : "修改";
                     if (msg[successMsgCode] == successCode) {
-                        var option = (type == "post") ? "添加" : "修改";
                         Global.notify("操作提示：", option + "成功！", "success");
                         reloadTable(); // 刷新页面
                     } else {
@@ -916,7 +916,7 @@ var DataTablePlus = function (option) {
                             });
                         break;
                     case 'select':
-                        $("select[name='" + name + "']").select2();
+                        $("select[name='" + name + "']").select2({'allowClear': true});
                         break;
 
                     case 'datepicker':
@@ -945,6 +945,7 @@ var DataTablePlus = function (option) {
                 rules: rules,
                 onkeyup: false,
                 onclick: false,
+                ignore: [],
                 debug: false, // 是否关闭表单提交功能
                 errorPlacement: function (error, element) {
                     var name = element.attr("name");
