@@ -332,6 +332,9 @@ var DataTablePlus = function (option) {
                                                 break;
                                             case 'select':
                                                 $("select[name='" + name + "']").select2("val", "");
+                                                $("select[name='" + name + "']").unbind("change").bind("change", function () {
+                                                    $(this).valid(); // 重新校验
+                                                });
                                                 break;
                                             case 'switch':
                                                 $("input[name='" + name + "']").attr("value", "1");
@@ -410,6 +413,9 @@ var DataTablePlus = function (option) {
                                                         }
                                                     }
                                                     $("select[name='" + name + "']").select2("val", value);
+                                                    $("select[name='" + name + "']").unbind("change").bind("change", function () {
+                                                        $(this).valid(); // 重新校验
+                                                    });
                                                     break;
                                                 case 'switch':
                                                     if (value) {
