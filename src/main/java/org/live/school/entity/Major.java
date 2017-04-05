@@ -12,6 +12,45 @@ import java.util.Date;
 @Entity
 @Table(name = "school_major")
 public class Major extends BaseEntity{
+
+    /**
+     * 编码
+     */
+    @Column
+    private String code;
+
+    /**
+     * 名称
+     */
+    @Column
+    private String name;
+
+    /**
+     * 描述
+     */
+    @Column
+    private String description;
+
+    /**
+     * 创建时间
+     */
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createTime;
+
+    /**
+     * 所属系部
+     */
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    /**
+     * 是否启用，默认为true
+     */
+    @Column
+    private boolean enableFlag;
+
     public String getCode() {
         return code;
     }
@@ -59,38 +98,5 @@ public class Major extends BaseEntity{
     public void setEnableFlag(boolean enableFlag) {
         this.enableFlag = enableFlag;
     }
-
-    /**
-     * 编码
-     */
-    @Column
-    private String code;
-    /**
-     * 名称
-     */
-    @Column
-    private String name;
-    /**
-     * 描述
-     */
-    @Column
-    private String description;
-    /**
-     * 创建时间
-     */
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createTime;
-    /**
-     * 所属系部
-     */
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
-    /**
-     * 是否启用，默认为true
-     */
-    @Column
-    private boolean enableFlag = true;
 
 }
