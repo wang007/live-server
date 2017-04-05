@@ -1,5 +1,6 @@
 package org.live.live.repository;
 
+import org.live.app.vo.LiveCategoryVo;
 import org.live.common.base.BaseRepository;
 import org.live.live.entity.LiveCategory;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +16,7 @@ public interface LiveCategoryRepository extends BaseRepository<LiveCategory, Str
      * 查询全部的直播分类，按enabled，serialNo排序
      * @return
      */
-    @Query("select c from LiveCategory c order by c.enabled DESC, c.serialNo ASC")
+    @Query("select l from LiveCategory l order by l.enabled DESC, l.serialNo ASC")
     public List<LiveCategory> findAllCategory() ;
 
     /**
@@ -24,6 +25,13 @@ public interface LiveCategoryRepository extends BaseRepository<LiveCategory, Str
      */
     @Query(value=" select max(l.serialNo) from LiveCategory l")
     public Integer findMaxSerialNo() ;
+
+    /**
+     * 查询直播分类给移动端
+     * @return
+     */
+    @Query("select new org.live.app.vo.LiveCategoryVo(l.id, l.categoryName, l.coverUrl) from LiveCategory l where l.enabled=true order by l.serialNo ASC")
+    public List<LiveCategoryVo> findLiveCategory4app() ;
 
 
 }
