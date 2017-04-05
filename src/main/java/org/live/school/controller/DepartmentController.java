@@ -6,8 +6,7 @@ import org.live.common.response.SimpleResponseModel;
 import org.live.common.systemlog.LogLevel;
 import org.live.common.systemlog.OperateType;
 import org.live.common.systemlog.SystemLog;
-import org.live.dictionary.controller.DictTypeController;
-import org.live.dictionary.entity.DictType;
+import org.live.common.utils.CopyPropertiesUtils;
 import org.live.school.entity.Department;
 import org.live.school.service.DepartmentService;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ import java.util.List;
  * Created by KAM on 2017/4/4.
  */
 @RestController
-@RequestMapping("/school")
+@RequestMapping("school/")
 public class DepartmentController {
     private static final String MODULE = "school";
     private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentController.class);
@@ -38,7 +37,7 @@ public class DepartmentController {
      * @param mv
      * @return
      */
-    @RequestMapping(value = "/department/page", method = RequestMethod.GET)
+    @RequestMapping(value = "department/page", method = RequestMethod.GET)
     public ModelAndView page(ModelAndView mv) {
         mv.setViewName(MODULE + "/department");
         return mv;
@@ -51,7 +50,7 @@ public class DepartmentController {
      * @return
      */
     @SystemLog(description = "请求系部数据", logLevel = LogLevel.WARN, operateType = OperateType.QUERY)
-    @RequestMapping(value = "/department/data", method = RequestMethod.POST)
+    @RequestMapping(value = "department/data", method = RequestMethod.POST)
     @ResponseBody
     public DataTableModel data(HttpServletRequest request) {
         return departmentService.findPage(request);
@@ -63,7 +62,7 @@ public class DepartmentController {
      * @return
      */
     @SystemLog(description = "删除多个系部记录", logLevel = LogLevel.ERROR, operateType = OperateType.DELETE)
-    @RequestMapping(value = "/department", method = RequestMethod.DELETE)
+    @RequestMapping(value = "department", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseModel del(@RequestParam(value = "ids[]") List<String> ids) {
         ResponseModel<Object> model = new SimpleResponseModel<Object>();
@@ -83,20 +82,15 @@ public class DepartmentController {
      * 保存系部记录
      */
     @SystemLog(description = "添加系部记录", logLevel = LogLevel.WARN, operateType = OperateType.ADD)
-    @RequestMapping(value = "/department", method = RequestMethod.POST)
+    @RequestMapping(value = "department", method = RequestMethod.POST)
     @ResponseBody
     public ResponseModel<Object> save(Department department) {
-        /** 需要保存的参数 **/
-        Department entity = new Department();
-        entity.setEnableFlag(department.isEnableFlag());
-        entity.setCode(department.getCode());
-        entity.setName(department.getName());
-        entity.setDescription(department.getDescription());
-        entity.setCreateTime(new Date());
+
+        department.setCreateTime(new Date());
         /** 保存系部记录 **/
         ResponseModel<Object> model = new SimpleResponseModel<Object>();
         try {
-            model.setData(departmentService.save(entity));
+            model.setData(departmentService.save(department));
             model.success();
         } catch (Exception e) {
             LOGGER.error("添加系部记录异常", e);
@@ -110,7 +104,7 @@ public class DepartmentController {
      * 修改系部记录
      */
     @SystemLog(description = "修改系部记录", logLevel = LogLevel.WARN, operateType = OperateType.UPDATE)
-    @RequestMapping(value = "/department", method = RequestMethod.PUT)
+    @RequestMapping(value = "department", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseModel<Object> update(Department department) {
         Department entity = null;
@@ -119,18 +113,12 @@ public class DepartmentController {
             /** 需要保存的参数 **/
             if (department.getId() != null) {
                 entity = departmentService.get(department.getId()); // 取得原始记录
-
-                /** 更新记录 **/
-                entity.setEnableFlag(department.isEnableFlag());
-                entity.setCode(department.getCode());
-                entity.setName(department.getName());
-                entity.setDescription(department.getDescription());
+                CopyPropertiesUtils.copyPropertiesIgnoreNull(entity, department); // 更新记录
             } else {
                 /** id为空异常 **/
                 model.error();
                 return model;
             }
-
             /** 保存系部记录 **/
             model.setData(departmentService.save(entity));
             model.success();
@@ -138,7 +126,6 @@ public class DepartmentController {
             LOGGER.error("添加系部异常", e);
             model.error();
         }
-
         return model;
     }
 }

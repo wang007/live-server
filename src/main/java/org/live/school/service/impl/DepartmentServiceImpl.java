@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,5 +44,14 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, String> i
         Page<Department> page = departmentRepository.find((PageRequest) params.get("pageRequest"), (Map<String, Object>) params.get("filter")); // 查询分页数据
         DataTableModel model = DataTableUtils.parseDataTableModel(page, (Integer) params.get("draw"), recordsTotal); // 映射成定制模型
         return model;
+    }
+
+    /**
+     * 查询所有启用系部
+     * @return
+     */
+    @Override
+    public List<Department> findAll() {
+        return departmentRepository.findByEnableFlag(true);
     }
 }
