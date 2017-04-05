@@ -1,5 +1,6 @@
 package org.live.live.service.impl;
 
+import org.live.app.vo.LiveCategoryVo;
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
 import org.live.common.support.UploadFilePathConfig;
@@ -56,6 +57,11 @@ public class LiveCategoryServiceImpl extends BaseServiceImpl<LiveCategory, Strin
         if(file.exists()) file.delete() ;
         delete(category) ;
         return  true ;
+    }
+
+    @Override
+    public List<LiveCategoryVo> findLiveCategory4app() {
+        return repository.findLiveCategory4app() ;
     }
 
 
