@@ -1,64 +1,40 @@
-package org.live.school.entity;
+package org.live.school.vo;
 
-import org.live.common.base.BaseEntity;
-
-import javax.persistence.*;
 import java.util.Date;
 
 /**
- * 学生
- * Created by KAM on 2017/4/4.
+ * Created by KAM on 2017/4/6.
  */
-@Entity
-@Table(name = "school_student")
-public class Student extends BaseEntity {
-    /**
-     * 学号
-     */
-    @Column
+public class StudentVo {
+    private String id;
     private String sNo;
-    /**
-     * 姓名
-     */
-    @Column
     private String realName;
-    /**
-     * 性别
-     */
-    @Column
     private String sex;
-    /**
-     * 所在班级
-     */
-    @ManyToOne
-    @JoinColumn(name = "grade_id")
-    private Grade grade;
-
-    /**
-     * 年龄
-     */
-    @Column
+    private String className;
     private Integer age;
-
-    /**
-     * 生日
-     */
-    @Temporal(TemporalType.DATE)
-    @Column
     private Date birthday;
-
-    /**
-     * 是否过期，默认为false
-     */
-    @Column
     private boolean outDate;
-
-    /**
-     * 注册时间
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column
     private Date registerDate;
+
+    public StudentVo(String id, String sNo, String realName, String sex, String className, Integer age, Date birthday, boolean outDate, Date registerDate) {
+        this.id = id;
+        this.sNo = sNo;
+        this.realName = realName;
+        this.sex = sex;
+        this.className = className;
+        this.age = age;
+        this.birthday = birthday;
+        this.outDate = outDate;
+        this.registerDate = registerDate;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getsNo() {
         return sNo;
@@ -84,12 +60,12 @@ public class Student extends BaseEntity {
         this.sex = sex;
     }
 
-    public Grade getGrade() {
-        return grade;
+    public String getClassName() {
+        return className;
     }
 
-    public void setGrade(Grade grade) {
-        this.grade = grade;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public Integer getAge() {
@@ -123,4 +99,6 @@ public class Student extends BaseEntity {
     public void setRegisterDate(Date registerDate) {
         this.registerDate = registerDate;
     }
+
+
 }

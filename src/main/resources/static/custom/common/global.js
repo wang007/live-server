@@ -134,6 +134,7 @@ var Global = (function () {
  *          rules : 默认启用jquery.validate，rules用于指定检验规则，若开启非auto modal工作模式，无需指定
  *          ajax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  *          columnsDefs : 暴露dataTables原生columnsDefs属性以满足单元格的复杂需求，注意因列表第一项以被checkbox占据，所以列表项的索引应该从1开始
+ *          editAjax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -150,6 +151,7 @@ var DataTablePlus = function (option) {
         var modal = option['modal']; // modal相关参数，用于指定modal的工作方式
         var rules = option['rules']; // 检验规制，默认启用jquery.validate
         var ajax = option['ajax'] || null; // 用于修改提交后台数据的方法
+        var editAjax = option['editAjax'] || null; // 用于修改添加和修改请求，提交至后台的数据的方法，
         var data; // 当前表格的全部数据
         var validator; // 表单检验器
         var defaultColumns = [
@@ -326,6 +328,32 @@ var DataTablePlus = function (option) {
                                                 $("input[name='" + name + "']").attr("value", "1");
                                                 $("input[name='" + name + "']").prop('checked', true);
                                                 break;
+                                            case 'spinner':
+                                                $("input[name='" + name + "']").attr("value", column['value']); // 设置默认值
+                                                break;
+                                            case 'radio':
+                                                var radioData = column['data'];
+                                                var radioVal = null;
+                                                for (var i = 0; i < radioData.length; i++) {
+                                                    var isChecked = radioData[i]['checked'] || null;
+                                                    if (isChecked != null && isChecked) {
+                                                        radioVal = radioData[i]['value'];
+                                                    }
+                                                }
+
+                                                if(radioVal != null){
+                                                    $("input:radio[value='" + radioVal + "']").iCheck('check');
+                                                }else{
+                                                    $("input:radio[name='" + name + "']:first").iCheck('check'); // 默认选中第一个
+                                                }
+
+                                                break;
+                                            case 'datepicker':
+                                                $("input[name='" + name + "']").val("");
+                                                $("input[name='" + name + "']").unbind("change").bind("change", function () {
+                                                    $(this).valid(); // 重新校验
+                                                });
+                                                break;
                                             default:
                                                 $("input[name='" + name + "']").val("");
                                                 var $div = $("div[name='" + name + "']");
@@ -411,6 +439,19 @@ var DataTablePlus = function (option) {
                                                         $("input[name='" + name + "']").attr("value", "0");
                                                         $("input[name='" + name + "']").prop('checked', false);
                                                     }
+                                                    break;
+                                                case 'spinner':
+
+                                                    $("input[name='" + name + "']").val(value);
+                                                    break;
+                                                case 'radio':
+                                                    $("input:radio[value='" + value + "']").iCheck("check");
+                                                    break;
+                                                case 'datepicker':
+                                                    $("input[name='" + name + "']").val(value);
+                                                    $("input[name='" + name + "']").unbind("change").bind("change", function () {
+                                                        $(this).valid(); // 重新校验
+                                                    });
                                                     break;
                                                 default:
                                                     $("input[name='" + name + "']").val(value);
@@ -515,7 +556,8 @@ var DataTablePlus = function (option) {
                             break; // 详情
                         case "datatable_edit_modal_btn":
                             var $btn = $("#datatable_edit_modal_btn");
-                            if (!$("#datatable_edit_form").valid()) {
+                            var $form = $("#datatable_edit_form");
+                            if (!$form.valid()) {
                                 Global.notify(" 错误提醒：", "请修改好表单错误项！", "error");
                                 return false;
                             }
@@ -546,6 +588,15 @@ var DataTablePlus = function (option) {
                                                 } else {
                                                     val = false;
                                                 }
+                                                break;
+                                            case 'spinner':
+                                                val = $("input[name='" + name + "']").val();
+                                                break;
+                                            case 'radio':
+                                                val = $("input[name='" + name + "']:checked").val();
+                                                break;
+                                            case 'datepicker':
+                                                val = $("input[name='" + name + "']").val();
                                                 break;
                                             default:
                                                 val = $("input[name='" + name + "']").val();
@@ -596,6 +647,15 @@ var DataTablePlus = function (option) {
                                                 } else {
                                                     val = false;
                                                 }
+                                                break;
+                                            case 'spinner':
+                                                val = $("input[name='" + name + "']").val();
+                                                break;
+                                            case 'radio':
+                                                val = $("input[name='" + name + "']:checked").val();
+                                                break;
+                                            case 'datepicker':
+                                                val = $("input[name='" + name + "']").val();
                                                 break;
                                             default:
                                                 val = $("input[name='" + name + "']").val();
@@ -649,9 +709,13 @@ var DataTablePlus = function (option) {
          * @param type 提交类型
          */
         function postModalData(url, data, type) {
+            if (editAjax != null) {
+                data = editAjax(data);
+            } // 修改数据
             if (type == 'put') {
                 data['_method'] = 'put'
             }
+            console.log("提交的数据--->" + $.param(data));
             $.ajax({
                 type: "POST",
                 url: url,
@@ -806,7 +870,8 @@ var DataTablePlus = function (option) {
                             break;
                         case 'radio' :
                             var data = column['data'];
-                            buffer.append(el['col6']);
+                            buffer.append(el['col5']);
+
                             for (var j = 0; j < data.length; j++) {
                                 var isChecked = data[j]['checked'] || false;
                                 var $checked = '';
@@ -814,11 +879,11 @@ var DataTablePlus = function (option) {
                                     $checked = 'checked="checked"';
                                 }
                                 buffer.append('<div class="radio" id="_' + name + '"><label>');
-                                buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="radio"/>');
-                                buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
+                                buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" style="margin-right: 5px;" type="radio"/>');
+                                buffer.append('<span class="lbl"> ' + data[j]['text'] + '</span>');
                                 buffer.append('</label></div>');
                             }
-                            buffer.append(el['/col6']);
+                            buffer.append(el['/col5']);
                             buffer.append(el['span']);
                             buffer.append('<span class="middle" name="' + name + '">' + hint + '</span>');
                             buffer.append(el['/span']);
@@ -997,7 +1062,6 @@ StringBuffer.prototype.append = function (str) {
 StringBuffer.prototype.toString = function () {
     return this.__strings__.join("");
 }
-
 
 Global.init(); // 相关方法初始化
 
