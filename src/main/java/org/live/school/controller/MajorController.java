@@ -6,6 +6,7 @@ import org.live.common.response.SimpleResponseModel;
 import org.live.common.systemlog.LogLevel;
 import org.live.common.systemlog.OperateType;
 import org.live.common.systemlog.SystemLog;
+import org.live.common.utils.CopyPropertiesUtils;
 import org.live.school.entity.Department;
 import org.live.school.entity.Major;
 import org.live.school.service.DepartmentService;
@@ -68,7 +69,7 @@ public class MajorController {
      * @return
      */
     @SystemLog(description = "添加专业记录", logLevel = LogLevel.WARN, operateType = OperateType.ADD)
-    @RequestMapping(value = "/major", method = RequestMethod.POST)
+    @RequestMapping(value = "major", method = RequestMethod.POST)
     @ResponseBody
     public ResponseModel<Object> save(Major major) {
         major.setCreateTime(new Date()); // 添加创建时间
@@ -88,22 +89,15 @@ public class MajorController {
      * 修改专业记录
      */
     @SystemLog(description = "修改专业记录", logLevel = LogLevel.WARN, operateType = OperateType.UPDATE)
-    @RequestMapping(value = "/major", method = RequestMethod.PUT)
+    @RequestMapping(value = "major", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseModel<Object> update(Major major) {
         Major entity = null;
         ResponseModel<Object> model = new SimpleResponseModel<Object>();
         try {
-            /** 需要保存的参数 **/
             if (major.getId() != null) {
                 entity = majorService.get(major.getId()); // 取得原始记录
-
-                /** 更新记录 **/
-                entity.setEnableFlag(major.isEnableFlag());
-                entity.setCode(major.getCode());
-                entity.setName(major.getName());
-                entity.setDescription(major.getDescription());
-                entity.setDepartment(major.getDepartment());
+                CopyPropertiesUtils.copyPropertiesIgnoreNull(entity, major); // 更新记录
             } else {
                 /** id为空异常 **/
                 model.error();
@@ -127,7 +121,7 @@ public class MajorController {
      * @return
      */
     @SystemLog(description = "删除多个专业记录", logLevel = LogLevel.ERROR, operateType = OperateType.DELETE)
-    @RequestMapping(value = "/major", method = RequestMethod.DELETE)
+    @RequestMapping(value = "major", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseModel del(@RequestParam(value = "ids[]") List<String> ids) {
         ResponseModel<Object> model = new SimpleResponseModel<Object>();

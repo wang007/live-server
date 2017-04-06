@@ -1,55 +1,35 @@
-package org.live.school.entity;
+package org.live.school.vo;
 
-import org.live.common.base.BaseEntity;
-
-import javax.persistence.*;
 import java.util.Date;
 
 /**
- * 专业
  * Created by KAM on 2017/4/4.
  */
-@Entity
-@Table(name = "school_major")
-public class Major extends BaseEntity{
-
-    /**
-     * 编码
-     */
-    @Column
+public class MajorVo {
+    private String id;
     private String code;
-
-    /**
-     * 名称
-     */
-    @Column
     private String name;
-
-    /**
-     * 描述
-     */
-    @Column
     private String description;
-
-    /**
-     * 创建时间
-     */
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
-
-    /**
-     * 所属系部
-     */
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
-
-    /**
-     * 是否启用，默认为true
-     */
-    @Column
+    private String departmentName;
     private boolean enableFlag;
+    public MajorVo(String id, String code, String name, String description, Date createTime, String departmentName, boolean enableFlag) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.description = description;
+        this.createTime = createTime;
+        this.departmentName = departmentName;
+        this.enableFlag = enableFlag;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getCode() {
         return code;
@@ -83,12 +63,12 @@ public class Major extends BaseEntity{
         this.createTime = createTime;
     }
 
-    public Department getDepartment() {
-        return department;
+    public String getDepartmentName() {
+        return departmentName;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
     }
 
     public boolean isEnableFlag() {
@@ -98,5 +78,4 @@ public class Major extends BaseEntity{
     public void setEnableFlag(boolean enableFlag) {
         this.enableFlag = enableFlag;
     }
-
 }

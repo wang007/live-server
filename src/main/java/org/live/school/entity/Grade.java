@@ -37,7 +37,7 @@ public class Grade extends BaseEntity {
      * 启用状态，默认为true
      */
     @Column
-    private boolean enableFlag = true;
+    private boolean enableFlag;
     /**
      * 创建时间
      */

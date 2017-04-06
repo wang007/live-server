@@ -48,7 +48,7 @@ public class Student extends BaseEntity {
      * 是否过期，默认为false
      */
     @Column
-    private boolean outDate = false;
+    private boolean outDate;
     /**
      * 注册时间
      */

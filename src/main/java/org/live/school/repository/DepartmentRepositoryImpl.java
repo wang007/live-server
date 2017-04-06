@@ -6,10 +6,11 @@ import org.live.school.entity.Department;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * 系部数据库操作接口
+ * 系部数据库访问接口实现
  * Created by KAM on 2017/4/4.
  */
 public class DepartmentRepositoryImpl extends BaseRepositoryImpl {
@@ -38,4 +39,5 @@ public class DepartmentRepositoryImpl extends BaseRepositoryImpl {
         Page<Department> page = super.find(pageRequest, hql, null);
         return page;
     }
+
 }

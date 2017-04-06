@@ -46,7 +46,7 @@
                         'edit': true,
                         'inputType': 'select',
                         'data': _dictTypes,
-                        'editName': 'dictType.id'
+                        'editName': 'dictType.id' // 用于提交新增或修改数据时指定的别名，主要易于后台取值
                     }, {
                         'name': 'dictMark',
                         'title': '字典标志',
@@ -97,18 +97,21 @@
                     'remarks': {
                         required: true
                     }
-                }, 'ajax': function (data) {
-                    var columns = data['columns'];
-                    var index = data['order'][0]['column'];
-                    var columnName = columns[index]['name'];
-                    if (columnName == "typeName") {
-                        columnName = "d." + columnName;
-
-                    } else {
-                        columnName = "dt." + columnName;
-                    } // 多对一时, 让后台能够正确执行hql语句
-                    data['columns'][index]['name'] = columnName;
-                    return data;
+                },
+                'ajax': function (d) {
+                    var columns = d['columns'];
+                    for (var i = 0; i < columns.length; i++) {
+                        var column = columns[i];
+                        var name = column['name'];
+                        if (name == "typeName") {
+                            name = "dt." + name;
+                        } else {
+                            name = "d." + name;
+                        }
+                        columns[i]['name'] = name;
+                    }
+                    d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
+                    return d;
                 }
             });
             _table.build(); // 创建表格

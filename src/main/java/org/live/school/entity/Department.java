@@ -31,7 +31,7 @@ public class Department extends BaseEntity {
      * 是否启用,默认为true
      */
     @Column
-    private boolean enableFlag = true;
+    private boolean enableFlag;
 
     /**
      * 创建时间
