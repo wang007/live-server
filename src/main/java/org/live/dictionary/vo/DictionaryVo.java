@@ -1,4 +1,4 @@
-package org.live.dictionary.entity;
+package org.live.dictionary.vo;
 
 /**
  * Created by KAM on 2017/4/3.

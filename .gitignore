@@ -1,6 +1,7 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
-
+src/test/
+src/main/resources/static/ace/doces/
 ### STS ###
 .apt_generated
 .classpath
