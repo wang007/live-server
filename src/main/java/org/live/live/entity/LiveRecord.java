@@ -36,7 +36,7 @@ public class LiveRecord extends BaseEntity {
      *  最高在线人数
      */
     @Column
-    private long maxOnlineCount ;
+    private int maxOnlineCount ;
 
 
     /**
@@ -77,11 +77,11 @@ public class LiveRecord extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public long getMaxOnlineCount() {
+    public int getMaxOnlineCount() {
         return maxOnlineCount;
     }
 
-    public void setMaxOnlineCount(long maxOnlineCount) {
+    public void setMaxOnlineCount(int maxOnlineCount) {
         this.maxOnlineCount = maxOnlineCount;
     }
 

@@ -55,7 +55,7 @@ public class LiveRoom extends BaseEntity {
      * 在线人数。当关闭直播的时候，这里要清零
      */
     @Column
-    private long onlineCount ;
+    private int onlineCount ;
 
     /**
      *  历史最高在线人数
@@ -111,11 +111,11 @@ public class LiveRoom extends BaseEntity {
         this.roomLabel = roomLabel;
     }
 
-    public long getOnlineCount() {
+    public int getOnlineCount() {
         return onlineCount;
     }
 
-    public void setOnlineCount(long onlineCount) {
+    public void setOnlineCount(int onlineCount) {
         this.onlineCount = onlineCount;
     }
 
