@@ -7,12 +7,31 @@ import java.util.Date;
  */
 public class MajorVo {
     private String id;
+    /**
+     * 编码
+     */
     private String code;
+    /**
+     * 名称
+     */
     private String name;
+    /**
+     * 描述
+     */
     private String description;
+    /**
+     * 创建时间
+     */
     private Date createTime;
+    /**
+     * 系部名称
+     */
     private String departmentName;
+    /**
+     * 启用标记
+     */
     private boolean enableFlag;
+
     public MajorVo(String id, String code, String name, String description, Date createTime, String departmentName, boolean enableFlag) {
         this.id = id;
         this.code = code;

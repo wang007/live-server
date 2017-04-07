@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"></meta>
+    <title>mobile_user</title>
+</head>
+<div class="page-header">
+    <h1>
+        直播类别
+        <small> 》移动端用户管理</small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="table-header">移动端用户列表</div>
+        <div>
+            <table id="mobile_user_table" class="table table-striped table-bordered lTable-font">
+            </table>
+        </div>
+    </div>
+</div>
+<!-- detail modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="mobile_user_info_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header table-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详情查看</h4>
+            </div>
+            <div class="modal-body">
+                <!-- 内容 -->
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 center">
+															<span class="profile-picture">
+																<img class="editable img-responsive" alt="Alex's Avatar"
+                                                                     id="avatar2"
+                                                                     src="static/ace/assets/avatars/profile-pic.jpg"/>
+															</span>
+
+                        <div class="space space-4"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>主播身份：</label>
+                            </div>
+                            <div class="col-md-6">
+                                <label>
+                                    <input name="info-anchorFlag" class="ace ace-switch ace-switch-4 btn-empty"
+                                           type="checkbox" disabled/>
+                                    <span class="lbl"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>锁定状态：</label>
+                            </div>
+                            <div class="col-md-6">
+                                <label>
+                                    <input name="info-lockFlag" class="ace ace-switch ace-switch-4 btn-empty"
+                                           type="checkbox" disabled/>
+                                    <span class="lbl"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- <a href="#" class="btn btn-sm btn-block btn-danger">
+                             <i class="ace-icon fa fa-lock bigger-120"></i>
+                             <span class="bigger-110">锁 定</span>
+                         </a>
+
+                         <a href="#" class="btn btn-sm btn-block btn-primary">
+                             &lt;!&ndash; <i class="ace-icon fa fa-envelope-o bigger-110"></i>&ndash;&gt;
+                             <span class="bigger-110">设为过期</span>
+                         </a>-->
+                    </div><!-- /.col -->
+
+                    <div class="col-xs-12 col-sm-8">
+                        <!--   <h4 class="blue">
+                               <span class="middle" name="realName"></span>
+
+                               &lt;!&ndash; <span class="label label-purple arrowed-in-right">
+                                                                        <i class="ace-icon fa fa-circle smaller-80 align-middle"></i>
+                                                                        在线
+                                                                    </span>&ndash;&gt;
+                           </h4>-->
+
+                        <div class="profile-user-info" id="profile-user-info">
+
+                        </div>
+                        <!--<div class="hr hr-8 dotted"></div>-->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /detail modal -->
+
+<!-- edit modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="mobile_user_edit_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header table-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="mobile-user-edit-modal-title">添加记录</h4>
+            </div>
+            <div class="modal-body" id="mobile-user-edit-modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="form-field-select-4"> 账户
+                        </label>
+
+                        <div class="col-sm-6">
+                            <select class="select2" style="width: 100%;" id="form-field-select-4" name="account"
+                                    data-placeholder="请选择...">
+                                <option value=""></option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                            </select>
+                        </div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"><span class="red">*</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 control-label no-padding-right">
+                            密码
+                        </label>
+
+                        <div class="col-xs-12 col-sm-5">
+																	<span class="block input-icon input-icon-right">
+																		<input type="password"
+                                                                               class="width-100"/>
+																	</span>
+                        </div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"><span class="red">*</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 control-label no-padding-right">
+                            昵称
+                        </label>
+
+                        <div class="col-xs-12 col-sm-5">
+																	<span class="block input-icon input-icon-right">
+																		<input type="password"
+                                                                               class="width-100"/>
+																	</span>
+                        </div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 control-label no-padding-right">
+                            邮箱
+                        </label>
+
+                        <div class="col-xs-12 col-sm-5">
+																	<span class="block input-icon input-icon-right">
+																		<input type="password"
+                                                                               class="width-100"/>
+                                                                        <i class="ace-icon fa  fa-envelope"></i>
+																	</span>
+                        </div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 control-label no-padding-right">
+                            电话
+                        </label>
+
+                        <div class="col-xs-12 col-sm-5">
+																	<span class="block input-icon input-icon-right">
+																		<input type="password"
+                                                                               class="width-100"/>
+                                                                        <i class="ace-icon glyphicon glyphicon-earphone"></i>
+																	</span>
+                        </div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"> 主播身份
+                        </label>
+                        <div class="col-sm-6">
+                            <div class="switch">
+                                <label>
+                                    <input name="anchorFlag" class="ace ace-switch ace-switch-4 btn-empty"
+                                           type="checkbox">
+                                    <span class="lbl"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                <button type="button" class="btn btn-success" id="mobile-user-edit-modal-btn"><i class="fa fa-plus"></i>
+                    添 加
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /edit modal -->
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $.ace_ajax_finish(function () {
+        jQuery(function ($) {
+            /*      var grades = /!*[[${grades}]]*!/null; // 专业数据
+             var _grades = []; // 专业下拉框数据源
+             for (var i = 0; i < grades.length; i++) {
+             var name = grades[i]['className'];
+             var id = grades[i]['id'];
+             _grades.push({'text': name, 'value': id});
+             }*/
+            $("select[name='account']").select2({
+                ajax: {
+                    url: "",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        // parse the results into the format expected by Select2
+                        // since we are using custom formatting functions we do not need to
+                        // alter the remote JSON data, except to indicate that infinite
+                        // scrolling can be used
+                       /* params.page = params.page || 1;
+
+                        return {
+                            results: data.items,
+                            pagination: {
+                                more: (params.page * 30) < data.total_count
+                            }
+                        };*/
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                }, // let our custom formatter work
+                minimumInputLength: 1,
+                templateResult: formatRepo, // omitted for brevity, see the source of this page
+                templateSelection: formatRepoSelection, // omitted for brevity, see the source of this page
+                allowClear: true
+            });
+            var _table = new DataTablePlus({
+                'targetId': 'mobile_user_table',
+                'columns': [
+                    {
+                        'name': 'account',
+                        'title': '账号',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
+                    }, {
+                        'name': 'nickname',
+                        'title': '昵称',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
+                    },
+                    {
+                        'name': 'realName',
+                        'title': '姓名',
+                        'show': true,
+                        'detail': true,
+                        'edit': false,
+                    }, {
+                        'name': 'mobileNumber',
+                        'title': '电话',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
+                    }, {
+                        'name': 'anchorFlag',
+                        'title': '主播身份',
+                        'show': true,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'text'
+                    }, {
+                        'name': 'registerTime',
+                        'title': '注册时间',
+                        'show': true,
+                        'detail': true,
+                        'edit': false
+                    }
+                ],
+                'columnsDefs': [
+                    {
+                        "targets": 5,
+                        "render": function (data, type, full, meta) {
+                            var str = (data == true) ? '是' : '否';
+                            return str; // 创建选择框
+                        }
+                    }
+                ],
+                'responseArguments': {
+                    'successMsgCode': 'status',
+                    'successCode': 1,
+                    'errorMsgName': 'message'
+                }, // 服务器响应参数
+                'url': {
+                    'delete': 'live/mobileUser', // 删除提交地址
+                    'edit': 'live/mobileUser', // 新增与修改提交地址
+                    'data': 'live/mobileUser/data' // 数据拉取地址
+                },
+                'modal': {
+                    'auto': true // 启用自动模式
+                },
+                'rules': {},
+                'ajax': function (d) {
+                    var columns = d['columns'];
+                    for (var i = 0; i < columns.length; i++) {
+                        var column = columns[i];
+                        var name = column['name'];
+                        if (name == "className") {
+                            name = "s.grade.className";
+                        } else if (name == "memberNo" || name == "realName") {
+                            name = "s." + name;
+                        } else {
+                            name = "mu." + name;
+                        }
+                        columns[i]['name'] = name;
+                    }
+                    d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
+                    return d;
+                },
+                'editAjax': function (d) {
+                    /*  var birthday = d['birthday'];
+                     d['birthday'] = birthday + " 00:00:00"; // 更改日期格式*/
+                    return d;
+                },
+                'modal': {
+                    'auto': false,
+                    'clickCallBack': function (call) {
+                        var btnType = call['btnType'];
+                        var data = call['data'];
+                        switch (btnType) {
+                            case 'info':
+                                var $modal = $("#mobile_user_info_modal");
+                                $modal.modal(); // 显示详情modal
+                                var spanName = {
+                                    'memberNo': '成员编号',
+                                    'nickname': '昵称',
+                                    'realName': '姓名',
+                                    'lastLoginTime': '最后登录时间',
+                                    'lastLoginIp': '最后登录ip',
+                                    'email': '邮箱',
+                                    'mobileNumber': '手机号码',
+                                    'memberType': '成员类型',
+                                    'className': '班级名称',
+                                    'sex': '性别',
+                                    'age': '年龄',
+                                    'birthday': '生日',
+                                    'anchorFlag': '主播身份',
+                                    'lockFlag': '是否锁定',
+                                    'registerTime': '注册时间'
+                                }; // 标签名称
+                                var $div = $("#profile-user-info");
+                                $div.empty(); // 清空
+                                for (var key in spanName) {
+                                    $div.append('<div class="profile-info-row">');
+                                    var val = data[key];
+                                    switch (key) {
+                                        case 'className':
+                                            if (val == null) {
+                                                val = "无";
+                                            }
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><span>' + val + '</span></div>');
+                                            break;
+                                        case 'mobileNumber':
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><i class="glyphicon glyphicon-earphone blue"></i> <span>' + val + '</span></div>');
+                                            break;
+                                        case 'memberType':
+                                            if (val == "tea") {
+                                                val = "教师";
+                                            }
+                                            if (val == "stu") {
+                                                val = "学生";
+                                            }
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><span class="label label-info arrowed-in-right arrowed">' + val + '</span></div>');
+                                            break;
+                                        case 'sex':
+                                            if (val == "1") {
+                                                val = "男";
+                                            }
+                                            if (val == "0") {
+                                                val = "女";
+                                            }
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><span>' + val + '</span></div>');
+                                            break;
+                                        case 'email':
+
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><i class="fa fa-envelope blue"></i> <span>' + val + '</span></div>');
+                                            break;
+                                        case 'birthday':
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><i class="fa fa-calendar blue"></i> <span>' + val + '</span></div>');
+
+                                            break;
+
+                                        case 'realName':
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><span class="blue">' + val + '</span></div>');
+                                            break;
+                                        case 'anchorFlag':
+                                            if (val) {
+                                                $("input[name='info-" + key + "']").prop("checked", true);
+                                            } else {
+                                                $("input[name='info-" + key + "']").prop("checked", false);
+                                            }
+                                            break;
+                                        case 'lockFlag':
+                                            if (val) {
+                                                $("input[name='info-" + key + "']").prop("checked", true);
+                                            } else {
+                                                $("input[name='info-" + key + "']").prop("checked", false);
+                                            }
+                                            break;
+                                        default:
+                                            $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
+                                            $div.append('<div class="profile-info-value"><span>' + val + '</span></div>');
+                                            break;
+                                    }
+                                    $div.append('</div>');
+                                }
+                                break; // 详情按钮
+                            case 'create':
+                                $("#mobile_user_edit_modal").modal(); // 显示modal
+                                break; // 添加按钮
+                        }
+                    }
+                }
+            });
+            _table.build(); // 创建表格
+        });
+    });
+    /*]]>*/
+</script>

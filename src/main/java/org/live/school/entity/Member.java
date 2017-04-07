@@ -6,17 +6,17 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * 学生
+ * 校园成员
  * Created by KAM on 2017/4/4.
  */
 @Entity
-@Table(name = "school_student")
-public class Student extends BaseEntity {
+@Table(name = "school_member")
+public class Member extends BaseEntity {
     /**
-     * 学号
+     * 成员编号，教师或饭堂阿姨对应工号，学生对应学号
      */
     @Column
-    private String sNo;
+    private String memberNo;
     /**
      * 姓名
      */
@@ -27,12 +27,18 @@ public class Student extends BaseEntity {
      */
     @Column
     private String sex;
+
     /**
      * 所在班级
      */
     @ManyToOne
     @JoinColumn(name = "grade_id")
     private Grade grade;
+
+    /**
+     * 成员类型,教师或学生 {stu|tea}
+     */
+    private String memberType;
 
     /**
      * 年龄
@@ -60,12 +66,12 @@ public class Student extends BaseEntity {
     @Column
     private Date registerDate;
 
-    public String getsNo() {
-        return sNo;
+    public String getMemberNo() {
+        return memberNo;
     }
 
-    public void setsNo(String sNo) {
-        this.sNo = sNo;
+    public void setMemberNo(String memberNo) {
+        this.memberNo = memberNo;
     }
 
     public String getRealName() {
@@ -82,6 +88,14 @@ public class Student extends BaseEntity {
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public String getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(String memberType) {
+        this.memberType = memberType;
     }
 
     public Grade getGrade() {

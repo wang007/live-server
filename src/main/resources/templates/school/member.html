@@ -2,20 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"></meta>
-    <title>student</title>
+    <title>member</title>
 </head>
 <div class="page-header">
     <h1>
         校园管理
-        <small> 》学生管理</small>
+        <small> 》成员管理</small>
     </h1>
 </div>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="table-header">学生列表</div>
+        <div class="table-header">成员列表</div>
         <div>
-            <table id="student_table" class="table table-striped table-bordered lTable-font">
+            <table id="member_table" class="table table-striped table-bordered lTable-font">
             </table>
         </div>
     </div>
@@ -33,21 +33,11 @@
                 _grades.push({'text': name, 'value': id});
             }
             var _table = new DataTablePlus({
-                'targetId': 'student_table',
+                'targetId': 'member_table',
                 'columns': [
                     {
-                        'name': 'className',
-                        'title': '班级名称',
-                        'show': true,
-                        'detail': true,
-                        'edit': true,
-                        'inputType': 'select',
-                        'editName': 'grade.id',
-                        'data': _grades // 数据源
-                    },
-                    {
-                        'name': 'sNo',
-                        'title': '学号',
+                        'name': 'memberNo',
+                        'title': '成员编号',
                         'show': true,
                         'detail': true,
                         'edit': true,
@@ -69,7 +59,7 @@
                         'data': [{
                             'text': '男',
                             'value': '1'
-                           /* 'checked': true*/
+                            /* 'checked': true*/
                         }, {
                             'text': '女',
                             'value': '0'
@@ -89,10 +79,51 @@
                     }, {
                         'name': 'birthday',
                         'title': '生日',
+                        'show': false,
+                        'detail': true,
+                        'edit': true,
+                        'inputType':'datepicker'
+                    }, {
+                        'name': 'memberType',
+                        'title': '成员类型',
                         'show': true,
                         'detail': true,
                         'edit': true,
-                        'inputType': 'datepicker'
+                        'inputType': 'radio',
+                        'data': [
+                            {
+                                'text': '学生',
+                                'value': 'stu',
+                                'checked': true,
+                            }, {
+                                'text': '教师',
+                                'value': 'tea'
+                            }
+                        ],
+                        'detailRender': function (data) {
+                            if (data == "tea") {
+                                return "教师";
+                            } else {
+                                return "学生";
+                            }
+                        }
+                    }, {
+                        'name': 'className',
+                        'title': '班级名称',
+                        'show': false,
+                        'detail': true,
+                        'edit': true,
+                        'inputType': 'select',
+                        'editName': 'grade.id',
+                        'data': _grades, // 数据源
+                        'detailRender': function (data) {
+                            if (data == null) {
+                                return "无";
+                            } else {
+                                return data;
+                            }
+                        },
+                        'editName':'grade.id'
                     },
                     {
                         'name': 'outDate',
@@ -101,12 +132,13 @@
                         'detail': true,
                         'edit': true,
                         'inputType': 'switch',
+                        'value':"0",
                         'detailRender': function (data) {
                             var str = '';
                             if (data) {
-                                str = "离校";
+                                str = "过期";
                             } else {
-                                str = "在读";
+                                str = "未过期";
                             }
                             return str;
                         }
@@ -120,9 +152,23 @@
                 ],
                 'columnsDefs': [
                     {
-                        "targets": 7,
+                        "targets": 3,
                         "render": function (data, type, full, meta) {
-                            var str = (data == true) ? '离校' : '在读';
+                            var str = (data == '0') ? '女' : '男';
+                            return str; // 创建选择框
+                        }
+                    },
+                    {
+                        "targets": 5,
+                        "render": function (data, type, full, meta) {
+                            var str = (data == 'stu') ? '学生' : '老师';
+                            return str; // 创建选择框
+                        }
+                    },
+                    {
+                        "targets": 6,
+                        "render": function (data, type, full, meta) {
+                            var str = (data == true) ? '过期' : '未过期';
                             return str; // 创建选择框
                         }
                     }
@@ -133,21 +179,18 @@
                     'errorMsgName': 'message'
                 }, // 服务器响应参数
                 'url': {
-                    'delete': 'school/student', // 删除提交地址
-                    'edit': 'school/student', // 新增与修改提交地址
-                    'data': 'school/student/data' // 数据拉取地址
+                    'delete': 'school/member', // 删除提交地址
+                    'edit': 'school/member', // 新增与修改提交地址
+                    'data': 'school/member/data' // 数据拉取地址
                 },
                 'modal': {
                     'auto': true // 启用自动模式
                 },
                 'rules': {
-                    'sNo': {
+                    'memberNo': {
                         required: true
                     },
                     'realName': {
-                        required: true
-                    },
-                    'className': {
                         required: true
                     },
                     'birthday': {
@@ -160,13 +203,21 @@
                         var column = columns[i];
                         var name = column['name'];
                         if (name == "className") {
-                            name = "g.className";
+                            name = "m.grade.className";
                         } else {
-                            name = "s." + name;
+                            name = "m." + name;
                         }
                         columns[i]['name'] = name;
                     }
                     d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
+                    var searchVal = d['search']['value'];
+                    if (searchVal == "教师" || searchVal == "师" || searchVal == "教") {
+                        d['search']['value'] = "tea";
+                    }
+                    if (searchVal == "学生" || searchVal == "学" || searchVal == "生") {
+                        d['search']['value'] = "stu";
+
+                    } // 替换搜索关键字
                     return d;
                 },
                 'editAjax': function (d) {

@@ -125,8 +125,6 @@ var Global = (function () {
  *              responseArguments.errorMsgName : 响应失败返回的错误信息对应的key值
  *          modal : 用于指定 edit modal 和 info modal ,即添加数据和修改数据用的modal和显示详细信息用的modal
  *              auto : {true|false} 是否启用自动modal模式，默认为true,若不启用需要为插件指定自定义editModalId、infoModalId 和 一个回调方法用于绑定按钮的点击事件
- *              editModalId : 指定需要与插件按钮绑定的 edit modal id
- *              infoModalId : 指定需要与插件按钮绑定的 info modal id
  *              clickCallBack : function(call){} 按钮点击回调方法
  *                  call : 回调相关参数
  *                      call.btnType : {create|update|info} 当前按钮类型、
@@ -325,8 +323,10 @@ var DataTablePlus = function (option) {
                                                 });
                                                 break;
                                             case 'switch':
-                                                $("input[name='" + name + "']").attr("value", "1");
-                                                $("input[name='" + name + "']").prop('checked', true);
+                                                var value = column['value'] || "1";
+                                                var isChecked = (value == "1") ? true : false;
+                                                $("input[name='" + name + "']").attr("value", value);
+                                                $("input[name='" + name + "']").prop('checked', isChecked);
                                                 break;
                                             case 'spinner':
                                                 $("input[name='" + name + "']").attr("value", column['value']); // 设置默认值
@@ -341,9 +341,9 @@ var DataTablePlus = function (option) {
                                                     }
                                                 }
 
-                                                if(radioVal != null){
+                                                if (radioVal != null) {
                                                     $("input:radio[value='" + radioVal + "']").iCheck('check');
-                                                }else{
+                                                } else {
                                                     $("input:radio[name='" + name + "']:first").iCheck('check'); // 默认选中第一个
                                                 }
 
@@ -368,8 +368,6 @@ var DataTablePlus = function (option) {
                                 }
                             } else {
                                 // 非自动模式
-
-                                $("#" + modal['editModalId']).modal(); // 显示modal
                                 modal['clickCallBack']({'btnType': 'create'}); // 执行回调
                             }
                             break; // 新增
@@ -468,7 +466,6 @@ var DataTablePlus = function (option) {
                                     showEditModal("update"); // 显示modal
                                 } else {
                                     // 非自动模式
-                                    $("#" + modal['editModalId']).modal(); // 显示modal
                                     modal['clickCallBack']({'btnType': 'update', 'data': originData}); // 执行回调
                                 }
 
@@ -524,9 +521,9 @@ var DataTablePlus = function (option) {
 
                             if (ids.length == 1) {
                                 var isAuto = modal['auto'];
+                                var record = data[index];
                                 if (isAuto) {
                                     $("#datatable_info_modal").modal(); // 显示modal
-                                    var record = data[index];
                                     var $ul = $("#datatable_info_modal_list");
                                     $ul.empty();
                                     for (var i = 0; i < columns.length; i++) {
@@ -547,8 +544,7 @@ var DataTablePlus = function (option) {
                                     } // 构建数据列表
                                 } else {
                                     // 非自动模式
-                                    $("#" + modal['detailModalId']).modal(); // 显示modal
-                                    modal['clickCallBack']({'btnType': 'info', 'data': originData}); // 执行回调
+                                    modal['clickCallBack']({'btnType': 'info', 'data': record}); // 执行回调
                                 }
                             } else {
                                 Global.notify("详情操作提醒", "未选取有效数据或选中了多条数据！", "warning");
@@ -580,6 +576,9 @@ var DataTablePlus = function (option) {
                                             case 'select' :
                                                 val = $("select[name='" + name + "']").val();
                                                 name = column['editName'];
+                                                if (val.length == 0) {
+                                                    val = null;
+                                                }
                                                 break;
                                             case 'switch':
                                                 val = $("input[name='" + name + "']").val();
@@ -639,6 +638,9 @@ var DataTablePlus = function (option) {
                                             case 'select' :
                                                 val = $("select[name='" + name + "']").val();
                                                 name = column['editName'];
+                                                if (val.length == 0) {
+                                                    val = null;
+                                                }
                                                 break;
                                             case 'switch':
                                                 val = $("input[name='" + name + "']").val();

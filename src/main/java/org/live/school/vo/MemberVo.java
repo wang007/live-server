@@ -5,20 +5,21 @@ import java.util.Date;
 /**
  * Created by KAM on 2017/4/6.
  */
-public class StudentVo {
+public class MemberVo {
     private String id;
-    private String sNo;
+    private String memberNo;
     private String realName;
     private String sex;
     private String className;
     private Integer age;
     private Date birthday;
+    private String memberType;
     private boolean outDate;
     private Date registerDate;
 
-    public StudentVo(String id, String sNo, String realName, String sex, String className, Integer age, Date birthday, boolean outDate, Date registerDate) {
+    public MemberVo(String id, String memberNo, String realName, String sex, String className, Integer age, Date birthday, String memberType, boolean outDate, Date registerDate) {
         this.id = id;
-        this.sNo = sNo;
+        this.memberNo = memberNo;
         this.realName = realName;
         this.sex = sex;
         this.className = className;
@@ -26,6 +27,7 @@ public class StudentVo {
         this.birthday = birthday;
         this.outDate = outDate;
         this.registerDate = registerDate;
+        this.memberType = memberType;
     }
 
     public String getId() {
@@ -36,12 +38,12 @@ public class StudentVo {
         this.id = id;
     }
 
-    public String getsNo() {
-        return sNo;
+    public String getMemberNo() {
+        return memberNo;
     }
 
-    public void setsNo(String sNo) {
-        this.sNo = sNo;
+    public void setMemberNo(String memberNo) {
+        this.memberNo = memberNo;
     }
 
     public String getRealName() {
@@ -82,6 +84,14 @@ public class StudentVo {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public String getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(String memberType) {
+        this.memberType = memberType;
     }
 
     public boolean isOutDate() {

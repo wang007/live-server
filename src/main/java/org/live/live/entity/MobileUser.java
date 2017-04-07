@@ -1,7 +1,7 @@
 package org.live.live.entity;
 
 import org.live.common.base.BaseEntity;
-import org.live.school.entity.Student;
+import org.live.school.entity.Member;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -51,19 +51,19 @@ public class MobileUser extends BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date registerTime;
 
-    /**
+/*    *//**
      * 性别
-     */
+     *//*
 
     @Column
-    private String sex;
+    private String sex;*/
 
     /**
-     * 对应的学生身份
+     * 对应的学校成员身份
      */
     @OneToOne
-    @JoinColumn(name = "student_id")
-    private Student student;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     /**
      * 头像url地址
@@ -96,6 +96,10 @@ public class MobileUser extends BaseEntity {
     @Column
     private String lastLoginIp;
 
+    /**
+     * 过期标记
+     */
+    private boolean outDateFlag;
 
     public String getAccount() {
         return account;
@@ -145,20 +149,20 @@ public class MobileUser extends BaseEntity {
         this.registerTime = registerTime;
     }
 
-    public String getSex() {
+ /*   public String getSex() {
         return sex;
     }
 
     public void setSex(String sex) {
         this.sex = sex;
+    }*/
+
+    public Member getMember() {
+        return member;
     }
 
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setMember(Member member) {
+        this.member = member;
     }
 
     public String getHeadImgUrl() {
@@ -199,5 +203,14 @@ public class MobileUser extends BaseEntity {
 
     public void setLastLoginIp(String lastLoginIp) {
         this.lastLoginIp = lastLoginIp;
+    }
+
+
+    public boolean isOutDateFlag() {
+        return outDateFlag;
+    }
+
+    public void setOutDateFlag(boolean outDateFlag) {
+        this.outDateFlag = outDateFlag;
     }
 }

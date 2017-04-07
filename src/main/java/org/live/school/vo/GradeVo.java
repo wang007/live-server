@@ -16,11 +16,29 @@ public class GradeVo {
 
     public GradeVo(String id, Integer classNo, Integer gradeNo, String className, String majorName, Date createTime, boolean enableFlag){
         this.id = id;
+        /**
+         * 班级号
+         */
         this.classNo = classNo;
+        /**
+         * 年级号
+         */
         this.gradeNo = gradeNo;
+        /**
+         * 班级名称
+         */
         this.className = className;
+        /**
+         * 专业名称
+         */
         this.majorName = majorName;
+        /**
+         * 创建时间
+         */
         this.createTime = createTime;
+        /**
+         * 启用标记
+         */
         this.enableFlag = enableFlag;
     }
 
