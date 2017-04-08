@@ -1,5 +1,6 @@
 package org.live.school.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.live.common.response.DataTableModel;
 import org.live.common.response.ResponseModel;
@@ -8,10 +9,13 @@ import org.live.common.systemlog.LogLevel;
 import org.live.common.systemlog.OperateType;
 import org.live.common.systemlog.SystemLog;
 import org.live.common.utils.CopyPropertiesUtils;
+import org.live.common.utils.DataTableUtils;
 import org.live.school.entity.Grade;
 import org.live.school.entity.Member;
 import org.live.school.service.GradeService;
 import org.live.school.service.MemberService;
+import org.live.school.vo.MemberVo;
+import org.live.school.vo.SimpleMemberVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +54,17 @@ public class MemberController {
         return mv;
     }
 
-//    public List<Member>
+    /**
+     * 根据姓名查询记录
+     *
+     * @param searchVal
+     * @return
+     */
+    @RequestMapping(value = "member/realName", method = RequestMethod.GET)
+    @ResponseBody
+    public List<SimpleMemberVo> find(@RequestParam(value = "searchVal") String searchVal) {
+        return memberService.findByRealName(searchVal);
+    }
 
     /**
      * 请求成员数据
@@ -76,7 +90,7 @@ public class MemberController {
     @ResponseBody
     public ResponseModel<Object> save(Member member) {
         String id = member.getGrade().getId();
-        if(StringUtils.isEmpty(id)){
+        if (StringUtils.isEmpty(id)) {
             member.setGrade(null);
         }
         member.setRegisterDate(new Date()); // 添加创建时间
@@ -100,7 +114,7 @@ public class MemberController {
     @ResponseBody
     public ResponseModel<Object> update(Member member) {
         String id = member.getGrade().getId();
-        if(StringUtils.isEmpty(id)){
+        if (StringUtils.isEmpty(id)) {
             member.setGrade(null);
         }
         Member entity = null;

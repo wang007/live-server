@@ -321,6 +321,12 @@ var DataTablePlus = function (option) {
                                                 $("select[name='" + name + "']").unbind("change").bind("change", function () {
                                                     $(this).valid(); // 重新校验
                                                 });
+                                                var $div = $("div[name='" + name + "']");
+                                                if ($div.is(".has-error")) {
+                                                    $div.removeClass("has-error");
+                                                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
+                                                    $("label[class='error']").text("");
+                                                } // 清除残留样式
                                                 break;
                                             case 'switch':
                                                 var value = column['value'] || "1";
@@ -428,6 +434,12 @@ var DataTablePlus = function (option) {
                                                     $("select[name='" + name + "']").unbind("change").bind("change", function () {
                                                         $(this).valid(); // 重新校验
                                                     });
+                                                    var $div = $("div[name='" + name + "']");
+                                                    if ($div.is(".has-error")) {
+                                                        $div.removeClass("has-error");
+                                                        $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
+                                                        $("label[class='error']").text("");
+                                                    } // 清除残留样式
                                                     break;
                                                 case 'switch':
                                                     if (value) {
@@ -998,7 +1010,6 @@ var DataTablePlus = function (option) {
                         break;
                 }
             }
-
             // 开启检验
             validator = $("#datatable_edit_form").validate({
                 rules: rules,

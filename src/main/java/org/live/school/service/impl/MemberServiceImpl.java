@@ -8,12 +8,14 @@ import org.live.school.entity.Member;
 import org.live.school.repository.MemberRepository;
 import org.live.school.service.MemberService;
 import org.live.school.vo.MemberVo;
+import org.live.school.vo.SimpleMemberVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,5 +43,10 @@ public class MemberServiceImpl extends BaseServiceImpl<Member, String> implement
         Page<MemberVo> page = memberRepository.find((PageRequest) params.get("pageRequest"), (Map<String, Object>) params.get("filter")); // 查询分页数据
         DataTableModel model = DataTableUtils.parseDataTableModel(page, (Integer) params.get("draw"), recordsTotal); // 映射成定制模型
         return model;
+    }
+
+    @Override
+    public List<SimpleMemberVo> findByRealName(String realName) {
+        return memberRepository.findByRealNameLike(realName);
     }
 }

@@ -3,8 +3,10 @@ package org.live.school.service;
 import org.live.common.base.BaseService;
 import org.live.common.response.DataTableModel;
 import org.live.school.entity.Member;
+import org.live.school.vo.SimpleMemberVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 成员业务接口
@@ -12,4 +14,5 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface MemberService extends BaseService<Member, String> {
     public DataTableModel findPage(HttpServletRequest request);
+    public List<SimpleMemberVo> findByRealName(String realName);
 }

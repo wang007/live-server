@@ -109,42 +109,43 @@
                 <h4 class="modal-title" id="mobile-user-edit-modal-title">添加记录</h4>
             </div>
             <div class="modal-body" id="mobile-user-edit-modal-body">
-                <form class="form-horizontal" role="form">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="form-field-select-4"> 账户
+                <form class="form-horizontal" role="form" id="mobile-user-form">
+                    <div class="form-group" name="account">
+                        <label class="col-sm-3 control-label no-padding-right"> 账户
                         </label>
 
-                        <div class="col-sm-6">
-                            <select class="select2" style="width: 100%;" id="form-field-select-4" name="account"
-                                    data-placeholder="请选择...">
-                                <option value=""></option>
-                                <option value="AL">Alabama</option>
-                                <option value="AK">Alaska</option>
-                                <option value="AZ">Arizona</option>
-                                <option value="AR">Arkansas</option>
-                                <option value="CA">California</option>
-                                <option value="CO">Colorado</option>
-                                <option value="CT">Connecticut</option>
-                                <option value="DE">Delaware</option>
-                                <option value="FL">Florida</option>
-                                <option value="GA">Georgia</option>
-                                <option value="HI">Hawaii</option>
-                            </select>
+                        <div class="col-xs-12 col-sm-5">
+
+																	<span class="block input-icon input-icon-right">
+																		<input type="password" name="account"
+                                                                               class="width-100"
+                                                                               data-placeholder="请选择..."/>
+
+                                                                        <input type="hidden" name="member.id"/>
+                                                                        <!-- 隐藏域 -->
+
+                                                                        <!--    <i class="ace-icon fa  fa-envelope"></i>-->
+																	</span>
+
                         </div>
-                        <div class="help-block col-xs-12 col-sm-reset inline"><span class="red">*</span></div>
+                        <div class="help-block col-xs-12 col-sm-reset inline">
+                            <span name="account"><span class="red">*</span></span>
+                        </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" name="password">
                         <label class="col-xs-12 col-sm-3 control-label no-padding-right">
                             密码
                         </label>
 
                         <div class="col-xs-12 col-sm-5">
 																	<span class="block input-icon input-icon-right">
-																		<input type="password"
+																		<input type="password" name="password"
                                                                                class="width-100"/>
 																	</span>
                         </div>
-                        <div class="help-block col-xs-12 col-sm-reset inline"><span class="red">*</span></div>
+                        <div class="help-block col-xs-12 col-sm-reset inline">
+                            <span class="red" name="password"><span class="red">*</span></span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 control-label no-padding-right">
@@ -153,39 +154,39 @@
 
                         <div class="col-xs-12 col-sm-5">
 																	<span class="block input-icon input-icon-right">
-																		<input type="password"
+																		<input type="text" name="nickname"
                                                                                class="width-100"/>
 																	</span>
                         </div>
                         <div class="help-block col-xs-12 col-sm-reset inline"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" name="email">
                         <label class="col-xs-12 col-sm-3 control-label no-padding-right">
                             邮箱
                         </label>
 
                         <div class="col-xs-12 col-sm-5">
 																	<span class="block input-icon input-icon-right">
-																		<input type="password"
+																		<input type="email" name="email"
                                                                                class="width-100"/>
                                                                         <i class="ace-icon fa  fa-envelope"></i>
 																	</span>
                         </div>
-                        <div class="help-block col-xs-12 col-sm-reset inline"></div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"><span name="email"></span></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" name="mobileNumber">
                         <label class="col-xs-12 col-sm-3 control-label no-padding-right">
                             电话
                         </label>
 
                         <div class="col-xs-12 col-sm-5">
 																	<span class="block input-icon input-icon-right">
-																		<input type="password"
+																		<input type="tel" name="mobileNumber"
                                                                                class="width-100"/>
                                                                         <i class="ace-icon glyphicon glyphicon-earphone"></i>
 																	</span>
                         </div>
-                        <div class="help-block col-xs-12 col-sm-reset inline"></div>
+                        <div class="help-block col-xs-12 col-sm-reset inline"><span name="mobileNumber"></span></div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right"> 主播身份
@@ -217,48 +218,128 @@
     /*<![CDATA[*/
     $.ace_ajax_finish(function () {
         jQuery(function ($) {
-            /*      var grades = /!*[[${grades}]]*!/null; // 专业数据
-             var _grades = []; // 专业下拉框数据源
-             for (var i = 0; i < grades.length; i++) {
-             var name = grades[i]['className'];
-             var id = grades[i]['id'];
-             _grades.push({'text': name, 'value': id});
-             }*/
-            $("select[name='account']").select2({
+
+            $("input[name='account']").select2({
                 ajax: {
-                    url: "",
+                    url: "school/member/realName",
                     dataType: 'json',
                     delay: 250,
-                    data: function (params) {
+                    data: function (searchVal) {
+                        return {'searchVal': searchVal};
+                    },
+                    results: function (data) {
                         return {
-                            q: params.term, // search term
-                            page: params.page
+                            results: data
                         };
-                    },
-                    processResults: function (data, params) {
-                        // parse the results into the format expected by Select2
-                        // since we are using custom formatting functions we do not need to
-                        // alter the remote JSON data, except to indicate that infinite
-                        // scrolling can be used
-                       /* params.page = params.page || 1;
-
-                        return {
-                            results: data.items,
-                            pagination: {
-                                more: (params.page * 30) < data.total_count
-                            }
-                        };*/
-                    },
-                    cache: true
+                    }/*,
+                     cache: true*/ // 设置缓存
                 },
                 escapeMarkup: function (markup) {
                     return markup;
-                }, // let our custom formatter work
-                minimumInputLength: 1,
-                templateResult: formatRepo, // omitted for brevity, see the source of this page
-                templateSelection: formatRepoSelection, // omitted for brevity, see the source of this page
+                }, // 处理转义字符
+                minimumInputLength: 2, // 最小输入字符
+                /*       maximumSelectionLength:10,*/ // 最大输入字符
+                formatResult: function (repo) {
+                    repo.text = repo.memberNo
+                    return repo.text;
+                }, // 显示至下拉框中的可选信息
+                formatSelection: function (repo) {
+                    repo.selected = true;
+                    $("input[name='member.id']").val(repo.id);
+                    $("input[name='account']").val(repo.text);
+                    return repo.text;
+                }, // 设置选中值
                 allowClear: true
             });
+            /**
+             * 校验表单
+             */
+            var rules = {
+                password: {
+                    required: true
+                },
+                account: {
+                    required: true
+                },
+                email: {
+                    email: true
+                },
+                mobileNumber: {
+                    digits: true,
+                    fixedLength: 11
+                }
+            };
+            // 开启检验
+            $.validator.addMethod("fixedLength", function (value, element, param) {
+                var length = value.length;
+                console.log(length +":"+ param[0]);
+                if (length > 0 && length == param[0]) {
+                    return true;
+                }
+                if(length > 0 && length != param[0]){
+                    return false;
+                }
+                return true;
+            }, $.validator.format("字符长度必须是{0}")); // 添加自定义校验
+            $("#mobile-user-form").validate({
+                messages: {
+                    maxlength: $.validator.format("请输入长度大于{0}的字符串"),
+                    minlength: $.validator.format("请输入长度大于{0}的字符串")
+                },
+                rules: rules,
+                onkeyup: false,
+                onclick: false,
+                ignore: [],
+                debug: false, // 是否关闭表单提交功能
+                errorPlacement: function (error, element) {
+                    var name = element.attr("name");
+                    var $span = $("span[name='" + name + "']");
+                    error.appendTo($span);
+                }, // 指定错误信息提示位置
+                success: function (label) {
+                    var $span = label.parent();
+                    var name = $span.attr("name");
+                    var $div = $("div[name='" + name + "']");
+                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove"); // 清除图标
+                    $div.removeClass("has-error"); // 清除样式
+                    label
+                    var rule = rules[name] || null;
+                    if (rule != null) {
+                        var isRequired = rule['required'] || false;
+                        if (isRequired) {
+                            $("span[name='" + name + "'] > span").detach(".red"); // 去重
+                            $("span[name='" + name + "']").prepend('<span class="red" id="required_hint">*</span>');
+                        }
+                    }
+                },// 指定检验完成后的样式
+                highlight: function (element, errorClass, validClass) {
+                    var name = element.name;
+                    var $span = $("span[name='" + name + "']");
+                    var $div = $("div[name='" + name + "']");
+                    $("span[name='" + name + "'] > span").detach(".red"); // 清除*字符
+                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove"); // 去重
+                    $span.prepend('<i class="glyphicon glyphicon-remove red"></i> ');
+                    $div.addClass("has-error"); // 添加错误样式
+                }, // 检验出错
+                unhighlight: function (element, errorClass, validClass) {
+                    var name = element.name;
+                    var $div = $("div[name='" + name + "']");
+                    $("span[name='" + name + "] > i").remove(".glyphicon-remove"); // 清除图标
+                    $div.removeClass("has-error"); // 清除样式
+                } // 检验正常
+            });
+            /**
+             * 绑定提交按钮
+             */
+            $("#mobile-user-edit-modal-btn").click(function () {
+                $("#mobile-user-form").valid();
+                /*    var isValid = _validator.valid(); // 校验表单
+                 var val = $("input[name='password']").val();
+                 console.log(val);
+
+                 console.log(isValid);*/
+            });
+
             var _table = new DataTablePlus({
                 'targetId': 'mobile_user_table',
                 'columns': [
@@ -266,43 +347,29 @@
                         'name': 'account',
                         'title': '账号',
                         'show': true,
-                        'detail': true,
-                        'edit': true,
                         'inputType': 'text'
                     }, {
                         'name': 'nickname',
                         'title': '昵称',
                         'show': true,
-                        'detail': true,
-                        'edit': true,
                         'inputType': 'text'
                     },
                     {
                         'name': 'realName',
                         'title': '姓名',
                         'show': true,
-                        'detail': true,
-                        'edit': false,
                     }, {
                         'name': 'mobileNumber',
                         'title': '电话',
                         'show': true,
-                        'detail': true,
-                        'edit': true,
-                        'inputType': 'text'
                     }, {
                         'name': 'anchorFlag',
                         'title': '主播身份',
                         'show': true,
-                        'detail': true,
-                        'edit': true,
-                        'inputType': 'text'
                     }, {
                         'name': 'registerTime',
                         'title': '注册时间',
                         'show': true,
-                        'detail': true,
-                        'edit': false
                     }
                 ],
                 'columnsDefs': [
@@ -327,7 +394,6 @@
                 'modal': {
                     'auto': true // 启用自动模式
                 },
-                'rules': {},
                 'ajax': function (d) {
                     var columns = d['columns'];
                     for (var i = 0; i < columns.length; i++) {
@@ -452,6 +518,11 @@
                                 break; // 详情按钮
                             case 'create':
                                 $("#mobile_user_edit_modal").modal(); // 显示modal
+                                $("input[name='account']").unbind("change").bind("change", function () {
+                                    $(this).valid(); // 重新校验
+                                    $("label[class='error']").text(""); // 清除错误信息
+                                });
+
                                 break; // 添加按钮
                         }
                     }
@@ -459,6 +530,7 @@
             });
             _table.build(); // 创建表格
         });
-    });
+    })
+    ;
     /*]]>*/
 </script>
