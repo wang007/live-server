@@ -222,14 +222,17 @@
             $("input[name='account']").select2({
                 ajax: {
                     url: "school/member/realName",
+                    async:true,
                     dataType: 'json',
                     delay: 250,
                     data: function (searchVal) {
                         return {'searchVal': searchVal};
                     },
                     results: function (data) {
+                        var a = data['a'];
+                        console.log(a);
                         return {
-                            results: data
+                            results: a
                         };
                     }/*,
                      cache: true*/ // 设置缓存

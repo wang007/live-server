@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by KAM on 2017/4/3.
  */
 public class DictRepositoryImpl extends BaseRepositoryImpl {
-    String hqlTemplate = "select new org.live.dictionary.entity.DictionaryVo(d.id,dt.typeName,d.dictMark,d.dictValue,d.remarks) from Dictionary d, DictType dt where d.dictType = dt"+
+    String hqlTemplate = "select new org.live.dictionary.vo.DictionaryVo(d.id,dt.typeName,d.dictMark,d.dictValue,d.remarks) from Dictionary d, DictType dt where d.dictType = dt"+
     "/~ and d.dictMark like '%[dictMark]%'~/" +
             "/~ or d.dictValue like '%[dictValue]%'~/" +
             "/~ or d.remarks like '%[remarks]%'~/" +
