@@ -1,8 +1,8 @@
 package org.live.dictionary.repository;
 
 import org.live.common.base.BaseRepositoryImpl;
-import org.live.dictionary.entity.Dictionary;
-import org.live.dictionary.entity.DictionaryVo;
+
+import org.live.dictionary.vo.DictionaryVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
