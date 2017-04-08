@@ -6,7 +6,7 @@ import org.live.common.base.BaseServiceImpl;
 import org.live.common.response.DataTableModel;
 import org.live.common.utils.DataTableUtils;
 import org.live.dictionary.entity.Dictionary;
-import org.live.dictionary.entity.DictionaryVo;
+import org.live.dictionary.vo.DictionaryVo;
 import org.live.dictionary.repository.DictRepository;
 import org.live.dictionary.service.DictService;
 import org.springframework.data.domain.Page;
