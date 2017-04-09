@@ -46,6 +46,25 @@ public class DictController {
     }
 
     /**
+     * 刷新字典缓存
+     *
+     * @return
+     */
+    @RequestMapping(value = "/cache", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> refreshDictCache() {
+        ResponseModel<Object> responseModel = new SimpleResponseModel<Object>();
+        try {
+            dictService.cacheDic();
+            responseModel.success();
+        } catch (Exception e) {
+            responseModel.error();
+            LOGGER.error("刷新字典缓存异常", e);
+        }
+        return responseModel;
+    }
+
+    /**
      * 查询非也数据
      *
      * @param request
@@ -158,7 +177,7 @@ public class DictController {
 
         ResponseModel<Object> model = new SimpleResponseModel<Object>();
         /*try {
-			dictService.getCacheDic(); // 缓存字典
+            dictService.getCacheDic(); // 缓存字典
 			model.success();
 		} catch (Exception e) {
 			LOGGER.error("缓存字典异常", e);

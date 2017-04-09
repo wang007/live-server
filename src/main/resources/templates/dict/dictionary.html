@@ -93,9 +93,6 @@
                     },
                     'dictValue': {
                         required: true
-                    },
-                    'remarks': {
-                        required: true
                     }
                 },
                 'ajax': function (d) {
@@ -112,6 +109,25 @@
                     }
                     d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
                     return d;
+                },
+                'appendBtn': function (btnGroupId) {
+                    $("#" + btnGroupId).append('<button type="button" id="dict-cache-refresh" class="btn btn-info2 datatable-btn" data-placement="top" title="刷新缓存"><i class="fa fa-refresh"></i> 刷新缓存</button>');
+                    /**
+                     * 绑定缓存刷新按钮
+                     */
+                    $("#dict-cache-refresh").click(function () {
+                        $.ajax({
+                            type: "GET",
+                            url: "dict/dictionary/cache",
+                            success: function (msg) {
+                                if (msg['status'] == 1) {
+                                    Global.notify("操作提示：", "刷新缓存成功！", "success");
+                                } else {
+                                    Global.notify("操作提示：", "刷新缓存失败，" + msg['message'], "error");
+                                }
+                            }
+                        });
+                    });
                 }
             });
             _table.build(); // 创建表格

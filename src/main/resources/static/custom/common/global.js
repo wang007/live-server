@@ -133,6 +133,8 @@ var Global = (function () {
  *          ajax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  *          columnsDefs : 暴露dataTables原生columnsDefs属性以满足单元格的复杂需求，注意因列表第一项以被checkbox占据，所以列表项的索引应该从1开始
  *          editAjax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
+ *          appendBtn : function(btnGroupId){} 用于追加自定义功能按钮
+ *              btnGroupId : 按钮组所在div的id
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -150,6 +152,7 @@ var DataTablePlus = function (option) {
         var rules = option['rules']; // 检验规制，默认启用jquery.validate
         var ajax = option['ajax'] || null; // 用于修改提交后台数据的方法
         var editAjax = option['editAjax'] || null; // 用于修改添加和修改请求，提交至后台的数据的方法，
+        var appendBtn = option['appendBtn'] || null; // 用于追加功能按钮
         var data; // 当前表格的全部数据
         var validator; // 表单检验器
         var defaultColumns = [
@@ -261,6 +264,9 @@ var DataTablePlus = function (option) {
                     '<button type="button" id="btn_datatable_del" name="datatable_btn_group" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>' +
                     '<button type="button" id="btn_datatable_info" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="详情"> &nbsp;<i class="fa fa-info"></i>&nbsp; </button>' +
                     '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-defalut datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
+                if(appendBtn != null && typeof appendBtn == "function"){
+                    appendBtn("datatable_btn_group");
+                }
                 $("#datatable_input_search").attr({
                     "class": "form-group pull-right top_search"
                 });

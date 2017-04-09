@@ -1,5 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" th:remove="tag">
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <title>日志管理</title>
 
 <div class="page-header">
@@ -67,7 +67,7 @@
             </div>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <div class="form-group">
-                <label for="search-handleTime">操作时间: </label>
+                <label for="beginTime">操作时间: </label>
                 <input type="text" id="beginTime" name="beginTime" class="form-control input-sm"/>
                 <span class="">
 								<i class="ace-icon fa fa-calendar"></i>
@@ -94,7 +94,7 @@
 
 
 <script type="text/javascript" th:inline="javascript">
-
+    /*<![CDATA[*/
     $.ace_ajax_finish(function () {
         jQuery(function ($) {
 
@@ -122,7 +122,7 @@
             $(window).on('resize.jqGrid', function () {
                 $(grid_selector).jqGrid('setGridWidth', $(".page-content").width());
             })
-
+            var logLevels = /*[[${@dictService.getDictMap('logLevel')}]]*/ null; // 从数据字典中取出一组日志级别
             $(grid_selector).jqGrid({
                 url: "/sys/log",//获取数据的url地址
                 datatype: "json", //获取数据的格式
@@ -183,26 +183,10 @@
                         align: 'center',
                         sortable: false,
                         formatter: function alamFormatter(cellvalue, options, row) {
-                            var level = '';
-                            switch (row.logLevel) {
-                                case 'ERROR':
-                                    level = '高级';
-                                    break;
-                                case 'INFO':
-                                    level = '低级';
-                                    break;
-                                case 'WARN':
-                                    level = '中级';
-                                    break;
+                            if (logLevels != null) {
+                                return logLevels[row['logLevel']];
                             }
-                            return level;
-                            /*<![CDATA[*/
-                            /*    var map = /!*[[${@dictService.dictMap('logLevel')}]]*!/ null;
-                             if(map != null){
-                             console.log(JSON.stringify(map));
-                             }*/
-                            // return map[row.logLevel] ;
-                            /*]]>*/
+                            return "无";
                         }
                     },
                     {
@@ -249,7 +233,7 @@
                     dataType: 'json',
                     postData: $('#search-log-form').serializeObject(),	//postData.接收的是一个对象
                     page: 1
-                }).trigger("reloadGrid"); //重新载入#
+                }).trigger("reloadGrid"); //重新载入
             }
 
 
@@ -298,7 +282,7 @@
 
         })
     })
-
+    /*]]>*/
 </script>
 
 </html>
