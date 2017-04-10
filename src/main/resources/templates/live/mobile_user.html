@@ -521,7 +521,7 @@
                                             }
                                             break;
                                         default:
-                                            if(val == null){
+                                            if (val == null) {
                                                 val = "无";
                                             }
                                             $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
@@ -567,6 +567,7 @@
                                         default:
                                             if (name == "account" || name == "password") {
                                                 $("div[name='" + name + "']").show(); // 显示账户和密码编辑项
+                                                $("input[name='" + name + "']").val("");
                                             } else {
                                                 if (name == "memberId") {
                                                     name = "member.id";
