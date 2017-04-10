@@ -11,9 +11,15 @@ $(document).ready(function () {
 
  //校验上传文件的大小
   jQuery.validator.addMethod("checkFileSize", function (value, element, param) {
-      return this.optional(element) || (param > element.files[0].size) ;
+        return this.optional(element) || (param > element.files[0].size) ;
+    })
 
-  })
+    //校验
+    jQuery.validator.addMethod("fixedLength", function (value, element, param) {
+        return this.optional(element) || ( value.length > 0 &&  value.length == param) ;
+    }, "字符长度必须是{0}") ;
+
+
 });
 
 //增加身份证验证

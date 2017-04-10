@@ -6,8 +6,11 @@
 </head>
 <div class="page-header">
     <h1>
-        直播类别
-        <small> 》移动端用户管理</small>
+        直播管理
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            移动端用户管理
+        </small>
     </h1>
 </div>
 
@@ -258,7 +261,8 @@
             var rules = {
                 password: {
                     required: true,
-                    isPwd: true
+                    alphabetAndNum: true,
+                    rangelength: [6,15]
                 },
                 account: {
                     required: true
@@ -272,23 +276,10 @@
                 }
             };
             // 开启检验
-            $.validator.addMethod("fixedLength", function (value, element, param) {
-                var length = value.length;
-                if (length > 0 && length == param) {
-                    return true;
-                }
-                if (length > 0 && length != param) {
-                    return false;
-                }
-                return true;
-            }, $.validator.format("字符长度必须是{0}")); // 添加自定义校验
-            // 匹配密码，以字母开头，长度在6-18之间，只能包含字母、数字和下划线。
-            $.validator.addMethod("isPwd", function (value, element) {
-                return this.optional(element) || /^[a-zA-Z]\w{5,17}$/.test(value);
-            }, "以字母开头，长度在6-18之间，只能包含字母、数字和下划线");
+
             $("#mobile-user-form").validate({
                 messages: {
-                    maxlength: $.validator.format("请输入长度大于{0}的字符串"),
+                    maxlength: $.validator.format("请输入长度小于{0}的字符串"),
                     minlength: $.validator.format("请输入长度大于{0}的字符串")
                 },
                 rules: rules,

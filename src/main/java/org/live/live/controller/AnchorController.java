@@ -1,27 +1,22 @@
 package org.live.live.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Created by KAM on 2017/4/10.
+ * Created by wang on 2017/4/10.
  */
-@RestController
+@Controller
 @RequestMapping("/live")
 public class AnchorController {
-    private static final String MODULE = "live";
 
     /**
-     * 跳转至主播管理页面
-     *
-     * @param mv
+     *  跳转到主播管理界面
      * @return
      */
-    @RequestMapping(value = "/anchor/page", method = RequestMethod.GET)
-    public ModelAndView page(ModelAndView mv) {
-        mv.setViewName(MODULE + "/anchor");
-        return mv;
+    @RequestMapping("/anchor/page")
+    public String toAnchorPage() {
+        return "live/anchor" ;
     }
+
 }
