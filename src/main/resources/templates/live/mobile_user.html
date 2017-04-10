@@ -188,13 +188,26 @@
                         </div>
                         <div class="help-block col-xs-12 col-sm-reset inline"><span name="mobileNumber"></span></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" name="anchorFlag">
                         <label class="col-sm-3 control-label no-padding-right"> 主播身份
                         </label>
                         <div class="col-sm-6">
                             <div class="switch">
                                 <label>
                                     <input name="anchorFlag" class="ace ace-switch ace-switch-4 btn-empty"
+                                           type="checkbox">
+                                    <span class="lbl"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" name="lockFlag">
+                        <label class="col-sm-3 control-label no-padding-right"> 锁定用户
+                        </label>
+                        <div class="col-sm-6">
+                            <div class="switch">
+                                <label>
+                                    <input name="lockFlag" class="ace ace-switch ace-switch-4 btn-empty"
                                            type="checkbox">
                                     <span class="lbl"></span>
                                 </label>
@@ -222,17 +235,15 @@
             $("input[name='account']").select2({
                 ajax: {
                     url: "school/member/realName",
-                    async:true,
+                    async: true,
                     dataType: 'json',
                     delay: 250,
                     data: function (searchVal) {
                         return {'searchVal': searchVal};
                     },
                     results: function (data) {
-                        var a = data['a'];
-                        console.log(a);
                         return {
-                            results: a
+                            results: data
                         };
                     }/*,
                      cache: true*/ // 设置缓存
@@ -259,7 +270,8 @@
              */
             var rules = {
                 password: {
-                    required: true
+                    required: true,
+                    isPwd: true
                 },
                 account: {
                     required: true
@@ -275,15 +287,18 @@
             // 开启检验
             $.validator.addMethod("fixedLength", function (value, element, param) {
                 var length = value.length;
-                console.log(length +":"+ param[0]);
-                if (length > 0 && length == param[0]) {
+                if (length > 0 && length == param) {
                     return true;
                 }
-                if(length > 0 && length != param[0]){
+                if (length > 0 && length != param) {
                     return false;
                 }
                 return true;
             }, $.validator.format("字符长度必须是{0}")); // 添加自定义校验
+            // 匹配密码，以字母开头，长度在6-18之间，只能包含字母、数字和下划线。
+            $.validator.addMethod("isPwd", function (value, element) {
+                return this.optional(element) || /^[a-zA-Z]\w{5,17}$/.test(value);
+            }, "以字母开头，长度在6-18之间，只能包含字母、数字和下划线");
             $("#mobile-user-form").validate({
                 messages: {
                     maxlength: $.validator.format("请输入长度大于{0}的字符串"),
@@ -331,17 +346,21 @@
                     $div.removeClass("has-error"); // 清除样式
                 } // 检验正常
             });
-            /**
-             * 绑定提交按钮
-             */
-            $("#mobile-user-edit-modal-btn").click(function () {
-                $("#mobile-user-form").valid();
-                /*    var isValid = _validator.valid(); // 校验表单
-                 var val = $("input[name='password']").val();
-                 console.log(val);
 
-                 console.log(isValid);*/
-            });
+
+            /**
+             * 用于编辑的字段
+             */
+            var editColumns = {
+                'memberId': 'input',
+                'account': 'input',
+                'password': 'input',
+                'nickname': 'input',
+                'email': 'input',
+                'mobileNumber': 'input',
+                'anchorFlag': 'switch',
+                'lockFlag': 'switch'
+            };
 
             var _table = new DataTablePlus({
                 'targetId': 'mobile_user_table',
@@ -391,7 +410,6 @@
                 }, // 服务器响应参数
                 'url': {
                     'delete': 'live/mobileUser', // 删除提交地址
-                    'edit': 'live/mobileUser', // 新增与修改提交地址
                     'data': 'live/mobileUser/data' // 数据拉取地址
                 },
                 'modal': {
@@ -512,6 +530,9 @@
                                             }
                                             break;
                                         default:
+                                            if(val == null){
+                                                val = "无";
+                                            }
                                             $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
                                             $div.append('<div class="profile-info-value"><span>' + val + '</span></div>');
                                             break;
@@ -520,20 +541,198 @@
                                 }
                                 break; // 详情按钮
                             case 'create':
+                                $("#mobile-user-edit-modal-title").text("添加记录");
+                                var $btn = $("#mobile-user-edit-modal-btn");
+                                $btn.removeClass("btn-primary"); // 清除样式
+                                $btn.empty();
+                                $btn.addClass("btn-success");
+                                $btn.append('<i class="fa fa-plus"></i> 添 加'); // 调整样式
                                 $("#mobile_user_edit_modal").modal(); // 显示modal
                                 $("input[name='account']").unbind("change").bind("change", function () {
                                     $(this).valid(); // 重新校验
                                     $("label[class='error']").text(""); // 清除错误信息
                                 });
-
+                                for (var name in editColumns) {
+                                    var inputType = editColumns[name];
+                                    switch (inputType) {
+                                        case 'switch':
+                                            if (name == "lockFlag") {
+                                                $("div[name='" + name + "']").hide(); // 隐藏锁定用户编辑项
+                                            } else {
+                                                $("input[name='" + name + "']").attr("value", "0");
+                                                $("input[name='" + name + "']").prop('checked', false);
+                                            }
+                                            $("input[name='" + name + "']").unbind("click").bind("click", function () {
+                                                var val = $(this).val();
+                                                if (val == "1") {
+                                                    $(this).attr('value', '0');
+                                                    $(this).prop('checked', false);
+                                                } else {
+                                                    $(this).attr('value', '1');
+                                                    $(this).prop('checked', true);
+                                                }
+                                            }); // 置换按钮状态
+                                            break;
+                                        default:
+                                            if (name == "account" || name == "password") {
+                                                $("div[name='" + name + "']").show(); // 显示账户和密码编辑项
+                                            } else {
+                                                if (name == "memberId") {
+                                                    name = "member.id";
+                                                }
+                                                $("input[name='" + name + "']").val("");
+                                            }
+                                            break;
+                                    }
+                                }
                                 break; // 添加按钮
+                            case 'update':
+                                $("#mobile-user-edit-modal-title").text("修改记录");
+                                var $btn = $("#mobile-user-edit-modal-btn");
+                                $btn.removeClass("btn-success"); // 清除样式
+                                $btn.empty();
+                                $btn.addClass("btn-primary");
+                                $btn.append('<i class="fa fa-edit"></i> 修 改'); // 调整样式
+                                $("#mobile_user_edit_modal").modal(); // 显示modal
+                                $("input[name='account']").unbind("change").bind("change", function () {
+                                    $(this).valid(); // 重新校验
+                                    $("label[class='error']").text(""); // 清除错误信息
+                                });
+                                for (var name in editColumns) {
+                                    var inputType = editColumns[name];
+                                    var val = data[name];
+                                    switch (inputType) {
+                                        case 'switch':
+                                            if (name == "lockFlag") {
+                                                $("div[name='" + name + "']").show();
+                                            } // 显示锁定用户编辑项
+                                            if (val) {
+                                                $("input[name='" + name + "']").attr("value", "1");
+                                                $("input[name='" + name + "']").prop('checked', true);
+                                            } else {
+                                                $("input[name='" + name + "']").attr("value", "0");
+                                                $("input[name='" + name + "']").prop('checked', false);
+                                            }
+                                            $("input[name='" + name + "']").unbind("click").bind("click", function () {
+                                                var val = $(this).val();
+                                                if (val == "1") {
+                                                    $(this).attr('value', '0');
+                                                    $(this).prop('checked', false);
+                                                } else {
+                                                    $(this).attr('value', '1');
+                                                    $(this).prop('checked', true);
+                                                }
+                                            }); // 置换按钮状态
+                                            break;
+                                        default:
+                                            if (name == "account" || name == "password") {
+                                                $("div[name='" + name + "']").hide(); // 隐藏账户和密码编辑项
+                                                $("input[name='" + name + "']").val("abcd123456"); // 为隐藏项目设置默认值以通过校验
+                                            } else {
+                                                if (name == "memberId") {
+                                                    name = "member.id";
+                                                }
+                                                $("input[name='" + name + "']").val(val);
+                                            }
+                                            break;
+                                    }
+                                }
+                                break;// 修改按钮
+
                         }
+                        /**
+                         * 绑定提交按钮
+                         */
+                        $("#mobile-user-edit-modal-btn").unbind("click").bind("click", function () {
+                            var isValid = $("#mobile-user-form").valid();
+                            var isCreate = $(this).is('.btn-success');
+                            if (!isValid) {
+                                return false;
+                            }
+                            var mobileUserDate = {};
+                            for (var name in editColumns) {
+                                var inputType = editColumns[name];
+                                var val;
+                                if (isCreate) {
+                                    // 添加按钮
+                                    switch (inputType) {
+                                        case 'switch':
+                                            if ($("input[name='" + name + "']").val() == "1") {
+                                                val = true;
+                                            } else {
+                                                val = false;
+                                            }
+                                            break;
+                                        default:
+                                            if (name == 'memberId') {
+                                                name = 'member.id';
+                                            }
+                                            val = $("input[name='" + name + "']").val();
+                                            break;
+                                    }
+                                    if (name != 'lockFlag') {
+                                        mobileUserDate[name] = val;
+                                    }
+
+                                } else {
+                                    // 修改按钮
+
+                                    switch (inputType) {
+                                        case 'switch':
+                                            if ($("input[name='" + name + "']").val() == "1") {
+                                                val = true;
+                                            } else {
+                                                val = false;
+                                            }
+                                            break;
+                                        default:
+                                            if (name == 'memberId') {
+                                                name = 'member.id';
+                                            }
+                                            val = $("input[name='" + name + "']").val();
+                                            break;
+                                    }
+                                    if (name != 'account' && name != 'password') {
+                                        mobileUserDate[name] = val;
+                                    }
+                                }
+                            }
+                            if (!isCreate)
+                                mobileUserDate['id'] = data['id'];
+                            var postType = (isCreate) ? 'post' : 'put'; // 提交类型
+                            postMobileUserData(mobileUserDate, postType)// 提交数据
+                            $("#mobile_user_edit_modal").modal('hide');// 关闭模态框
+                        }); // 按钮点击事件
+
+
                     }
                 }
             });
-            _table.build(); // 创建表格
+            var dataTableApi = _table.build(); // 创建表格
+            function postMobileUserData(data, type) {
+                if (type == 'put') {
+                    data['_method'] = 'put'
+                }
+                console.log("提交的数据--->" + $.param(data));
+                $.ajax({
+                    type: "POST",
+                    url: "live/mobileUser",
+                    data: $.param(data),
+                    success: function (msg) {
+                        var option = (type == "post") ? "添加" : "修改";
+                        if (msg['status'] == 1) {
+                            Global.notify("操作提示：", option + "成功！", "success");
+                            dataTableApi.ajax.reload(function (json) {
+                                // 请求到的数据做相应的操作，如详情查看等
+                            }, true); // 刷新表格，分页信息重置
+                        } else {
+                            Global.notify("操作提示：", option + "失败，" + msg['message'], "error");
+                        }
+                    }
+                });
+            }
         });
-    })
-    ;
+    });
+
     /*]]>*/
 </script>

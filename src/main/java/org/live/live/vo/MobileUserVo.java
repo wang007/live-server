@@ -77,10 +77,15 @@ public class MobileUserVo {
      * 生日
      */
     private Date birthday;
+    /**
+     * 成员id
+     */
+    private String memberId;
+
 
     public MobileUserVo(
             String id, String headImgUrl, String account, String nickname, String email, String mobileNumber, Date registerTime, boolean anchorFlag, boolean lockFlag,
-            Date lastLoginTime, String lastLoginIp, String memberNo, String realName, String sex, String memberType, String className, Integer age, Date birthday
+            Date lastLoginTime, String lastLoginIp, String memberNo, String realName, String sex, String memberType, String className, Integer age, Date birthday, String memberId
     ) {
         this.id = id;
         this.headImgUrl = headImgUrl;
@@ -100,6 +105,7 @@ public class MobileUserVo {
         this.className = className;
         this.age = age;
         this.birthday = birthday;
+        this.memberId = memberId;
     }
 
     public String getId() {
@@ -246,5 +252,11 @@ public class MobileUserVo {
         this.birthday = birthday;
     }
 
+    public String getMemberId() {
+        return memberId;
+    }
 
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
 }

@@ -255,7 +255,7 @@ var DataTablePlus = function (option) {
             "dom": '<"#datatable_wrapper.dataTables_wrapper form-inline dt-bootstrap no-footer datatable-plus"' +
             '<"row"<"col-sm-6" <"#datatable_btn_group">><"col-sm-6" <"#datatable_input_search">>>' +
             '<"row"<"col-sm-12" t>>' +
-            '<"row"<"col-sm-3" i><"col-sm-3 datatable-length-row" l><"col-sm-6" p>>' +
+            '<"row"<"col-sm-4" i><"col-sm-2 datatable-length-row" l><"col-sm-6" p>>' +
             '> ',
             "initComplete": function () {
                 $("#datatable_btn_group").append('操作：' +

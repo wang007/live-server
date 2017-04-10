@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class MobileUserRepositoryImpl extends BaseRepositoryImpl {
     String hqlTemplate = "select new org.live.live.vo.MobileUserVo(mu.id, mu.headImgUrl, mu.account, mu.nickname, mu.email, mu.mobileNumber, mu.registerTime, mu.anchorFlag, mu.lockFlag, mu.lastLoginTime, " +
-            "mu.lastLoginIp, m.memberNo, m.realName, m.sex, m.memberType, m.grade.className, m.age, m.birthday) from MobileUser mu left join mu.member m left join m.grade";
+            "mu.lastLoginIp, m.memberNo, m.realName, m.sex, m.memberType, m.grade.className, m.age, m.birthday, m.id) from MobileUser mu left join mu.member m left join m.grade where mu.outDateFlag = false";
     String block = "/~mu.account like '%[account]%'~/"
             + "/~ or mu.nickname like '%[nickname]%'~/"
             + "/~ or mu.email like '%[email]%'~/"
@@ -43,8 +43,9 @@ public class MobileUserRepositoryImpl extends BaseRepositoryImpl {
         StringBuilder _hql = new StringBuilder();
         _hql.append(hqlTemplate);
         if (filter.size() > 0) {
-            _hql.append(" where ");
+            _hql.append(" and ( ");
             _hql.append(block);
+            _hql.append(" ) ");
         }
         String hql = super.xsqlConvertHql(_hql.toString(), filter);
         System.out.println("hql---> " + hql);
