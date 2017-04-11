@@ -66,6 +66,7 @@ public class MobileUserController {
         try {
             mobileUser.setRegisterTime(new Date());
             mobileUser.setLockFlag(false);
+            mobileUser.setHeadImgUrl("static/images/common/user.png"); // 默认头像地址
             model.setData(mobileUserService.save(mobileUser));
             model.success();
         } catch (Exception e) {

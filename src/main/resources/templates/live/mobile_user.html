@@ -37,9 +37,9 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-4 center">
 															<span class="profile-picture">
-																<img class="editable img-responsive" alt="Alex's Avatar"
-                                                                     id="avatar2"
-                                                                     src="static/ace/assets/avatars/profile-pic.jpg"/>
+																<img class="editable img-responsive" alt="暂无图片"
+                                                                     name="info-headImgUrl"
+                                                                     src=""/>
 															</span>
 
                         <div class="space space-4"></div>
@@ -262,7 +262,7 @@
                 password: {
                     required: true,
                     alphabetAndNum: true,
-                    rangelength: [6,15]
+                    rangelength: [6, 15]
                 },
                 account: {
                     required: true
@@ -419,8 +419,15 @@
                     'clickCallBack': function (call) {
                         var btnType = call['btnType'];
                         var data = call['data'];
+
+
                         switch (btnType) {
                             case 'info':
+                                var headImgUrl = data['headImgUrl'];
+                                if (headImgUrl == null) {
+                                    headImgUrl = "static/ace/assets/avatars/profile-pic.jpg"
+                                }
+                                $("img[name='info-headImgUrl']").attr('src', headImgUrl);
                                 var $modal = $("#mobile_user_info_modal");
                                 $modal.modal(); // 显示详情modal
                                 var spanName = {

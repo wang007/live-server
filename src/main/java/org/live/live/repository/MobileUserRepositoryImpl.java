@@ -48,7 +48,6 @@ public class MobileUserRepositoryImpl extends BaseRepositoryImpl {
             _hql.append(" ) ");
         }
         String hql = super.xsqlConvertHql(_hql.toString(), filter);
-        System.out.println("hql---> " + hql);
         Page<MobileUserVo> page = super.find(pageRequest, hql, null);
         return page;
     }
