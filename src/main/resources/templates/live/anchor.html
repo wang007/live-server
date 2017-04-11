@@ -29,9 +29,9 @@
     <div class="hr hr24 hr-dotted"></div>
 
     <div class="col-xs-12">
-        <div class="anchorInfo-hold">
 
-        <!--    <div class="col-xs-4 profile_details">
+
+           <!-- <div class="col-xs-4 profile_details">
                 <div class="well profile_view">
                     <div class="col-xs-12">
                         <h4 class="brief">城院大帅比</h4>
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="col-xs-12 bottom text-center">
-                        <div class="col-xs-6" style="padding:0px;">
+                        <div class="col-xs-3" style="padding:0px;">
                             <button type="button" class="btn btn-info btn-sm">
                                 <i class="fa fa-info"></i> 详情
                             </button>
@@ -58,7 +58,7 @@
                 </div>
             </div>-->
 
-
+        <div class="anchorInfo-hold">
         </div> <!-- /.anchorInfo-hold -->
     </div>  <!-- /.col-xs-12 -->
 
@@ -81,17 +81,130 @@
     </div>
 </div>
 
+<!-- detail modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="anchor-info-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header table-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详情查看</h4>
+            </div>
+            <div class="modal-body">
+                <!-- 内容 -->
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 center">
+                        <span class="profile-picture">
+                            <img class="editable img-responsive" alt="暂无图片" style="width:150px;height: 150px;" id="show-headImgUrl" src=""/>
+                        </span>
+
+                    </div><!-- /.col -->
+                    <div class="col-xs-12 col-sm-8">
+                        <div class="profile-user-info">
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 账号 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-account"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 昵称 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-nickname"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 姓名 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-realName"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 身份证号 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-idCard"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 邮箱 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-email"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 手机号 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-mobileNumber"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 是否锁定 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-lockFlag">  </span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 个性签名 </div>
+                                <div class="profile-info-value">
+                                    <span id="show-description">  </span>
+                                </div>
+                            </div>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /detail modal -->
+
 
 <script type="text/javascript">
 
     //点击主播详情按钮
     function clickInfoAnchor(anchorId) {
-        alert(anchorId) ;
+
+        $.ajax({
+            url : '/live/anchor/'+anchorId ,
+            type : 'GET',
+            dataType : 'json',
+            success : function(data) {
+                if(data.status == 0) {
+                    showErrorMsg("服务器忙！") ;
+                    return ;
+                }
+                var resultData = data.data ;
+                $("#show-headImgUrl").prop("src", resultData.headImgUrl) ;
+                $("#show-account").text(resultData.account) ;
+                $("#show-nickname").text(resultData.nickname) ;
+                $("#show-realName").text(resultData.realName) ;
+                $("#show-email").text(resultData.email) ;
+                $("#show-idCard").text(resultData.idCard) ;
+                $("#show-mobileNumber").text(resultData.mobileNumber) ;
+                $("#show-description").text(resultData.description) ;
+                if(resultData.lockFlag) {
+                    $("#show-lockFlag").text("锁定") ;
+                } else {
+                    $("#show-lockFlag").text("未锁定") ;
+                }
+            },
+        })
+        $("#anchor-info-modal").modal() ;
     }
 
     //点击更新主播详情按钮
     function clickUpdateAnchor(anchorId) {
-        alert(anchorId) ;
+
     }
 
     //2.如果页面中还需要引入其他的js文件
@@ -117,21 +230,25 @@
                         }
                         $(".anchorInfo-hold").empty() ; //先清空主播信息
                         $.each(data.rows, function(index, row) {
+                           /* var lockCheckInput = "<i class='ace-icon fa fa-remove bigger-125' style='color: #00B83F'></i>" ;
+                            if(row.lockFlag) lockCheckInput = "<i class='ace-icon fa fa-check bigger-125' style='color:red'></i>" ;*/
+                            var lockCheckInput =  row.lockFlag ? "锁定": "未锁定" ;
+
                             var template = "<div class='col-xs-4 profile_details'> "
                                 + "<div class='well profile_view'> "
                                 + "<div class='col-xs-12'>"
                                 + "<h4 class='brief'>"+ row.nickname +"</h4>"
                                 + "<div class='left col-xs-7' style='padding:0px'>"
-                                + "<p>账号: <strong>"+ row.account +"</strong></p>"
-                                + "<p>姓名: <strong>"+ row.realName +"</strong></p>"
-                                + "<p>身份证号: <strong>"+ row.idCard +"</strong></p>"
+                                + "<p>账号: &nbsp; <strong>"+ row.account +"</strong></p>"
+                                + "<p>姓名: &nbsp; <strong>"+ row.realName +"</strong></p>"
+                                + "<p>是否锁定:&nbsp; <strong>"+ lockCheckInput +"</strong></p>"
                                 + "</div><div class='right col-xs-5'>"
                                 + "<img src='"+ row.headImgUrl +"' style='width: 120px; height: 118px;' class='img-circle img-responsive'>"
                                 + "</div></div>"
                                 + "<div class='col-xs-12 bottom text-center'>"
-                                + "<div class='col-xs-6' style='padding:0px;'>"
-                                + "<button type='button' class='btn btn-info btn-sm' onclick='clickInfoAnchor(\""+ row.anchorId +"\")'><i class='fa fa-info'></i> 详情 </button>"
-                                + "<button type='button' class='btn btn-danger btn-sm' style='margin-left: 4px;' onclick='clickUpdateAnchor(\""+ row.anchorId +"\")'> <i class='fa fa-edit'></i> 修改 </button>"
+                                + "<div class='col-xs-3'>"
+                                + "<button type='button' class='btn btn-info btn-sm' onclick='clickInfoAnchor(\""+ row.anchorId +"\")'><i class='fa fa-info'></i> 详情</button>"
+                                //+ "<button type='button' class='btn btn-danger btn-sm' style='margin-left: 4px;' onclick='clickUpdateAnchor(\""+ row.anchorId +"\")'> <i class='fa fa-edit'></i> 修改</button>"
                                 + "</div></div></div></div>" ;
                             $(".anchorInfo-hold").append(template) ;
                         });

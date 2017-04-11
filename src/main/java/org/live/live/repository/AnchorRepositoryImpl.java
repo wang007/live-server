@@ -14,7 +14,7 @@ import java.util.Map;
 public class AnchorRepositoryImpl extends BaseRepositoryImpl {
 
 
-    private final String FIND_ANCHOR_XSQL = "select new org.live.live.vo.AnchorVo(a.id, a.user.nickname, a.user.account, a.realName, a.idCard, a.user.headImgUrl) "
+    private final String FIND_ANCHOR_XSQL = "select new org.live.live.vo.AnchorVo(a.id, a.user.nickname, a.user.account, a.realName, a.idCard, a.user.headImgUrl, a.user.lockFlag) "
             +"from Anchor a where ("
             + "/~ or a.user.account like '%[account]%'~/"
             + "/~ or a.user.nickname like '%[nickname]%'~/"
@@ -35,7 +35,6 @@ public class AnchorRepositoryImpl extends BaseRepositoryImpl {
         filter.put("realName", searchStr) ;
         String hql = this.xsqlConvertHql(FIND_ANCHOR_XSQL, filter) ;
         hql = hql.replace("where ()", "").replace("( or", "(") ;
-        System.out.println("hql---> "+ hql) ;
         Page<AnchorVo> pageResult = this.find(page, hql, null) ;
         return pageResult ;
     }

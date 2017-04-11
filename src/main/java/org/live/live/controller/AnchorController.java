@@ -2,14 +2,18 @@ package org.live.live.controller;
 
 import org.live.common.page.JqGridModel;
 import org.live.common.page.PageUtils;
+import org.live.common.response.ResponseModel;
+import org.live.common.response.SimpleResponseModel;
 import org.live.common.systemlog.SystemLog;
 import org.live.live.service.AnchorService;
+import org.live.live.vo.AnchorInfoVo;
 import org.live.live.vo.AnchorVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,9 +58,29 @@ public class AnchorController {
             return model ;
         } catch (Exception e) {
             LOGGER.error("查询主播信息异常", e) ;
-
         }
         return null ;
+    }
+
+
+    /**
+     *  查询单条主播信息
+     * @param anchorId
+     * @return
+     */
+    @RequestMapping(value = "/anchor/{anchorId}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> findAnchorInfo(@PathVariable String anchorId) {
+        ResponseModel<Object> model = new SimpleResponseModel<Object>() ;
+        try{
+            AnchorInfoVo info = service.findAnchorInfo(anchorId) ;
+            model.setData(info) ;
+            model.success() ;
+        } catch (Exception e) {
+            LOGGER.error("查询单条主播信息异常", e) ;
+            model.error() ;
+        }
+        return model ;
     }
 
 

@@ -37,15 +37,18 @@ public class AnchorVo {
      */
     private String headImgUrl;
 
+    private boolean lockFlag ;
+
     public AnchorVo(){}
 
-    public AnchorVo(String anchorId, String nickname, String account, String realName, String idCard, String headImgUrl) {
+    public AnchorVo(String anchorId, String nickname, String account, String realName, String idCard, String headImgUrl, boolean lockFlag) {
         this.anchorId = anchorId;
         this.nickname = nickname;
         this.account = account;
         this.realName = realName;
         this.idCard = idCard;
         this.headImgUrl = headImgUrl;
+        this.lockFlag = lockFlag ;
     }
 
     public String getAnchorId() {
@@ -94,5 +97,13 @@ public class AnchorVo {
 
     public void setHeadImgUrl(String headImgUrl) {
         this.headImgUrl = headImgUrl;
+    }
+
+    public boolean isLockFlag() {
+        return lockFlag;
+    }
+
+    public void setLockFlag(boolean lockFlag) {
+        this.lockFlag = lockFlag;
     }
 }

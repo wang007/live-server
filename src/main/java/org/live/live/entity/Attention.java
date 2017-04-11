@@ -4,6 +4,7 @@ import org.live.common.base.BaseEntity;
 
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import java.util.Date;
 
 /**
  *  关注表
@@ -27,6 +28,11 @@ public class Attention extends BaseEntity{
     @JoinColumn(name="live_room_id")
     private LiveRoom liveRoom ;
 
+    /**
+     *  创建时间，即关注时间
+     */
+    private Date createTime ;
+
     public MobileUser getUser() {
         return user;
     }
@@ -41,5 +47,13 @@ public class Attention extends BaseEntity{
 
     public void setLiveRoom(LiveRoom liveRoom) {
         this.liveRoom = liveRoom;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

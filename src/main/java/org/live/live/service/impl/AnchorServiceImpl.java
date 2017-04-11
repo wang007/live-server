@@ -5,6 +5,7 @@ import org.live.common.base.BaseServiceImpl;
 import org.live.live.entity.Anchor;
 import org.live.live.repository.AnchorRepository;
 import org.live.live.service.AnchorService;
+import org.live.live.vo.AnchorInfoVo;
 import org.live.live.vo.AnchorVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,5 +30,10 @@ public class AnchorServiceImpl extends BaseServiceImpl<Anchor, String> implement
     @Override
     public Page<AnchorVo> findAnchors(PageRequest page, String searchStr) {
         return repository.findAnchors(page, searchStr) ;
+    }
+
+    @Override
+    public AnchorInfoVo findAnchorInfo(String anchorId) {
+        return repository.findAnchorInfo(anchorId) ;
     }
 }

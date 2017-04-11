@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-4 center">
                         <span class="profile-picture">
-                            <img class="editable img-responsive" alt="暂无图片" name="info-headImgUrl" src=""/>
+                            <img class="editable img-responsive" alt="暂无图片" style="width:150px;height: 150px;" name="info-headImgUrl" src=""/>
                         </span>
 
                         <div class="space space-4"></div>
@@ -385,7 +385,7 @@
                             case 'info':
                                 var headImgUrl = data['headImgUrl'];
                                 if (headImgUrl == null) {
-                                    headImgUrl = "static/ace/assets/avatars/profile-pic.jpg"
+                                    headImgUrl = "/static/ace/assets/avatars/profile-pic.jpg"
                                 }
                                 $("img[name='info-headImgUrl']").attr('src', headImgUrl);
                                 var $modal = $("#mobile_user_info_modal");
