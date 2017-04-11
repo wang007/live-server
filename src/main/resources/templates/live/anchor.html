@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <title>主播管理</title>
-<link rel="stylesheet" th:href="@{/static/custom/common/customProfile.css}" />
-
+<link rel="stylesheet" th:href="@{/static/custom/common/customProfile.css}"/>
+<link rel="stylesheet" th:href="@{/static/plugins/css/customJqPaginator.css}"/>
 
 <div class="page-header">
     <h1>直播管理
@@ -29,140 +29,54 @@
     <div class="hr hr24 hr-dotted"></div>
 
     <div class="col-xs-12">
+        <div class="anchorInfo-hold">
 
-        <div class="col-xs-4 profile_details">
-            <div class="well profile_view">
-                <div class="col-xs-12">
-                    <h4 class="brief"><i>城院大帅比</i></h4>
-                    <div class="left col-xs-7" style="padding:0px">
-                        <p>账号:  <strong>201335020231</strong> </p>
-                        <p>姓名:  <strong>王展城王展城王展城 </strong> </p>
-                        <p>身份证号:  <strong>441481199405262230</strong> </p>
+        <!--    <div class="col-xs-4 profile_details">
+                <div class="well profile_view">
+                    <div class="col-xs-12">
+                        <h4 class="brief">城院大帅比</h4>
+                        <div class="left col-xs-7" style="padding:0px">
+                            <p>账号: <strong>201335020231</strong></p>
+                            <p>姓名: <strong>王展城王展城王展城 </strong></p>
+                            <p>身份证号: <strong>441481199405262230</strong></p>
+                        </div>
+                        <div class="right col-xs-5">
+                            <img src="/static/ace/assets/avatars/user.jpg" style="width: 110px; height: 118px;" alt=""
+                                 class="img-circle img-responsive">
+                        </div>
                     </div>
-                    <div class="right col-xs-5">
-                        <img src="/static/ace/assets/avatars/user.jpg" style="width: 150px; height: 118px;" alt="" class="img-circle img-responsive">
+                    <div class="col-xs-12 bottom text-center">
+                        <div class="col-xs-6" style="padding:0px;">
+                            <button type="button" class="btn btn-info btn-sm">
+                                <i class="fa fa-info"></i> 详情
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm">
+                                <i class="fa fa-edit"></i> 修改
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="col-xs-12 bottom text-center">
-                    <div class="col-xs-6" style="padding:0px;">
-                        <button type="button" class="btn btn-info btn-xs">
-                            <i class="fa fa-info"></i> 详情
-                         </button>
-                        <button type="button" class="btn btn-danger btn-xs">
-                            <i class="fa fa-edit"></i> 修改
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </div>-->
+
+
+        </div> <!-- /.anchorInfo-hold -->
+    </div>  <!-- /.col-xs-12 -->
+
+    <div class="col-xs-12 customBootstrap">
+        <div class="col-xs-3" style="padding-top:20px;">
+            <label>
+                每页显示
+                <select id="pageRows" style="width: 70px;">
+                    <option value="6">6</option>
+                    <option value="12">12</option>
+                    <option value="24">24</option>
+                </select> 条记录
+            </label>
+
         </div>
-
-        <div class="col-xs-4 profile_details">
-            <div class="well profile_view">
-                <div class="col-xs-12">
-                    <h4 class="brief"><i>城院大帅比</i></h4>
-                    <div class="left col-xs-7" style="padding:0px">
-                        <p>账号:  <strong>201335020231</strong> </p>
-                        <p>姓名:  <strong>王展城王展城王展城 </strong> </p>
-                        <p>身份证号:  <strong>441481199405262230</strong> </p>
-                    </div>
-                    <div class="right col-xs-5">
-                        <img src="/static/ace/assets/avatars/user.jpg" style="width: 150px; height: 118px;" alt="" class="img-circle img-responsive">
-                    </div>
-                </div>
-                <div class="col-xs-12 bottom text-center">
-                    <div class="col-xs-6" style="padding:0px;">
-                        <button type="button" class="btn btn-info btn-xs">
-                            <i class="fa fa-info"></i> 详情
-                        </button>
-                        <button type="button" class="btn btn-danger btn-xs">
-                            <i class="fa fa-edit"></i> 修改
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="col-xs-8">
+            <ul class="pagination" id="page"></ul>
         </div>
-
-        <div class="col-xs-4 profile_details">
-            <div class="well profile_view">
-                <div class="col-xs-12">
-                    <h4 class="brief"><i>城院大帅比</i></h4>
-                    <div class="left col-xs-7" style="padding:0px">
-                        <p>账号:  <strong>201335020231</strong> </p>
-                        <p>姓名:  <strong>王展城王展城王展城 </strong> </p>
-                        <p>身份证号:  <strong>441481199405262230</strong> </p>
-                    </div>
-                    <div class="right col-xs-5">
-                        <img src="/static/ace/assets/avatars/user.jpg" style="width: 150px; height: 118px;" alt="" class="img-circle img-responsive">
-                    </div>
-                </div>
-                <div class="col-xs-12 bottom text-center">
-                    <div class="col-xs-6" style="padding:0px;">
-                        <button type="button" class="btn btn-info btn-xs">
-                            <i class="fa fa-info"></i> 详情
-                        </button>
-                        <button type="button" class="btn btn-danger btn-xs">
-                            <i class="fa fa-edit"></i> 修改
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xs-4 profile_details">
-            <div class="well profile_view">
-                <div class="col-xs-12">
-                    <h4 class="brief"><i>城院大帅比</i></h4>
-                    <div class="left col-xs-7" style="padding:0px">
-                        <p>账号:  <strong>201335020231</strong> </p>
-                        <p>姓名:  <strong>王展城王展城王展城 </strong> </p>
-                        <p>身份证号:  <strong>441481199405262230</strong> </p>
-                    </div>
-                    <div class="right col-xs-5">
-                        <img src="/static/ace/assets/avatars/user.jpg" style="width: 150px; height: 118px;" alt="" class="img-circle img-responsive">
-                    </div>
-                </div>
-                <div class="col-xs-12 bottom text-center">
-                    <div class="col-xs-6" style="padding:0px;">
-                        <button type="button" class="btn btn-info btn-xs">
-                            <i class="fa fa-info"></i> 详情
-                        </button>
-                        <button type="button" class="btn btn-danger btn-xs">
-                            <i class="fa fa-edit"></i> 修改
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xs-4 profile_details">
-            <div class="well profile_view">
-                <div class="col-xs-12">
-                    <h4 class="brief"><i>城院大帅比</i></h4>
-                    <div class="left col-xs-7" style="padding:0px">
-                        <p>账号:  <strong>201335020231</strong> </p>
-                        <p>姓名:  <strong>王展城王展城王展城 </strong> </p>
-                        <p>身份证号:  <strong>441481199405262230</strong> </p>
-                    </div>
-                    <div class="right col-xs-5">
-                        <img src="/static/ace/assets/avatars/user.jpg" style="width: 150px; height: 118px;" alt="" class="img-circle img-responsive">
-                    </div>
-                </div>
-                <div class="col-xs-12 bottom text-center">
-                    <div class="col-xs-6" style="padding:0px;">
-                        <button type="button" class="btn btn-info btn-xs">
-                            <i class="fa fa-info"></i> 详情
-                        </button>
-                        <button type="button" class="btn btn-danger btn-xs">
-                            <i class="fa fa-edit"></i> 修改
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-
 
     </div>
 </div>
@@ -170,24 +84,83 @@
 
 <script type="text/javascript">
 
-    //1.js代码放里面
-    $.ace_ajax_finish(function() {
-        jQuery(function ($) {
+    //点击主播详情按钮
+    function clickInfoAnchor(anchorId) {
+        alert(anchorId) ;
+    }
 
-        })
-    })
+    //点击更新主播详情按钮
+    function clickUpdateAnchor(anchorId) {
+        alert(anchorId) ;
+    }
 
     //2.如果页面中还需要引入其他的js文件
-/*
-    var scripts =  [null, "xxx/xxx.js,",null] ;
-    $.ace_ajax_finish(scripts,function() {
+    var scripts = [null, "/static/plugins/js/jqPaginator.min.js", null];
+    $.ace_ajax_finish(scripts, function () {
         jQuery(function ($) {
+
+            //加载主播数据
+            function loadAnchorData(currentPage) {
+                $.ajax({
+                    url : '/live/anchor',
+                    type : 'GET',
+                    data : {
+                        page: currentPage,
+                        rows: $("#pageRows").val(),
+                        searchStr: $.trim($("#search_input").val())
+                    },
+                    dataType : 'json',
+                    success : function(data) {
+                        if(data == null) {
+                            showInfoMsg("暂时没有主播信息！") ;
+                            return ;
+                        }
+                        $(".anchorInfo-hold").empty() ; //先清空主播信息
+                        $.each(data.rows, function(index, row) {
+                            var template = "<div class='col-xs-4 profile_details'> "
+                                + "<div class='well profile_view'> "
+                                + "<div class='col-xs-12'>"
+                                + "<h4 class='brief'>"+ row.nickname +"</h4>"
+                                + "<div class='left col-xs-7' style='padding:0px'>"
+                                + "<p>账号: <strong>"+ row.account +"</strong></p>"
+                                + "<p>姓名: <strong>"+ row.realName +"</strong></p>"
+                                + "<p>身份证号: <strong>"+ row.idCard +"</strong></p>"
+                                + "</div><div class='right col-xs-5'>"
+                                + "<img src='"+ row.headImgUrl +"' style='width: 120px; height: 118px;' class='img-circle img-responsive'>"
+                                + "</div></div>"
+                                + "<div class='col-xs-12 bottom text-center'>"
+                                + "<div class='col-xs-6' style='padding:0px;'>"
+                                + "<button type='button' class='btn btn-info btn-sm' onclick='clickInfoAnchor(\""+ row.anchorId +"\")'><i class='fa fa-info'></i> 详情 </button>"
+                                + "<button type='button' class='btn btn-danger btn-sm' style='margin-left: 4px;' onclick='clickUpdateAnchor(\""+ row.anchorId +"\")'> <i class='fa fa-edit'></i> 修改 </button>"
+                                + "</div></div></div></div>" ;
+                            $(".anchorInfo-hold").append(template) ;
+                        });
+                        $('#page').jqPaginator("option",{totalPages: data.total}) ;
+                    },
+                    error : function() {
+                        showErrorMsg('网络连接异常')
+                    }
+                })  //ajax.
+
+            }
+
+            //分页
+            var $page = $('#page').jqPaginator({
+                totalPages: 1 ,
+                visiblePages: 6,
+                currentPage: 1,
+                onPageChange: function (currentPage, type) {
+                    loadAnchorData(currentPage) ;
+                }
+            });
+
+            //点击搜索按钮
+            $("#search_btn").click(function () {
+                loadAnchorData(1) ;
+            })
 
         })
     })
-*/
-
-
 
 
 </script>

@@ -1,0 +1,42 @@
+
+/**
+ *  外部用div包住分页的ul， div的class=customBootstrap， ul的class=pagination
+ */
+.customBootstrap .pagination > li > a {
+    margin-right: 5px;
+    border-radius: 2px;
+    background: #fff;
+    color: #333;
+    border-color: #ccc;
+    padding: 6px 15px
+}
+
+.customBootstrap .pagination > li > a:hover, .customBootstrap .pagination > li > a:focus {
+    color: #fff;
+    background: #2a91d8;
+    border-color: #2a91d8
+}
+
+.customBootstrap .pagination > .active > a, .customBootstrap .pagination > .active > a:hover, .customBootstrap .pagination > .active > a:focus {
+    color: #fff;
+    background: #2a91d8;
+    border-color: #2a91d8;
+}
+
+.customBootstrap .pagination .arrow2 {
+    margin: 3px 8px 5px 0
+}
+
+.customBootstrap .pagination a:hover .arrow2 {
+    border-right-color: #fff
+}
+
+.customBootstrap .pagination .arrow3 {
+    margin: 3px 0 5px 8px
+}
+
+.customBootstrap .pagination a:hover .arrow3 {
+    border-left-color: #fff
+}
+
+
