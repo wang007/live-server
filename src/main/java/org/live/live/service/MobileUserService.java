@@ -12,6 +12,16 @@ import java.util.List;
  * Created by KAM on 2017/4/6.
  */
 public interface MobileUserService extends BaseService<MobileUser, String> {
-    public DataTableModel findPage(HttpServletRequest request);
-    public void setOutDate(List<String> ids);
+
+     DataTableModel findPage(HttpServletRequest request);
+
+     void setOutDate(List<String> ids);
+
+    /**
+     * 根据用户账号查询用户
+     * @param account
+     * @return
+     */
+    MobileUser findMobileUserByAccount(String account) ;
+
 }

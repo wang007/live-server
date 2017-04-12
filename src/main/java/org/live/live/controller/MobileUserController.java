@@ -4,6 +4,7 @@ import org.live.common.response.DataTableModel;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
 import org.live.common.utils.CopyPropertiesUtils;
+import org.live.common.utils.EncryptUtils;
 import org.live.live.entity.MobileUser;
 import org.live.live.service.MobileUserService;
 import org.live.school.controller.MemberController;
@@ -66,7 +67,8 @@ public class MobileUserController {
         try {
             mobileUser.setRegisterTime(new Date());
             mobileUser.setLockFlag(false);
-            mobileUser.setHeadImgUrl("static/images/common/user.png"); // 默认头像地址
+            mobileUser.setHeadImgUrl("/static/images/common/user.png"); // 默认头像地址
+            mobileUser.setPassword(EncryptUtils.encryptToBase64(mobileUser.getPassword())) ;
             model.setData(mobileUserService.save(mobileUser));
             model.success();
         } catch (Exception e) {

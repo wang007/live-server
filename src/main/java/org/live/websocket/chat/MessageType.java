@@ -41,4 +41,14 @@ public class MessageType {
      */
     public static final int RELIEVE_SHUTUP_USER_MESSAGE_TYPE = 6 ;
 
+    /**
+     * 主播踢出用户
+     */
+    public static final int KICKOUT_USER_MESSAGE_TYPE = 7 ;
+
+    /**
+     *  主播解除踢出用户
+     */
+    public static final int RELIEVE_KICKOUT_USER_MESSAGE_TYPE = 8 ;
+
 }
