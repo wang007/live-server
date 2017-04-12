@@ -49,4 +49,9 @@ public class MemberServiceImpl extends BaseServiceImpl<Member, String> implement
     public List<SimpleMemberVo> findByRealName(String realName) {
         return memberRepository.findByRealNameLike(realName);
     }
+
+    @Override
+    public Member findMemberBymemberNo(String memberNo) {
+        return memberRepository.findMemberBymemberNo(memberNo) ;
+    }
 }
