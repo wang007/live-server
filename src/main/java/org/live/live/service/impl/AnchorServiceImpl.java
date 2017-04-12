@@ -3,6 +3,7 @@ package org.live.live.service.impl;
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
 import org.live.live.entity.Anchor;
+import org.live.live.entity.MobileUser;
 import org.live.live.repository.AnchorRepository;
 import org.live.live.service.AnchorService;
 import org.live.live.vo.AnchorInfoVo;
@@ -36,4 +37,11 @@ public class AnchorServiceImpl extends BaseServiceImpl<Anchor, String> implement
     public AnchorInfoVo findAnchorInfo(String anchorId) {
         return repository.findAnchorInfo(anchorId) ;
     }
+
+    @Override
+    public Anchor findAnchorByUser(MobileUser user) {
+        return repository.findAnchorByUser(user) ;
+    }
+
+
 }

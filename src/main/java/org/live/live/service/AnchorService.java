@@ -2,6 +2,7 @@ package org.live.live.service;
 
 import org.live.common.base.BaseService;
 import org.live.live.entity.Anchor;
+import org.live.live.entity.MobileUser;
 import org.live.live.vo.AnchorInfoVo;
 import org.live.live.vo.AnchorVo;
 import org.springframework.data.domain.Page;
@@ -28,5 +29,12 @@ public interface AnchorService extends BaseService<Anchor, String> {
      * @return
      */
     public AnchorInfoVo findAnchorInfo(String anchorId) ;
+
+    /**
+     * 查询主播信息
+     * @param user 移动端用户
+     * @return
+     */
+    Anchor findAnchorByUser(MobileUser user) ;
 
 }

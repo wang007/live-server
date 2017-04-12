@@ -15,5 +15,13 @@ import java.util.Map;
  * Created by KAM on 2017/4/6.
  */
 public interface MobileUserRepository extends BaseRepository<MobileUser, String> {
+
     Page<MobileUserVo> find(PageRequest pageRequest, Map<String, Object> filter);
+
+    /**
+     * 根据用户账号查询用户
+     * @param account
+     * @return
+     */
+    MobileUser findMobileUserByAccount(String account) ;
 }

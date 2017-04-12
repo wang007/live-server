@@ -57,4 +57,9 @@ public class MobileUserServiceImpl extends BaseServiceImpl<MobileUser, String> i
         }
 
     }
+
+    @Override
+    public MobileUser findMobileUserByAccount(String account) {
+        return mobileUserRepository.findMobileUserByAccount(account) ;
+    }
 }

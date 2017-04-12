@@ -14,6 +14,11 @@ public class AnchorInfoVo {
     private String anchorId ;
 
     /**
+     *  账号
+     */
+    private String account ;
+
+    /**
      *  昵称
      */
     private String nickname ;
@@ -61,8 +66,9 @@ public class AnchorInfoVo {
     public AnchorInfoVo() {
     }
 
-    public AnchorInfoVo(String anchorId, String nickname, String realName, String headImgUrl, String idCard, Date createTime, String description, String email, String mobileNumber, boolean lockFlag) {
+    public AnchorInfoVo(String anchorId, String account, String nickname, String realName, String headImgUrl, String idCard, Date createTime, String description, String email, String mobileNumber, boolean lockFlag) {
         this.anchorId = anchorId;
+        this.account = account ;
         this.nickname = nickname;
         this.realName = realName;
         this.headImgUrl = headImgUrl;
@@ -80,6 +86,14 @@ public class AnchorInfoVo {
 
     public void setAnchorId(String anchorId) {
         this.anchorId = anchorId;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     public String getNickname() {
@@ -153,4 +167,5 @@ public class AnchorInfoVo {
     public void setLockFlag(boolean lockFlag) {
         this.lockFlag = lockFlag;
     }
+
 }
