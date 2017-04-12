@@ -53,6 +53,11 @@ public interface Constants {
 	 * 数据字典：系统中默认值：零(string类型)
 	 */
 	public static final String DEFULT_VALUE_GRADE = "gradeOrdinary" ;
+
+	/**
+	 * 默认头像地址
+	 */
+	public static final String DEFAULT_HEAD_IMG_URL = "/static/images/common/user.png" ;
 	
 
 

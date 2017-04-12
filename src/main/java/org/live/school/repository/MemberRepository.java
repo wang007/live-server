@@ -22,4 +22,11 @@ public interface MemberRepository extends BaseRepository<Member, String> {
 
     @Query("select new org.live.school.vo.SimpleMemberVo(m.id, m.memberNo, m.realName) from Member m where m.realName like %:realName%")
     List<SimpleMemberVo> findByRealNameLike(@Param("realName") String realName);
+
+    /**
+     *  根据成员编号查询成员
+     * @param memberNo
+     * @return
+     */
+    Member findMemberBymemberNo(String memberNo) ;
 }

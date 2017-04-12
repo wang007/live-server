@@ -13,6 +13,10 @@ import java.util.List;
  * Created by KAM on 2017/4/6.
  */
 public interface MemberService extends BaseService<Member, String> {
-    public DataTableModel findPage(HttpServletRequest request);
-    public List<SimpleMemberVo> findByRealName(String realName);
+
+     DataTableModel findPage(HttpServletRequest request);
+
+     List<SimpleMemberVo> findByRealName(String realName);
+
+    Member findMemberBymemberNo(String memberNo) ;
 }

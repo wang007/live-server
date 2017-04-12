@@ -1,5 +1,6 @@
 package org.live.live.controller;
 
+import org.live.common.constants.Constants;
 import org.live.common.response.DataTableModel;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
@@ -67,7 +68,7 @@ public class MobileUserController {
         try {
             mobileUser.setRegisterTime(new Date());
             mobileUser.setLockFlag(false);
-            mobileUser.setHeadImgUrl("/static/images/common/user.png"); // 默认头像地址
+            mobileUser.setHeadImgUrl(Constants.DEFAULT_HEAD_IMG_URL); // 默认头像地址
             mobileUser.setPassword(EncryptUtils.encryptToBase64(mobileUser.getPassword())) ;
             model.setData(mobileUserService.save(mobileUser));
             model.success();

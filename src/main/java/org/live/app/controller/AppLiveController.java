@@ -1,17 +1,22 @@
 package org.live.app.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.bcel.Const;
 import org.live.app.vo.LiveCategoryVo;
 import org.live.app.vo.MobileUserVo;
+import org.live.common.constants.Constants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
 import org.live.common.utils.EncryptUtils;
+import org.live.common.utils.HttpServletUtils;
 import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
 import org.live.live.service.AnchorService;
 import org.live.live.service.LiveCategoryService;
 import org.live.live.service.LiveRoomService;
 import org.live.live.service.MobileUserService;
+import org.live.school.entity.Member;
+import org.live.school.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,6 +50,9 @@ public class AppLiveController {
 
     @Resource
     private LiveRoomService liveRoomService ;
+
+    @Resource
+    private MemberService memberService ;
 
 
     /**
@@ -74,7 +84,7 @@ public class AppLiveController {
      */
     @RequestMapping(value="/login", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseModel<Object> liveLogin(String account, String password) {
+    public ResponseModel<Object> liveLogin(HttpServletRequest request, String account, String password) {
         ResponseModel<Object> model = new SimpleResponseModel() ;
         try {
            MobileUser mobileUser = mobileUserService.findMobileUserByAccount(account) ;
@@ -121,6 +131,10 @@ public class AppLiveController {
            userVo.setRealName(mobileUser.getMember().getRealName()) ;
            userVo.setSex(mobileUser.getMember().getSex()) ;
 
+           mobileUser.setLastLoginTime(new Date()) ;
+           mobileUser.setLastLoginIp(HttpServletUtils.getIpAddr(request)) ;
+           mobileUserService.save(mobileUser) ;
+
            model.success() ;
            model.setData(userVo) ;
         } catch (Exception e) {
@@ -128,6 +142,87 @@ public class AppLiveController {
             model.error() ;
             model.setMessage("服务器忙！");
 
+        }
+        return model ;
+    }
+
+    /**
+     *
+     *  注册
+     * @param account 账号
+     * @param password 密码
+     * @param nickname 昵称
+     * @return
+     */
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseModel<Object> register(String account, String password, String nickname) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            Member member = memberService.findMemberBymemberNo(account) ;
+            if(member == null) {
+                model.error() ;
+                model.setMessage("请输入您的学号或工号!") ;
+                return model ;
+            }
+            if(mobileUserService.findMobileUserByAccount(account) != null) {
+                model.error() ;
+                model.setMessage("该账号已注册!") ;
+                return model ;
+            }
+            MobileUser user = new MobileUser() ;
+            user.setAccount(account) ;
+            user.setPassword(EncryptUtils.encryptToBase64(password)) ;
+            user.setAnchorFlag(false) ;
+            user.setOutDateFlag(false) ;
+            user.setLockFlag(false) ;
+            user.setHeadImgUrl(Constants.DEFAULT_HEAD_IMG_URL) ;
+            user.setMember(member) ;
+            user.setNickname(nickname) ;
+            user.setRegisterTime(new Date()) ;
+            mobileUserService.save(user) ;
+
+            model.success() ;
+        } catch (Exception e){
+            LOGGER.error("移动端用户注册异常", e) ;
+            model.error() ;
+            model.setMessage("服务器忙!") ;
+        }
+        return model ;
+    }
+
+    /**
+     * 重置密码
+     * @param account
+     * @param realName
+     * @param newPassword
+     * @return
+     */
+    @RequestMapping(value = "/password/resetting", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseModel<Object> resetPassword(String account, String realName, String newPassword) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+           MobileUser user =  mobileUserService.findMobileUserByAccount(account) ;
+           if(user == null) {
+               model.error() ;
+               model.setMessage("重置密码失败，信息填写有误!") ;
+               return model ;
+           }
+           if(!StringUtils.equals(user.getMember().getRealName(), realName)) {
+               model.error() ;
+               model.setMessage("重置密码失败，信息填写有误!") ;
+               return model ;
+           }
+           user.setPassword(EncryptUtils.encryptToBase64(newPassword)) ;
+           mobileUserService.save(user) ;
+
+           model.success() ;
+           model.setMessage("密码重置成功!") ;
+        } catch (Exception e) {
+            LOGGER.error("移动端密码重置失败！", e) ;
+            model.error() ;
+            model.setMessage("服务器忙!") ;
         }
         return model ;
     }
