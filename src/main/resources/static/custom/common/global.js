@@ -365,6 +365,12 @@ var DataTablePlus = function (option) {
                                                 $("input[name='" + name + "']").unbind("change").bind("change", function () {
                                                     $(this).valid(); // 重新校验
                                                 });
+                                                var $div = $("div[name='" + name + "']");
+                                                if ($div.is(".has-error")) {
+                                                    $div.removeClass("has-error");
+                                                    $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
+                                                    $("label[class='error']").text("");
+                                                } // 清除残留样式
                                                 break;
                                             default:
                                                 $("input[name='" + name + "']").val("");
@@ -468,6 +474,12 @@ var DataTablePlus = function (option) {
                                                     $("input[name='" + name + "']").unbind("change").bind("change", function () {
                                                         $(this).valid(); // 重新校验
                                                     });
+                                                    var $div = $("div[name='" + name + "']");
+                                                    if ($div.is(".has-error")) {
+                                                        $div.removeClass("has-error");
+                                                        $("span[name='" + name + "'] > i").remove(".glyphicon-remove");
+                                                        $("label[class='error']").text("");
+                                                    } // 清除残留样式
                                                     break;
                                                 default:
                                                     $("input[name='" + name + "']").val(value);

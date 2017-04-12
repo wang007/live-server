@@ -45,17 +45,26 @@ public class DemoController {
         }
         return jsonObject.toString();
     }
-    @RequestMapping(value="/record", method = RequestMethod.PUT)
+
+    @RequestMapping(value = "/record", method = RequestMethod.PUT)
     @ResponseBody
-    public String edit(Demo demo){
+    public String edit(Demo demo) {
         System.out.println(demo.getName());
         return "success";
     }
-    @RequestMapping(value="/record", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/record", method = RequestMethod.POST)
     @ResponseBody
-    public String insert(Demo demo){
+    public String insert(Demo demo) {
         System.out.println(demo.getName());
         return "success";
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.POST)
+    @ResponseBody
+    public String test(@RequestParam("account") String accoount, @RequestParam("password") String password) {
+        System.out.println(accoount + ":" + password);
+        return "{'name':'test'}";
     }
 
 }
