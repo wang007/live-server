@@ -2,12 +2,10 @@ package org.live.app.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.live.app.vo.LiveCategoryVo;
-import org.live.app.vo.LoginResponseVo;
 import org.live.app.vo.MobileUserVo;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
 import org.live.common.utils.EncryptUtils;
-import org.live.live.entity.Anchor;
 import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
 import org.live.live.service.AnchorService;
@@ -76,24 +74,24 @@ public class AppLiveController {
      */
     @RequestMapping(value="/login", method = RequestMethod.POST)
     @ResponseBody
-    public LoginResponseVo liveLogin(String account, String password) {
-        LoginResponseVo responseVo = new LoginResponseVo() ;
+    public ResponseModel<Object> liveLogin(String account, String password) {
+        ResponseModel<Object> model = new SimpleResponseModel() ;
         try {
            MobileUser mobileUser = mobileUserService.findMobileUserByAccount(account) ;
            if(mobileUser == null || !StringUtils.equals(mobileUser.getPassword(), EncryptUtils.encryptToBase64(password)) ) {
-               responseVo.error() ;
-               responseVo.setMessage("账号或密码错误！") ;
-               return responseVo ;
+               model.error() ;
+               model.setMessage("账号或密码错误！") ;
+               return model ;
            }
            if(mobileUser.isLockFlag()) {    //账号被锁
-               responseVo.error() ;
-               responseVo.setMessage("账号被锁定！") ;
-               return responseVo ;
+               model.error() ;
+               model.setMessage("账号被锁定！") ;
+               return model ;
            }
            if(mobileUser.isOutDateFlag()) {
-               responseVo.error() ;
-               responseVo.setMessage("账号已过期！") ;
-               return responseVo ;
+               model.error() ;
+               model.setMessage("账号已过期！") ;
+               return model ;
            }
 
             MobileUserVo userVo = new MobileUserVo() ;
@@ -123,15 +121,15 @@ public class AppLiveController {
            userVo.setRealName(mobileUser.getMember().getRealName()) ;
            userVo.setSex(mobileUser.getMember().getSex()) ;
 
-           responseVo.success() ;
-           responseVo.setData(userVo) ;
+           model.success() ;
+           model.setData(userVo) ;
         } catch (Exception e) {
             LOGGER.error("移动端登录异常", e) ;
-            responseVo.error() ;
-            responseVo.setMessage("服务器忙！");
+            model.error() ;
+            model.setMessage("服务器忙！");
 
         }
-        return responseVo ;
+        return model ;
     }
 
 }
