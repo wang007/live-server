@@ -82,6 +82,11 @@ public class MobileUserVo {
         private String roomId ;
 
         /**
+         *  直播间号
+         */
+        private String roomNum ;
+
+        /**
          *  房间名
          */
         private String roomName ;
@@ -92,9 +97,19 @@ public class MobileUserVo {
         private String roomCoverUrl ;
 
         /**
+         * 直播地址
+         */
+        private String liveRoomUrl ;
+
+        /**
          * 房间标签。多个用“,”逗号间隔
          */
         private String roomLabel ;
+
+        /**
+         * 禁播标记
+         */
+        private boolean banLiveFlag ;
 
         /**
          *  个性签名
@@ -155,6 +170,30 @@ public class MobileUserVo {
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public String getRoomNum() {
+            return roomNum;
+        }
+
+        public void setRoomNum(String roomNum) {
+            this.roomNum = roomNum;
+        }
+
+        public boolean isBanLiveFlag() {
+            return banLiveFlag;
+        }
+
+        public void setBanLiveFlag(boolean banLiveFlag) {
+            this.banLiveFlag = banLiveFlag;
+        }
+
+        public String getLiveRoomUrl() {
+            return liveRoomUrl;
+        }
+
+        public void setLiveRoomUrl(String liveRoomUrl) {
+            this.liveRoomUrl = liveRoomUrl;
         }
     }
 
@@ -245,4 +284,5 @@ public class MobileUserVo {
     public void setLiveRoomVo(LiveRoomInUserVo liveRoomVo) {
         this.liveRoomVo = liveRoomVo;
     }
+
 }

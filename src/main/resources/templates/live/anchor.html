@@ -225,7 +225,7 @@
                     dataType : 'json',
                     success : function(data) {
                         if(data == null) {
-                            showInfoMsg("暂时没有主播信息！") ;
+                            showInfoMsg("暂时没有新主播信息！") ;
                             return ;
                         }
                         $(".anchorInfo-hold").empty() ; //先清空主播信息
@@ -258,15 +258,16 @@
                         showErrorMsg('网络连接异常')
                     }
                 })  //ajax.
-
             }
 
+            var extCurrentPage = 1 ;
             //分页
             var $page = $('#page').jqPaginator({
                 totalPages: 1 ,
                 visiblePages: 6,
                 currentPage: 1,
                 onPageChange: function (currentPage, type) {
+                    extCurrentPage = currentPage ;
                     loadAnchorData(currentPage) ;
                 }
             });
@@ -274,6 +275,11 @@
             //点击搜索按钮
             $("#search_btn").click(function () {
                 loadAnchorData(1) ;
+            })
+
+            //分页下拉框改变
+            $("#pageRows").change(function () {
+                loadAnchorData(extCurrentPage) ;
             })
 
         })

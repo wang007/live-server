@@ -4,6 +4,9 @@ import org.live.common.base.BaseService;
 import org.live.live.entity.Anchor;
 import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
+import org.live.live.vo.LiveRoomVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -24,6 +27,14 @@ public interface LiveRoomService extends BaseService<LiveRoom, String> {
      * @param user
      * @return
      */
-    public LiveRoom findLiveRoomByMobileUser(@Param(value="user") MobileUser user) ;
+    public LiveRoom findLiveRoomByMobileUser(MobileUser user) ;
+
+    /**
+     * 分页查询直播间数据
+     * @param page
+     * @param searchStr 搜索条件
+     * @return
+     */
+    Page<LiveRoomVo> findLiveRooms(PageRequest page, String searchStr) ;
 
 }

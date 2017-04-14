@@ -28,6 +28,12 @@ public class LiveRoom extends BaseEntity {
     private LiveCategory liveCategory ;
 
     /**
+     *  房间号
+     */
+    @Column
+    private String roomNum ;
+
+    /**
      *  房间名
      */
     @Column
@@ -40,6 +46,12 @@ public class LiveRoom extends BaseEntity {
     private String coverUrl ;
 
     /**
+     * 直播地址
+     */
+    @Column
+    private String liveRoomUrl ;
+
+    /**
      *  正在直播的标记，默认是false
      */
     @Column
@@ -50,6 +62,12 @@ public class LiveRoom extends BaseEntity {
      */
     @Column
     private String roomLabel ;
+
+    /**
+     *  禁播标记， 默认是false
+     */
+    @Column
+    private boolean banLiveFlag ;
 
     /**
      * 在线人数。当关闭直播的时候，这里要清零
@@ -125,5 +143,29 @@ public class LiveRoom extends BaseEntity {
 
     public void setHistoryMaxOnlineCount(long historyMaxOnlineCount) {
         this.historyMaxOnlineCount = historyMaxOnlineCount;
+    }
+
+    public String getRoomNum() {
+        return roomNum;
+    }
+
+    public void setRoomNum(String roomNum) {
+        this.roomNum = roomNum;
+    }
+
+    public boolean isBanLiveFlag() {
+        return banLiveFlag;
+    }
+
+    public void setBanLiveFlag(boolean banLiveFlag) {
+        this.banLiveFlag = banLiveFlag;
+    }
+
+    public String getLiveRoomUrl() {
+        return liveRoomUrl;
+    }
+
+    public void setLiveRoomUrl(String liveRoomUrl) {
+        this.liveRoomUrl = liveRoomUrl;
     }
 }

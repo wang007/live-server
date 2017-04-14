@@ -117,6 +117,10 @@ public class AppLiveController {
                    liveRoomVo.setRoomId(liveRoom.getId()) ;
                    liveRoomVo.setRoomLabel(liveRoom.getRoomLabel()) ;
                    liveRoomVo.setRoomName(liveRoom.getRoomName()) ;
+
+                   liveRoomVo.setRoomNum(liveRoom.getRoomNum()) ;
+                   liveRoomVo.setBanLiveFlag(liveRoom.isBanLiveFlag()) ;
+                   liveRoomVo.setLiveRoomUrl(liveRoom.getLiveRoomUrl()) ;
                    userVo.setLiveRoomVo(liveRoomVo) ;
                }
            }
