@@ -4,6 +4,7 @@ import org.live.common.base.BaseRepository;
 import org.live.live.entity.Anchor;
 import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
+import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,5 +46,15 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
      * @return
      */
     Page<LiveRoomVo> findLiveRooms(PageRequest page, String searchStr) ;
+
+    /**
+     * 直播间详情
+     * @param liveRoomId
+     * @return
+     */
+    @Query("select new org.live.live.vo.LiveRoomInfoVo(lr.liveCategory.categoryName, lr.roomNum, lr.roomName, " +
+            "lr.roomLabel, lr.historyMaxOnlineCount, lr.anchor.description, lr.anchor.user.account, lr.anchor.user.nickname, " +
+            "lr.anchor.user.member.sex, lr.anchor.user.headImgUrl) from LiveRoom lr where lr.id=:liveRoomId")
+    LiveRoomInfoVo getLiveRoomInfo(@Param("liveRoomId") String liveRoomId) ;
 
 }

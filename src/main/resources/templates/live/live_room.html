@@ -155,10 +155,10 @@
             <label>
                 每页显示
                 <select id="pageRows" style="width: 70px;">
-                    <option value="6">6</option>
-                    <option value="9">9</option>
-                    <option value="15">15</option>
-                    <option value="24">24</option>
+                    <option value="6" th:selected="${rows} ==6">6</option>
+                    <option value="9" th:selected="${rows} ==9">9</option>
+                    <option value="15" th:selected="${rows} == 15">15</option>
+                    <option value="24" th:selected="${rows} == 24">24</option>
                 </select> 条记录
             </label>
 
@@ -167,6 +167,122 @@
             <ul class="pagination" id="page"></ul>
         </div>
     </div>
+
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="play_live_model">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header table-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="show_play_room_name">直播间观看</h4>
+                </div>
+                <div class="modal-body" style="padding:1px;">
+                    <div id="id_test_video" style="width:585px;height: 432px;margin: 0 auto;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /detail modal -->
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="liveroom_info_modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header table-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">详情查看</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- 内容 -->
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4 center">
+                        <span class="profile-picture">
+                            <img class="editable img-responsive" alt="暂无图片" style="width:150px;height: 150px;" id="show_headImgUrl" src=""/>
+                        </span>
+
+                        </div><!-- /.col -->
+                        <div class="col-xs-12 col-sm-8">
+                            <div class="profile-user-info">
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 直播间号 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_liveroom_num"></span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 直播间名 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_liveroom_name"></span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 直播分类 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_category_name"></span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 主播账号 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_account"></span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 主播昵称 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_nickname"></span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 性别 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_sex">  </span>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 房间标签 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_room_label"></span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 最高在线人数 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_historyMaxOnlineCount">  </span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-info-row">
+                                    <div class="profile-info-name"> 个性签名 </div>
+                                    <div class="profile-info-value">
+                                        <span id="show_description"></span>
+                                    </div>
+                                </div>
+
+
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /detail modal -->
 
 
 
@@ -180,28 +296,62 @@
     var extCurrentPage = /*[[${page == null? 1: page}]]*/1 ;
     /*]]>*/
 
-    //播放直播的方法
-    function playLiveRoom(liveRoomUrl, playFlag) {
-        var player = new TcPlayer('id_test_video', {
-            "rtmp": "rtmp://119.29.167.148/live/s", //请替换成实际可用的播放地址
-            "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
-            "coverpic" : "/upload/20170409/20170409617176.jpg",
-            "width" :  '480',//视频的显示宽度，请尽量使用视频分辨率宽度
-            "height" : '320'//视频的显示高度，请尽量使用视频分辨率高度
-        });
 
+    //播放直播的方法
+    function playLiveRoom(liveRoomUrl, roomName, playFlag) {
         if(!playFlag) {
-            showWarnMsg("禁播或离线状态的直播间不能观看！") ;
+            showWarnMsg("禁播或离线状态的直播间不能播放！") ;
             return ;
         }
+        $("#id_test_video").empty() ;    //先清除之前的播放器
+        //播放器
+        var  player = new TcPlayer('id_test_video', {
+            "rtmp": liveRoomUrl ,
+            "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
+            "live": true,
+            "coverpic" : "/upload/20170409/20170409617176.jpg",
+            "width" :  '576', //视频的显示宽度，请尽量使用视频分辨率宽度
+            "height" : '432', //视频的显示高度，请尽量使用视频分辨率高度
+        }) ;
+        console.log(player) ;
+        $("#show_play_room_name").text(roomName) ;
+        $("#play_live_model").modal() ;
 
-        console.log(liveRoomUrl) ;
-        console.log(playFlag) ;
+
+
     }
 
     //查看直播间详情
     function showLiveRoomInfo(liveRoomId) {
         console.log(liveRoomId) ;
+        $.ajax({
+            url: '/live/liveroom/'+ liveRoomId ,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if(data.status == 0) {
+                    showError("服务器忙！") ;
+                    return ;
+                }
+                var row = data.data ;
+                $("#show_headImgUrl").prop("src",row.headImgUrl) ;
+                $("#show_liveroom_num").text(row.roomNum) ;
+                $("#show_liveroom_name").text(row.roomName) ;
+                $("#show_category_name").text(row.categoryName) ;
+                $("#show_account").text(row.account) ;
+                $("#show_nickname").text(row.nickname) ;
+                $("#show_sex").text(row.sex == "1"? "男": "女") ;
+                $("#show_room_label").text(row.roomLabel) ;
+                $("#show_historyMaxOnlineCount").text(row.historyMaxOnlineCount) ;
+                $("#show_description").text(row.description) ;
+            },
+            error: function () {
+                showError("网络异常！") ;
+            }
+        })
+
+        $("#liveroom_info_modal").modal() ;
+
     }
 
     //禁播
@@ -300,7 +450,7 @@
                                            + "<span class='red'><i class='ace-icon fa fa-ban bigger-130'></i></span></a></li>" ;
                             }
 
-                            var template ="<li class='liveroom-chunk'><a href='javascript:;' onclick='playLiveRoom(\""+row.liveRoomUrl+"\","+playFlag+")'>"
+                            var template ="<li class='liveroom-chunk'><a href='javascript:;' onclick='playLiveRoom(\""+row.liveRoomUrl+"\",\""+row.roomName+"\","+playFlag+")'>"
                                 +"<img class='liveroom-coverImg' src="+row.liveRoomCoverUrl+"/> <div class='text'> <div class='inner float-left color-white'>直播间号："+row.roomNum+"</div></div>"
                                 +"<div class='text transparent'><div class='inner'> <i class='ace-icon fa fa-play align-top bigger-225'></i></div></div></a>"
                                 +"<div class='liveroom-info-chunk'><div><span class='color-grey size-13'>主播:</span>&nbsp;<span>"+row.nickname+"</span>"
@@ -344,6 +494,11 @@
             //点击刷新
             $("#refresh_btn").click(function(){
                 toMain("/live/liveroom/refresh", {refresh: $("#search_input").val(), page: extCurrentPage, rows: $("#pageRows").val()} ) ;
+            })
+
+            //改变每个显示条目
+            $("#pageRows").change(function () {
+                toMain("/live/liveroom/refresh", {refresh: $("#search_input").val(), page: 1, rows: $("#pageRows").val()} ) ;
             })
 
         })

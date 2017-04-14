@@ -7,6 +7,7 @@ import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
 import org.live.live.repository.LiveRoomRepository;
 import org.live.live.service.LiveRoomService;
+import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,5 +42,10 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
     @Override
     public Page<LiveRoomVo> findLiveRooms(PageRequest page, String searchStr) {
         return repository.findLiveRooms(page, searchStr) ;
+    }
+
+    @Override
+    public LiveRoomInfoVo getLiveRoomInfo(String liveRoomId) {
+        return repository.getLiveRoomInfo(liveRoomId) ;
     }
 }

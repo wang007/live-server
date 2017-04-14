@@ -7,6 +7,7 @@ import org.live.common.response.SimpleResponseModel;
 import org.live.common.systemlog.SystemLog;
 import org.live.live.entity.LiveRoom;
 import org.live.live.service.LiveRoomService;
+import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,11 +93,34 @@ public class LiveRoomController {
         ResponseModel<Object> model = new SimpleResponseModel<>() ;
         try {
            LiveRoom liveRoom =  service.get(liveRoomId) ;
+           if(liveRoomBanFlag) {    //禁播
+               // TODO 这里完善解散在线直播间的功能
+           }
+
            liveRoom.setBanLiveFlag(liveRoomBanFlag) ;
            service.save(liveRoom) ;
             model.success() ;
         } catch (Exception e) {
             LOGGER.error("更新直播间的禁播状态发生异常", e) ;
+            model.error() ;
+        }
+        return model ;
+    }
+
+    /**
+     * 直播间详情
+     * @return
+     */
+    @RequestMapping(value="/liveroom/{liveroomId}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> getLiveRoomInfo(@PathVariable String liveroomId) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            LiveRoomInfoVo liveRoomInfo = service.getLiveRoomInfo(liveroomId) ;
+            model.setData(liveRoomInfo) ;
+            model.success() ;
+        } catch (Exception e) {
+            LOGGER.error("查询直播间详情异常", e) ;
             model.error() ;
         }
         return model ;
