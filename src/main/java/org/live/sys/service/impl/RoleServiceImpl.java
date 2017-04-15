@@ -42,7 +42,6 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, String> implements Ro
      */
 	@Override
 	public Integer createSerialNo() {
-		// TODO Auto-generated method stub
 		Integer csn;
 
 		csn = this.roleRepo.getMaxSerialNo();// 获得serialNo最大值
@@ -59,7 +58,6 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, String> implements Ro
 	 */
 	@Override
 	public List<Role> findRoleBySerialNo(int serialNo) {
-		// TODO Auto-generated method stub
 		List<Role> roles = null;
 		try {
 			roles = this.roleRepo.findRoleBySerialNo(serialNo);
@@ -74,7 +72,6 @@ public class RoleServiceImpl extends BaseServiceImpl<Role, String> implements Ro
 	 */
 	@Override
 	public boolean isExistSerialNo(int serialNo) {
-		// TODO Auto-generated method stub
 		List<Role> roles=this.findRoleBySerialNo(serialNo);
     	return roles != null && roles.size() > 0;
 	}
