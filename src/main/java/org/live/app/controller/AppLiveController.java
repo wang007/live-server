@@ -2,35 +2,42 @@ package org.live.app.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.bcel.Const;
+import org.live.app.vo.ApplyAnchorVo;
 import org.live.app.vo.LiveCategoryVo;
 import org.live.app.vo.MobileUserVo;
 import org.live.common.constants.Constants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
+import org.live.common.support.UploadFilePathConfig;
+import org.live.common.utils.CreateOrderNoUtils;
 import org.live.common.utils.EncryptUtils;
 import org.live.common.utils.HttpServletUtils;
+import org.live.common.utils.UploadUtils;
+import org.live.live.entity.ApplyAnchor;
 import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
-import org.live.live.service.AnchorService;
-import org.live.live.service.LiveCategoryService;
-import org.live.live.service.LiveRoomService;
-import org.live.live.service.MobileUserService;
+import org.live.live.service.*;
 import org.live.school.entity.Member;
 import org.live.school.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
 /**
- *  移动端访问的直播分类接口
+ *  移动端访问的综合功能接口
  * Created by Mr.wang on 2017/4/4.
  */
 @Controller
@@ -38,9 +45,6 @@ import java.util.List;
 public class AppLiveController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppLiveController.class) ;
-
-    @Resource
-    private LiveCategoryService categoryService ;
 
     @Resource
     private MobileUserService mobileUserService ;
@@ -54,27 +58,18 @@ public class AppLiveController {
     @Resource
     private MemberService memberService ;
 
+    @Resource
+    private ApplyAnchorService applyAnchorService ;
 
     /**
-     * 获取直播分类
-     * @return
+     * 申请成为主播的最大申请数
      */
-    @RequestMapping("/category")
-    @ResponseBody
-    public ResponseModel<Object> findLiveCategorys(){
+    @Value("${system.applyAnchorMaxCount}")
+    private int applyAnchorMaxCount ;
 
-        ResponseModel<Object> model = new SimpleResponseModel<Object>() ;
-        try {
-           List<LiveCategoryVo> voList = categoryService.findLiveCategory4app() ;
-            model.setData(voList) ;
-            model.setMessage("查询成功") ;
-            model.success() ;
-        } catch(Exception e) {
-            LOGGER.error(e.getMessage(), e) ;
-            model.setMessage("查询失败") ;
-        }
-        return model ;
-    }
+    @Resource
+    private UploadFilePathConfig pathConfig ;
+
 
     /**
      *  登录
@@ -124,6 +119,7 @@ public class AppLiveController {
                    userVo.setLiveRoomVo(liveRoomVo) ;
                }
            }
+            userVo.setUserId(mobileUser.getId()) ;
            userVo.setAccount(account) ;
            userVo.setPassword(password) ;
            userVo.setAnchorFlag(mobileUser.isAnchorFlag()) ;    //主播标记
@@ -227,6 +223,104 @@ public class AppLiveController {
             LOGGER.error("移动端密码重置失败！", e) ;
             model.error() ;
             model.setMessage("服务器忙!") ;
+        }
+        return model ;
+    }
+
+
+    /**
+     * 申请成为主播的入口
+     * @param applyAnchorVo
+     * @return
+     */
+    @RequestMapping(value="/applyAnchor", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseModel<Object> applyAnchor(MultipartFile file, ApplyAnchorVo applyAnchorVo) {
+
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            MobileUser mobileUser = mobileUserService.get(applyAnchorVo.getUserId());
+            if(mobileUser == null) {
+                model.error() ;
+                model.setMessage("信息填写错误，重新登录后再申请！") ;  //移动端的userId失效的情况
+                return model ;
+            }
+            if(StringUtils.isEmpty(mobileUser.getEmail()) || StringUtils.isEmpty(mobileUser.getMobileNumber())) {
+                model.error() ;
+                model.setMessage("申请主播，必须先填写好邮箱和手机号") ;
+                return model ;
+            }
+            if(!applyAnchorService.judgeUserApplyCount(applyAnchorVo.getUserId(), applyAnchorMaxCount)) {    //判断次数
+                model.error() ;
+                model.setMessage("您已申请过了，并超过系统规定的申请限制数！") ;
+                return model ;
+            }
+            if(file == null) {
+                model.error() ;
+                model.setMessage("申请失败，请上传身份证照！") ;
+                return model ;
+            }
+            String fileSuffix = UploadUtils.getFileSuffix(file.getOriginalFilename()) ; //文件后缀
+
+            //路径： 相对于项目的 /projectDir/upload/系统日期/系统时间+6位随机数.xxx
+            String dateStr = CreateOrderNoUtils.getDate() ;
+            String fileName = CreateOrderNoUtils.getCreateOrderNo()+fileSuffix ;
+
+            String targetPathSuffix = dateStr + File.separator + fileName ;
+
+            File targetFile = UploadUtils.createFile(pathConfig.getUploadFilePath(), targetPathSuffix) ;
+            file.transferTo(targetFile);
+
+            ApplyAnchor applyAnchor = new ApplyAnchor() ;
+            applyAnchor.setUser(mobileUser) ;
+            applyAnchor.setRealName(applyAnchorVo.getRealName()) ;
+            applyAnchor.setIdCard(applyAnchorVo.getIdCard()) ;
+            applyAnchor.setIdImgUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName) ;
+            applyAnchorService.save(applyAnchor) ;
+            model.success() ;
+            model.setMessage("申请成功！") ;
+        } catch (Exception e) {
+            LOGGER.error("申请主播发生异常", e) ;
+            model.error() ;
+            model.setMessage("服务器繁忙，请稍后再试！") ;
+        }
+        return model ;
+    }
+
+    /**
+     * 更换头像
+     * @return
+     */
+    @RequestMapping(value="/headImg/{userId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseModel<Object> changeUserHeadImg(MultipartFile file, @PathVariable String userId) {
+
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            MobileUser mobileUser = mobileUserService.get(userId);
+            String headImgUrl = mobileUser.getHeadImgUrl();
+            if(!StringUtils.equals(headImgUrl, Constants.DEFAULT_HEAD_IMG_URL)) {   //不等于默认头像，
+                File oldFile = new File(pathConfig.getUploadFileRootPath(), headImgUrl) ;
+                if(oldFile.exists()) oldFile.delete() ; //删除之前的图片
+            }
+            String fileSuffix = UploadUtils.getFileSuffix(file.getOriginalFilename()) ; //文件后缀
+
+            //路径： 相对于项目的 /projectDir/upload/系统日期/系统时间+6位随机数.xxx
+            String dateStr = CreateOrderNoUtils.getDate() ;
+            String fileName = CreateOrderNoUtils.getCreateOrderNo()+fileSuffix ;
+
+            String targetPathSuffix = dateStr + File.separator + fileName ;
+
+            File targetFile = UploadUtils.createFile(pathConfig.getUploadFilePath(), targetPathSuffix) ;
+            file.transferTo(targetFile);
+
+            mobileUser.setHeadImgUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName);
+            mobileUserService.save(mobileUser) ;
+            model.setMessage("设置成功！") ;
+        } catch (Exception e) {
+            LOGGER.error("设置移动端用户头像异常", e) ;
+            model.error() ;
+            model.setMessage("设置失败！") ;
         }
         return model ;
     }

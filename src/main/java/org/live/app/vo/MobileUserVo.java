@@ -9,6 +9,11 @@ import java.util.Date;
 public class MobileUserVo {
 
     /**
+     *  用户id
+     */
+    private String userId ;
+
+    /**
      * 账号
      */
     private String account ;
@@ -195,6 +200,14 @@ public class MobileUserVo {
         public void setLiveRoomUrl(String liveRoomUrl) {
             this.liveRoomUrl = liveRoomUrl;
         }
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getAccount() {
