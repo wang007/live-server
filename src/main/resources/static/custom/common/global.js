@@ -135,9 +135,10 @@ var Global = (function () {
  *          editAjax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  *          appendBtn : function(btnGroupId){} 用于追加自定义功能按钮
  *              btnGroupId : 按钮组所在div的id
- *          featureDef : 用于指定功能的开启与关闭，仅支持新增和修改功能
+ *          featureDef : 用于指定功能的开启与关闭，仅支持新增、修改功能和删除功能
  *              edit : {true|false} 定义是否启用修改功能
  *              create : {true|false} 定义是否启用新增功能
+ *              delete : {true|false} 定义是否启用删除功能
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -263,19 +264,22 @@ var DataTablePlus = function (option) {
             '> ',
             "initComplete": function () {
                 $("#datatable_btn_group").append('操作：' +
-                    '<button type="button" id="btn_datatable_del" name="datatable_btn_group" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>' +
                     '<button type="button" id="btn_datatable_info" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="详情"> &nbsp;<i class="fa fa-info"></i>&nbsp; </button>' +
                     '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-defalut datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
 
 
                 var hasCreateFeature = featureDef['create'] || true;
                 var hasEditFeature = featureDef['edit'] || true;
+                var hasDeleteFeature = featureDef['delete'] || true;
                 if (hasCreateFeature) {
                     $("#datatable_btn_group").append('<button type="button" id="btn_datatable_create" name="datatable_btn_group" class="btn btn-success datatable-btn"  data-placement="top" title="添加"><i class="fa fa-plus"></i></button>');
 
                 }
                 if (hasEditFeature) {
                     $("#datatable_btn_group").append('<button type="button" id="btn_datatable_update" name="datatable_btn_group" class="btn btn-primary datatable-btn" data-placement="top" title="修改"><i class="fa fa-edit"></i></button>');
+                }
+                if(hasDeleteFeature){
+                    $("#datatable_btn_group").append('<button type="button" id="btn_datatable_del" name="datatable_btn_group" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>');
                 }
 
                 if (appendBtn != null && typeof appendBtn == "function") {
