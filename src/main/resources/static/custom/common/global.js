@@ -134,7 +134,8 @@ var Global = (function () {
  *          columnsDefs : 暴露dataTables原生columnsDefs属性以满足单元格的复杂需求，注意因列表第一项以被checkbox占据，所以列表项的索引应该从1开始
  *          editAjax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  *          appendBtn : function(btnGroup){} 用于追加自定义功能按钮
- *              btnGroupId : 按钮组所在div元素
+ *              btnGroup : 按钮组所在div元素
+ *              name : 通过按钮名称，将自定义按钮绑定至插件按钮组点击事件
  *          featureDef : 用于指定功能的开启与关闭，仅支持新增、修改功能和删除功能
  *              edit : {true|false} 定义是否启用修改功能
  *              create : {true|false} 定义是否启用新增功能
@@ -269,14 +270,14 @@ var DataTablePlus = function (option) {
                 var hasCreateFeature = true;
                 var hasEditFeature = true;
                 var hasDeleteFeature = true;
-                if(featureDef != null){
-                    if(!featureDef.create){
+                if (featureDef != null) {
+                    if (!featureDef.create) {
                         hasCreateFeature = featureDef.create;
                     }
-                    if(!featureDef.edit){
-                        hasEditFeature= featureDef.edit;
+                    if (!featureDef.edit) {
+                        hasEditFeature = featureDef.edit;
                     }
-                    if(!featureDef.delete){
+                    if (!featureDef.delete) {
                         hasDeleteFeature = featureDef.delete;
                     }
                 }
@@ -288,12 +289,12 @@ var DataTablePlus = function (option) {
                 if (hasEditFeature) {
                     $("#datatable_btn_group").append('<button type="button" id="btn_datatable_update" name="datatable_btn_group" class="btn btn-primary datatable-btn" data-placement="top" title="修改"><i class="fa fa-edit"></i></button>');
                 }
-                if(hasDeleteFeature){
+                if (hasDeleteFeature) {
                     $("#datatable_btn_group").append('<button type="button" id="btn_datatable_del" name="datatable_btn_group" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>');
                 }
 
                 if (appendBtn != null && typeof appendBtn == "function") {
-                    appendBtn($("#datatable_btn_group"));
+                    appendBtn($("#datatable_btn_group"), "datatable_btn_group");
                 }
                 $("#datatable_input_search").attr({
                     "class": "form-group pull-right top_search"
@@ -735,6 +736,19 @@ var DataTablePlus = function (option) {
                             }
                             $("#datatable_edit_modal").modal('hide'); // 关闭模态框
                             break; // 编辑modal提交按钮
+                        default:
+                            var index;
+                            var i = 0;
+                            $("input[name='iCheckGroup']").each(function () {
+                                i++; // 定位选择框所在的行索引
+                                var val = $(this).val();
+                                if (val != "all" && $(this).is(':checked')) {
+                                    index = i - 2;
+                                }
+                            });
+                            var record = data[index];
+                            modal['clickCallBack']({'btnType': $(this), 'data': record}); // 执行回调
+                            break; // 其他按钮，若有的话
                     }
                 });
             }
