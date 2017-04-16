@@ -266,11 +266,21 @@ var DataTablePlus = function (option) {
                 $("#datatable_btn_group").append('操作：' +
                     '<button type="button" id="btn_datatable_info" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="详情"> &nbsp;<i class="fa fa-info"></i>&nbsp; </button>' +
                     '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-defalut datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
+                var hasCreateFeature = true;
+                var hasEditFeature = true;
+                var hasDeleteFeature = true;
+                if(featureDef != null){
+                    if(!featureDef.create){
+                        hasCreateFeature = featureDef.create;
+                    }
+                    if(!featureDef.edit){
+                        hasEditFeature= featureDef.edit;
+                    }
+                    if(!featureDef.delete){
+                        hasDeleteFeature = featureDef.delete;
+                    }
+                }
 
-
-                var hasCreateFeature = featureDef['create'] || true;
-                var hasEditFeature = featureDef['edit'] || true;
-                var hasDeleteFeature = featureDef['delete'] || true;
                 if (hasCreateFeature) {
                     $("#datatable_btn_group").append('<button type="button" id="btn_datatable_create" name="datatable_btn_group" class="btn btn-success datatable-btn"  data-placement="top" title="添加"><i class="fa fa-plus"></i></button>');
 
