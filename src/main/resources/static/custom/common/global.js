@@ -133,8 +133,8 @@ var Global = (function () {
  *          ajax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
  *          columnsDefs : 暴露dataTables原生columnsDefs属性以满足单元格的复杂需求，注意因列表第一项以被checkbox占据，所以列表项的索引应该从1开始
  *          editAjax : function(data){} 插件向后台提交数据前，可通过此方法对数据进行修改和添加，注意一定要返回data
- *          appendBtn : function(btnGroupId){} 用于追加自定义功能按钮
- *              btnGroupId : 按钮组所在div的id
+ *          appendBtn : function(btnGroup){} 用于追加自定义功能按钮
+ *              btnGroupId : 按钮组所在div元素
  *          featureDef : 用于指定功能的开启与关闭，仅支持新增、修改功能和删除功能
  *              edit : {true|false} 定义是否启用修改功能
  *              create : {true|false} 定义是否启用新增功能
@@ -293,7 +293,7 @@ var DataTablePlus = function (option) {
                 }
 
                 if (appendBtn != null && typeof appendBtn == "function") {
-                    appendBtn("datatable_btn_group");
+                    appendBtn($("#datatable_btn_group"));
                 }
                 $("#datatable_input_search").attr({
                     "class": "form-group pull-right top_search"
