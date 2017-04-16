@@ -18,7 +18,7 @@ import java.util.List;
  * Created by wang on 2017/4/15.
  */
 @Controller
-@RequestMapping("/live")
+@RequestMapping("/app")
 public class AppLiveRoomController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppLiveRoomController.class) ;
