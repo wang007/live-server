@@ -140,6 +140,9 @@ var Global = (function () {
  *              edit : {true|false} 定义是否启用修改功能
  *              create : {true|false} 定义是否启用新增功能
  *              delete : {true|false} 定义是否启用删除功能
+ *          sortBy :  指定默认排序根据，以字段列的下标作为参数
+ *              target : 以字段列的下标指定排序根据
+ *              dir : {asc|desc} 排序类型
  * @param option {targetId:'#xxx','columns':[{'name':'与实体属性名一致','title','表格列标题'},...],'responseArguments':{'successMsgName':'xxx','successCode':1001,'errorMsgName':'xxxx'}}
  * @constructor
  */
@@ -161,6 +164,7 @@ var DataTablePlus = function (option) {
         var featureDef = option['featureDef'] || null; // 用于定义功能
         var data; // 当前表格的全部数据
         var validator; // 表单检验器
+        var sortBy = option['sortBy'] || null; // 用于指定默认排序
         var defaultColumns = [
             {
                 "data": "id",
@@ -233,6 +237,10 @@ var DataTablePlus = function (option) {
 
                     if (ajax != null) {
                         d = ajax(d);
+                    }
+                    if (d.order[0]['column'] == 0 && sortBy != null) {
+                        d.order[0]['column'] = sortBy['target'];
+                        d.order[0]['dir'] = sortBy['dir'];
                     }
                     return JSON.stringify(d);
                 }
