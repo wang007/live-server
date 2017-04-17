@@ -36,103 +36,108 @@
             } // 构建数据源
 
             var _table = new DataTablePlus({
-                'targetId': 'dict_table',
-                'columns': [
-                    {
-                        'name': 'typeName',
-                        'title': '字典类型',
-                        'show': true,
-                        'detail': true,
-                        'edit': true,
-                        'inputType': 'select',
-                        'data': _dictTypes,
-                        'editName': 'dictType.id' // 用于提交新增或修改数据时指定的别名，主要易于后台取值
-                    }, {
-                        'name': 'dictMark',
-                        'title': '字典标志',
-                        'show': true,
-                        'detail': true,
-                        'edit': true,
-                        'inputType': 'text'
+                    'targetId': 'dict_table',
+                    'columns': [
+                        {
+                            'name': 'typeName',
+                            'title': '字典类型',
+                            'show': true,
+                            'detail': true,
+                            'edit': true,
+                            'inputType': 'select',
+                            'data': _dictTypes,
+                            'editName': 'dictType.id' // 用于提交新增或修改数据时指定的别名，主要易于后台取值
+                        }, {
+                            'name': 'dictMark',
+                            'title': '字典标志',
+                            'show': true,
+                            'detail': true,
+                            'edit': true,
+                            'inputType': 'text'
+                        },
+                        {
+                            'name': 'dictValue',
+                            'title': '字典值',
+                            'show': true,
+                            'detail': true,
+                            'edit': true,
+                            'inputType': 'text'
+                        }, {
+                            'name': 'remarks',
+                            'title': '描述',
+                            'show': true,
+                            'detail': true,
+                            'edit': true,
+                            'inputType': 'textarea',
+                            'maxLength': 50
+                        }
+                    ],
+                    'responseArguments': {
+                        'successMsgCode': 'status',
+                        'successCode': 1,
+                        'errorMsgName': 'message'
+                    }, // 服务器响应参数
+                    'url': {
+                        'delete': 'dict/dictionary/data', // 删除提交地址
+                        'edit': 'dict/dictionary/record', // 新增与修改提交地址
+                        'data': 'dict/dictionary/data' // 数据拉取地址
                     },
-                    {
-                        'name': 'dictValue',
-                        'title': '字典值',
-                        'show': true,
-                        'detail': true,
-                        'edit': true,
-                        'inputType': 'text'
-                    }, {
-                        'name': 'remarks',
-                        'title': '描述',
-                        'show': true,
-                        'detail': true,
-                        'edit': true,
-                        'inputType': 'textarea',
-                        'maxLength': 50
-                    }
-                ],
-                'responseArguments': {
-                    'successMsgCode': 'status',
-                    'successCode': 1,
-                    'errorMsgName': 'message'
-                }, // 服务器响应参数
-                'url': {
-                    'delete': 'dict/dictionary/data', // 删除提交地址
-                    'edit': 'dict/dictionary/record', // 新增与修改提交地址
-                    'data': 'dict/dictionary/data' // 数据拉取地址
-                },
-                'modal': {
-                    'auto': true, // 启用自动模式
-                    'clickCallBack': function (call) {
-                        /**
-                         * 绑定缓存刷新按钮
-                         */
-                        if (call['btnType'].attr("id") == "dict-cache-refresh") {
-                            $.ajax({
-                                type: "GET",
-                                url: "dict/dictionary/cache",
-                                success: function (msg) {
-                                    if (msg['status'] == 1) {
-                                        Global.notify("操作提示：", "刷新缓存成功！", "success");
-                                    } else {
-                                        Global.notify("操作提示：", "刷新缓存失败，" + msg['message'], "error");
+                    'modal': {
+                        'auto': true, // 启用自动模式
+                        'clickCallBack': function (call) {
+                            /**
+                             * 绑定缓存刷新按钮
+                             */
+                            if (call['btnType'].attr("id") == "dict-cache-refresh") {
+                                $.ajax({
+                                    type: "GET",
+                                    url: "dict/dictionary/cache",
+                                    success: function (msg) {
+                                        if (msg['status'] == 1) {
+                                            Global.notify("操作提示：", "刷新缓存成功！", "success");
+                                        } else {
+                                            Global.notify("操作提示：", "刷新缓存失败，" + msg['message'], "error");
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
-                    }
-                }, 'rules': {
-                    'typeName': {
-                        required: true
-                    },
-                    'dictMark': {
-                        required: true
-                    },
-                    'dictValue': {
-                        required: true
-                    }
-                },
-                'ajax': function (d) {
-                    var columns = d['columns'];
-                    for (var i = 0; i < columns.length; i++) {
-                        var column = columns[i];
-                        var name = column['name'];
-                        if (name == "typeName") {
-                            name = "dt." + name;
-                        } else {
-                            name = "d." + name;
+                    }, 'rules': {
+                        'typeName': {
+                            required: true
+                        },
+                        'dictMark': {
+                            required: true
+                        },
+                        'dictValue': {
+                            required: true
                         }
-                        columns[i]['name'] = name;
-                    }
-                    d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
-                    return d;
-                },
-                'appendBtn': function (btnGroup, name) {
-                    btnGroup.append('<button type="button" id="dict-cache-refresh" name="' + name + '" class="btn btn-info2 datatable-btn" data-placement="top" title="刷新缓存"><i class="fa fa-refresh"></i> 刷新缓存</button>');
+                    },
+                    'ajax': function (d) {
+                        var columns = d['columns'];
+                        for (var i = 0; i < columns.length; i++) {
+                            var column = columns[i];
+                            var name = column['name'];
+                            if (name == "typeName") {
+                                name = "dt." + name;
+                            } else {
+                                name = "d." + name;
+                            }
+                            columns[i]['name'] = name;
+                        }
+                        d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
+                        return d;
+                    },
+                    'appendBtn': function (btnGroup, name) {
+                        btnGroup.append('<button type="button" id="dict-cache-refresh" name="' + name + '" class="btn btn-info2 datatable-btn" data-placement="top" title="刷新缓存"><i class="fa fa-refresh"></i> 刷新缓存</button>');
 
-                }
-            });
+                    },
+                    'sortBy': {
+                        'target': 2,
+                        'dir': 'asc'
+                    }
+                })
+                ;
             _table.build(); // 创建表格
         })
     });

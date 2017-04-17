@@ -35,7 +35,7 @@ public class DataTableUtils {
         JSONObject order = jsonObject.getJSONArray("order").getJSONObject(0); // 用于排序的相关参数
         Integer start = jsonObject.getInteger("start"); // 记录起始下标
         Integer length = jsonObject.getInteger("length"); // 单页记录长度
-        JSONObject search = jsonObject.getJSONObject("search"); // 应用于素有列的顾虑条件
+        JSONObject search = jsonObject.getJSONObject("search"); // 应用于所有列的过虑条件
         JSONArray columns = jsonObject.getJSONArray("columns"); // 字段基本信息数据
 
         Integer currentPage = (start + length - 1) / length; // 当前页数

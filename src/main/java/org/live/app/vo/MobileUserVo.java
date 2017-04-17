@@ -1,6 +1,5 @@
 package org.live.app.vo;
 
-import javax.persistence.Column;
 import java.util.Date;
 
 /**

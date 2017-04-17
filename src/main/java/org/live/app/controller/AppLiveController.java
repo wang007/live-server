@@ -291,7 +291,7 @@ public class AppLiveController {
      * 更换头像
      * @return
      */
-    @RequestMapping(value="/headImg/{userId}", method = RequestMethod.PUT)
+    @RequestMapping(value="/headImg/{userId}", method = RequestMethod.POST)
     @ResponseBody
     public ResponseModel<Object> changeUserHeadImg(MultipartFile file, @PathVariable String userId) {
 

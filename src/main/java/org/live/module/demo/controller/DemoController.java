@@ -1,15 +1,21 @@
 package org.live.module.demo.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.live.common.response.DataTableModel;
 import org.live.module.demo.entity.Demo;
 import org.live.module.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -65,6 +71,35 @@ public class DemoController {
     public String test(@RequestParam("account") String accoount, @RequestParam("password") String password) {
         System.out.println(accoount + ":" + password);
         return "{'name':'test'}";
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @ResponseBody
+    public String upload(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
+
+        try {
+            demoService.handleEXCELData(file.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*file.ge*/
+        // String path = request.getSession().getServletContext().getRealPath("upload");
+  /*      String fileName = file.getOriginalFilename();
+        // String fileName = new Date().getTime()+".jpg";
+        System.out.println(path);
+        File targetFile = new File(path, fileName);
+        if (!targetFile.exists()) {
+            targetFile.mkdirs();
+        }
+
+        // 保存
+        try {
+            file.transferTo(targetFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        return "result";
     }
 
 }
