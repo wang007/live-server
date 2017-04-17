@@ -1,6 +1,8 @@
 package org.live.websocket.chat;
 
 import org.live.common.utils.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -17,6 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by Mr.wang on 2017/3/16.
  */
 public class ChatRoom {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatRoom.class) ;
 
     private String chatRoomNum ;     //直播间号
 
@@ -145,8 +149,7 @@ public class ChatRoom {
                 }
             }
         } catch (IOException e) {
-            //TODO 换成日志框架
-            e.printStackTrace() ;
+            LOGGER.error(e.getMessage(), e) ;
         }
     }
 
@@ -167,8 +170,7 @@ public class ChatRoom {
             }
 
         } catch (IOException e) {
-            //TODO 换成日志框架
-            e.printStackTrace() ;
+            LOGGER.error(e.getMessage(), e) ;
         }
     }
 
@@ -199,11 +201,19 @@ public class ChatRoom {
 
             }
         } catch (IOException e) {
-            //TODO 换成日志框架
-            e.printStackTrace() ;
+            LOGGER.error(e.getMessage(), e) ;
         }
         onlineUserSessions.clear() ;    //清空chatRoom的session
         onlineUserSessions = null ;
+    }
+
+    /**
+     * 获取用户的session
+     * @param account 账号
+     * @return
+     */
+    public WebSocketSession getSessionByAccount(String account) {
+       return onlineUserSessions.get(account) ;
     }
 
 

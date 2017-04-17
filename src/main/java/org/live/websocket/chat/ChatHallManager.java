@@ -74,8 +74,9 @@ public class ChatHallManager {
                 String destination = message.getDestination() ;  //消息的目的地，格式："主播间号-用户账号"
                 if(destination == null || "".equals(destination)) return ;
                 String[] destinations = destination.split("-") ;
-                message.setDestination(destinations[1]) ;   //
-                listener.onShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。
+                message.setDestination(destinations[0]) ;   //设置发往的直播间
+                if(listener != null) listener.onShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的conteent
                 chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
                 break ;
             }
@@ -85,8 +86,9 @@ public class ChatHallManager {
                 String destination = message.getDestination() ;  //消息的目的地，格式："主播间号-用户账号"
                 if(destination == null || "".equals(destination)) return ;
                 String[] destinations = destination.split("-") ;
-                message.setDestination(destinations[1]) ;   //
-                listener.onRelieveShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。
+                message.setDestination(destinations[0]) ;   //
+                if(listener != null) listener.onRelieveShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中
                 chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
                 break ;
             }
@@ -95,7 +97,7 @@ public class ChatHallManager {
                 String destination = message.getDestination() ;  //消息的目的地，格式："主播间号-用户账号"
                 if(destination == null || "".equals(destination)) return ;
                 String[] destinations = destination.split("-") ;
-                message.setDestination(destinations[1]) ;   //
+                message.setDestination(destinations[1]) ;   //消息目的地是用户，
                 chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
                 break ;
             }
@@ -105,16 +107,14 @@ public class ChatHallManager {
                 //直播间号
                 String chatroomNum = (String) session.getAttributes().get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
 
-                listener.onAnchorDissolveChatRoom(chatroomNum) ; //通知调用者。
-
-                chatHall.dispatchMessageToChatRoom(chatroomNum, MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE) ;
+                chatHall.dispatchMessageToChatRoom(chatroomNum, message) ;
                 break ;
             }
 
             case MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE: {    //观众进入直播间
                 //直播间号
                 String chatRoomNum = (String) session.getAttributes().get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
-                chatHall.dispatchMessageToChatRoom(chatRoomNum, MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE) ;
+                chatHall.dispatchMessageToChatRoom(chatRoomNum, message) ;
                 break ;
 
             }
@@ -122,7 +122,7 @@ public class ChatHallManager {
             case MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE: {     //用户离开直播间
                 //直播间号
                 String chatRoomNum = (String) session.getAttributes().get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
-                chatHall.dispatchMessageToChatRoom(chatRoomNum, MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE) ;
+                chatHall.dispatchMessageToChatRoom(chatRoomNum, message) ;
                 break ;
             }
         }
@@ -156,7 +156,7 @@ public class ChatHallManager {
 
         if(chatHall.removeWebSocketSessionToChatRoom(session)) {    //离开的是主播
             String chatroomNum = (String) session.getAttributes().get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
-            listener.onAnchorDissolveChatRoom(chatroomNum) ; //通知调用者。
+            if(listener != null) listener.onAnchorDissolveChatRoom(chatroomNum) ; //通知调用者。
         }
     }
 
