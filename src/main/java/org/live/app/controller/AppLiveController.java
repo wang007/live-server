@@ -342,6 +342,7 @@ public class AppLiveController {
             mobileUser.setHeadImgUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName);
             mobileUserService.save(mobileUser) ;
             model.setMessage("设置成功！") ;
+            model.success();
         } catch (Exception e) {
             LOGGER.error("设置移动端用户头像异常", e) ;
             model.error() ;
