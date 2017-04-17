@@ -55,7 +55,7 @@ public interface ChatHall {
      * @param chatRoomNum 直播间号
      * @param messageType 消息类型 , 参考{@link MessageType}
      */
-    public void dispatchMessageToChatRoom(String chatRoomNum, int messageType) ;
+/*    public void dispatchMessageToChatRoom(String chatRoomNum, int messageType) ;*/
 
     /**
      *  获取直播间的在线人数

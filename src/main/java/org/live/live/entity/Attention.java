@@ -2,8 +2,10 @@ package org.live.live.entity;
 
 import org.live.common.base.BaseEntity;
 
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -12,6 +14,8 @@ import java.util.Date;
  *
  * Created by Mr.wang on 2017/3/28.
  */
+@Entity
+@Table(name="live_attention")
 public class Attention extends BaseEntity{
 
     /**

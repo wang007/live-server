@@ -59,6 +59,7 @@ public class DataTableUtils {
                 filter.put(name, searchVal);
             }
         }
+        params.put("searchVal",searchVal);
         params.put("draw", draw);
         params.put("pageRequest", pageRequest);
         params.put("filter", filter);

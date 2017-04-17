@@ -3,6 +3,8 @@ package org.live.websocket;
 
 import org.live.websocket.chat.ChatConstants;
 import org.live.websocket.chat.ChatHallManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -18,12 +20,14 @@ import java.util.Map;
  */
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatWebSocketHandler.class) ;
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         try {
             ChatHallManager.enterChatRoom(session) ;
         } catch (Throwable e) {
-            e.printStackTrace() ;
+            LOGGER.error("websocket->afterConnectionEstablished,异常 ", e) ;
         }
 
 
@@ -34,7 +38,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         try {
             ChatHallManager.dispatchMessage(session, message);
         } catch (Throwable e) {
-            e.printStackTrace();
+            LOGGER.error("websocket->handleTextMessage,异常 ", e) ;
         }
     }
 
@@ -51,7 +55,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
             ChatHallManager.exitChatRoom(session) ;
         } catch (Throwable e) {
-            e.printStackTrace() ;
+            LOGGER.error("websocket->afterConnectionClosed,异常 ", e) ;
         }
 
 

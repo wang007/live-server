@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>申请主播管理</title>
+
+
+<div class="page-header">
+    <h1>主播管理
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            申请主播表归档、
+            <a href="javascript:;" data-rel="tooltip" data-placement="bottom" title="返回到申请主播管理"
+               onClick="toMain('/live/apply/page')">
+                <i class="ace-icon fa fa-reply"></i>
+                <strong>返回</strong>
+            </a>
+        </small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="table-header">已审核的申请主播列表</div>
+        <div>
+            <table id="mobile_apply_table" class="table table-striped table-bordered lTable-font">
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="apply_info_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header table-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详情查看</h4>
+            </div>
+            <div class="modal-body">
+                <!-- 内容 -->
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 center">
+                        <span class="profile-picture">
+                            <a href="" target="_blank" id="show_bigIdImgUrl">
+                                <img class="editable img-responsive" alt="暂无图片" style="width:150px;height: 150px;"
+                                     id="show_idImgUrl" src=""/>
+                            </a>
+                        </span>
+
+                    </div><!-- /.col -->
+                    <div class="col-xs-12 col-sm-8">
+                        <div class="profile-user-info">
+
+                            <input type="hidden" id="hidden_applay_id_in_modal" value=""/>
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 账号</div>
+                                <div class="profile-info-value">
+                                    <span id="show_account"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 昵称</div>
+                                <div class="profile-info-value">
+                                    <span id="show_nickname"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 身份证号</div>
+                                <div class="profile-info-value">
+                                    <span id="show_idCard"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 姓名</div>
+                                <div class="profile-info-value">
+                                    <span id="show_realName"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 存档姓名</div>
+                                <div class="profile-info-value">
+                                    <span id="show_realNameInMember"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 邮箱</div>
+                                <div class="profile-info-value">
+                                    <span id="show_email">  </span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 手机号码</div>
+                                <div class="profile-info-value">
+                                    <span id="show_mobileNumber">  </span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 分类名称</div>
+                                <div class="profile-info-value">
+                                    <span id="show_categoryName">  </span>
+                                </div>
+                            </div>
+
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 审核状态</div>
+                                <div class="profile-info-value">
+                                    <span id="show_passFlag"></span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 未通过理由</div>
+                                <div class="profile-info-value">
+                                    <span id="show_noPassReason">  </span>
+                                </div>
+                            </div>
+
+                            <div class="profile-info-row">
+                                <div class="profile-info-name"> 申请时间</div>
+                                <div class="profile-info-value">
+                                    <span id="show_createTime"></span>
+                                </div>
+                            </div>
+
+
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /detail modal -->
+
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    $.ace_ajax_finish(function () {
+        jQuery(function ($) {
+            var _table = new DataTablePlus({
+                'targetId': 'mobile_apply_table',
+                'columns': [{
+                    'name': 'account',
+                    'title': '账号',
+                    'show': true
+                }, {
+                    'name': 'nickname',
+                    'title': '昵称',
+                    'show': true
+                }, {
+                    'name': 'realName',
+                    'title': '姓名',
+                    'show': true
+                }, {
+                    'name': 'categoryName',
+                    'title': '所属分类',
+                    'show': true
+                }/*, {
+                 'name': 'email',
+                 'title': '邮箱',
+                 'show': true
+                 }, {
+                 'name': 'mobileNumber',
+                 'title': '手机号码',
+                 'show': true
+                 }*/, {
+                    'name': 'createTime',
+                    'title': '申请时间',
+                    'show': true
+                }, {
+                    'name': 'passFlag',
+                    'title': '审核状态',
+                    'show': true
+                }],
+                'columnsDefs': [
+                    {
+                        "targets": 6,
+                        "render": function (data, type, full, meta) {
+                            var label = data == 1 ? "label-success" : data == 2 ? "label-danger" : "label-info";
+                            var map = /*[[${@dictService.getDictMap('passFlag')}]]*/ '';
+                            var val = map[data];
+                            return "<span class='label " + label + "'>" + val + "</span>"; // 创建选择框
+                        }
+                    }
+                ],
+                'featureDef': {
+                    'edit': false
+
+                },
+                'responseArguments': {
+                    'successMsgCode': 'status',
+                    'successCode': 1,
+                    'errorMsgName': 'message'
+                }, // 服务器响应参数
+                'url': {
+                    'data': 'live/apply/data2' // 数据拉取地址
+                },
+                'modal': {
+                    'auto': false,
+                    'clickCallBack': function (call) {
+                        var map = /*[[${@dictService.getDictMap('passFlag')}]]*/ '';    //审核类型的值
+                        var btnType = call['btnType']; // 被点击的按钮类型
+                        var data = call['data']; // 选中行的整行数据
+                        // 默认相关按钮的回调，如详情按钮
+                        if (btnType == "info") {
+                            $.ajax({
+                                url: '/live/apply/' + data.id,
+                                type: 'GET',
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.status == 0) {
+                                        showError("服务器忙！");
+                                        return;
+                                    }
+                                    var row = data.data;
+                                    $("#hidden_applay_id_in_modal").val(row.id) ;
+                                    $("#show_bigIdImgUrl").prop("href", row.idImgUrl);
+                                    $("#show_idImgUrl").prop("src", row.idImgUrl);
+                                    $("#show_account").text(row.account);
+                                    $("#show_nickname").text(row.nickname);
+                                    $("#show_idCard").text(row.idCard);
+                                    $("#show_realName").text(row.realName);
+                                    $("#show_realNameInMember").text(row.realNameInMember);
+                                    $("#show_email").text(row.email);
+                                    $("#show_mobileNumber").text(row.mobileNumber);
+                                    $("#show_categoryName").text(row.categoryName);
+                                    $("#show_passFlag").text(map[row.passFlag]);
+                                    $("#show_noPassReason").text(row.noPassReason);
+                                    if (row.passFlag == 2) { //审核未通过
+                                        $("#show_noPassReason").closest(".profile-info-row", ".profile-user-info").show();
+                                    } else {
+                                        $("#show_noPassReason").closest(".profile-info-row", ".profile-user-info").hide();
+                                    }
+                                    $("#show_createTime").text(row.createTime);
+                                    $("#apply_info_modal").modal();
+                                },
+                                error: function () {
+                                    showError("网络异常！");
+                                }
+                            })
+                        }
+                    }
+                },
+                'ajax': function (d) {
+                    var columns = d['columns'];
+                    for (var i = 0; i < columns.length; i++) {
+                        var column = columns[i];
+                        var name = column['name'];
+                        if (name == "categoryName") {
+                            name = "a.category.categoryName";
+                        } else if (name == "realName") {
+                            name = "a.user.member.realName";
+                        } else if (name == "id" || name == "passFlag" || name == "auditFlag" || name == "createTime") {
+                            name = "a." + name;
+                        } else {
+                            name = "a.user." + name;
+                        }
+                        columns[i]['name'] = name;
+                    }
+                    d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
+                    return d;
+                },
+                'sortBy': {
+                    'target': 5,
+                    'dir': "desc"
+                },
+                'appendBtn': function (btnGroup, name) {
+                }
+            });
+            var dataTableApi = _table.build();
+
+
+        })
+    })
+    /*]]>*/
+</script>

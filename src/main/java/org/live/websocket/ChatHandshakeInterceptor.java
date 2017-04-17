@@ -17,7 +17,7 @@ import java.util.Map;
  * 此websocket连接，必选3个参数 chatroom（直播间号），account（用户账号）, nickname(昵称),  1个可选参数 anchor（是否主播开启直播间的flag）
  *
  *  anchor可选值。 1. 代表是主播开启主播间。 不存在此参数就是普通观众.
- *  如果直播进入某个主播间，不能携带此参数。
+ *  如果主播进入某个主播间，不能携带此参数。
  *
  * Created by Mr.wang on 2017/3/18.
  */

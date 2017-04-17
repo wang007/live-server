@@ -45,5 +45,10 @@ public interface LiveRoomService extends BaseService<LiveRoom, String> {
      */
     LiveRoomInfoVo getLiveRoomInfo(@Param("liveRoomId") String liveRoomId) ;
 
-
+    /**
+     *  查询直播间
+     * @param roomNum 主播间号
+     * @return
+     */
+    LiveRoom getLiveRoomByRoomNum(String roomNum) ;
 }

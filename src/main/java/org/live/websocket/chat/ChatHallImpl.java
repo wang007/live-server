@@ -1,6 +1,9 @@
 package org.live.websocket.chat;
 
+import org.live.common.constants.Constants;
 import org.live.common.utils.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -16,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Mr.wang on 2017/3/17.
  */
 public class ChatHallImpl implements ChatHall {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatHallImpl.class) ;
 
     /**
      *  直播间的列表
@@ -60,7 +65,7 @@ public class ChatHallImpl implements ChatHall {
     @Override
     public void dissolveChatRoom(ChatRoom chatRoom, Message message) {
         chatRoom.dissolveChatRoom(message) ;
-        chatRoomMap.remove(chatRoom.getChatRoomNum()) ;   //从聊天室中删除这个直播间
+        chatRoomMap.remove(chatRoom.getChatRoomNum()) ;   //从聊天大厅中删除这个直播间
     }
 
     @Override
@@ -84,7 +89,13 @@ public class ChatHallImpl implements ChatHall {
             }
 
             case MessageType.RELIEVE_SHUTUP_USER_MESSAGE_TYPE: {    //主播解除禁言
-                chatRoom.sendMessageToCurrentChatRoom(message) ;
+                WebSocketSession session = chatRoom.getSessionByAccount(message.getContent());
+                if(session != null) {
+                    //获取昵称
+                    String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY);
+                    message.setContent(nickname) ;
+                    chatRoom.sendMessageToCurrentChatRoom(message) ;
+                }
                 break ;
             }
 
@@ -111,7 +122,7 @@ public class ChatHallImpl implements ChatHall {
 
     }
 
-    @Override
+  /*  @Override
     public void dispatchMessageToChatRoom(String chatRoomNum, int messageType) {
 
         Message message = new Message() ;
@@ -155,7 +166,7 @@ public class ChatHallImpl implements ChatHall {
                 break ;
             }
         }
-    }
+    }*/
 
     @Override
     public int getChatRoomOnLineCount(String chatroomNum) {
@@ -188,8 +199,7 @@ public class ChatHallImpl implements ChatHall {
             try {
                 session.sendMessage(springTextMessage) ;
             } catch (IOException e) {
-                //TODO 换成日志框架
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e) ;
             }
             return ;
         }
@@ -201,6 +211,7 @@ public class ChatHallImpl implements ChatHall {
         message.setContent(onlineCount+"") ;
         message.setMessageType(MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE) ;
         message.setAccount(account) ;
+        message.setNickname(nickname);
         chatRoom.sendMessageToCurrentChatRoom(message) ;
 
     }
@@ -217,14 +228,24 @@ public class ChatHallImpl implements ChatHall {
         Object anchorFlag = map.get(ChatConstants.ANCHOR_FLAG_IN_WEBSOCKET_SESSION_KEY) ;
         ChatRoom chatRoom = this.getChatRoom(chatroomNum) ;
 
+        Message message = new Message() ;
+        message.setFromChatRoomNum(chatroomNum) ;
+        message.setDestination(chatroomNum) ;
+        message.setNickname(ChatConstants.SYSTEM_NAME) ;
+        message.setAccount(ChatConstants.SYSTEM_NUM) ;
+
         String anchorInChatroom = chatRoom.getanchorAccount() ; //直播间的主播账号
         if(anchorFlag != null || userAccount.equals(anchorInChatroom)) {
-            dispatchMessageToChatRoom(chatroomNum, MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE) ;
+
+            message.setMessageType(MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE) ;
+            dispatchMessageToChatRoom(chatroomNum, message) ;
             return true ;
         }
 
+        message.setMessageType(MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE) ;
+        message.setContent((chatRoom.getOnlineCount() -1) +"") ;
+        dispatchMessageToChatRoom(chatroomNum, message) ;
         chatRoom.removeUserSession(session) ;
-        dispatchMessageToChatRoom(chatroomNum, MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE) ;
         return false ;
 
     }
