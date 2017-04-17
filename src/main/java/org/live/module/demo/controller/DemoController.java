@@ -5,6 +5,7 @@ import org.live.common.response.DataTableModel;
 import org.live.module.demo.entity.Demo;
 import org.live.module.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
@@ -65,6 +66,21 @@ public class DemoController {
     public String test(@RequestParam("account") String accoount, @RequestParam("password") String password) {
         System.out.println(accoount + ":" + password);
         return "{'name':'test'}";
+    }
+
+    @Value("${system.localServerIp}")
+    private String localServerIp ;
+
+    @Value("${system.rtmpAddrPrefix}")
+    private String rtmpAddrPrefix ;
+
+    @RequestMapping("/demo")
+    @ResponseBody
+    public String demo() {
+
+        System.out.println("localServerIp ---> "+ localServerIp) ;
+        System.out.println("rtmpAddrPrefix --->"+ rtmpAddrPrefix) ;
+        return null ;
     }
 
 }

@@ -3,6 +3,7 @@ package org.live.live.entity;
 import org.live.common.base.BaseEntity;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  *  申请表，申请成为主播。
@@ -28,11 +29,20 @@ public class ApplyAnchor extends BaseEntity {
     public final static int ADUIT_NOT_PASS = 2 ;
 
     /**
+     * 审核被忽略
+     */
+    public final static int ADUIT_IGNORE = 3 ;
+
+    /**
      *  用户
      */
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="mobile_user_id")
     private MobileUser user ;
+
+    @ManyToOne
+    @JoinColumn(name="category_id")
+    private LiveCategory category ;
 
     /**
      *  身证份号
@@ -53,13 +63,7 @@ public class ApplyAnchor extends BaseEntity {
     private String idImgUrl ;
 
     /**
-     *  是否已经审核. false: 未审核， true： 已审核
-     */
-    @Column
-    private boolean auditFlag ;
-
-    /**
-     * 是否审核通过， 0. 未审核， 1.审核通过， 2.审核不通过
+     * 是否审核通过， 0. 未审核， 1.审核通过， 2.审核不通过，3.忽略审核。（当存在审核通过就要忽略掉）
      */
     @Column
     private int passFlag ;
@@ -70,12 +74,26 @@ public class ApplyAnchor extends BaseEntity {
     @Column
     private String noPassReason ;
 
+    /**
+     * 创建时间
+     */
+    @Column
+    private Date createTime ;
+
     public MobileUser getUser() {
         return user;
     }
 
     public void setUser(MobileUser user) {
         this.user = user;
+    }
+
+    public LiveCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(LiveCategory category) {
+        this.category = category;
     }
 
     public String getIdCard() {
@@ -102,14 +120,6 @@ public class ApplyAnchor extends BaseEntity {
         this.idImgUrl = idImgUrl;
     }
 
-    public boolean isAuditFlag() {
-        return auditFlag;
-    }
-
-    public void setAuditFlag(boolean auditFlag) {
-        this.auditFlag = auditFlag;
-    }
-
     public int getPassFlag() {
         return passFlag;
     }
@@ -124,5 +134,13 @@ public class ApplyAnchor extends BaseEntity {
 
     public void setNoPassReason(String noPassReason) {
         this.noPassReason = noPassReason;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

@@ -8,6 +8,11 @@ package org.live.app.vo;
 public class ApplyAnchorVo {
 
     /**
+     * 分类的id
+     */
+    private String categoryId ;
+
+    /**
      *  移动端用户id
      */
     private String userId ;
@@ -26,6 +31,14 @@ public class ApplyAnchorVo {
      *  身份证正面照
      */
     private String idImgUrl ;
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public String getUserId() {
         return userId;

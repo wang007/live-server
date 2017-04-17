@@ -2,6 +2,7 @@ package org.live.live.service;
 
 import org.live.common.base.BaseService;
 import org.live.common.response.DataTableModel;
+import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,5 +24,12 @@ public interface MobileUserService extends BaseService<MobileUser, String> {
      * @return
      */
     MobileUser findMobileUserByAccount(String account) ;
+
+    /**
+     * 用户关注直播间
+     * @param user
+     * @param liveRoom
+     */
+    void attentionLiveRoom(MobileUser user, LiveRoom liveRoom) ;
 
 }

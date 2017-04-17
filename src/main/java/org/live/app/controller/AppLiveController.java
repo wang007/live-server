@@ -1,6 +1,7 @@
 package org.live.app.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.tomcat.util.bcel.Const;
 import org.live.app.vo.ApplyAnchorVo;
 import org.live.app.vo.LiveCategoryVo;
@@ -9,13 +10,8 @@ import org.live.common.constants.Constants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
 import org.live.common.support.UploadFilePathConfig;
-import org.live.common.utils.CreateOrderNoUtils;
-import org.live.common.utils.EncryptUtils;
-import org.live.common.utils.HttpServletUtils;
-import org.live.common.utils.UploadUtils;
-import org.live.live.entity.ApplyAnchor;
-import org.live.live.entity.LiveRoom;
-import org.live.live.entity.MobileUser;
+import org.live.common.utils.*;
+import org.live.live.entity.*;
 import org.live.live.service.*;
 import org.live.school.entity.Member;
 import org.live.school.service.MemberService;
@@ -56,6 +52,9 @@ public class AppLiveController {
     private LiveRoomService liveRoomService ;
 
     @Resource
+    private LiveCategoryService categoryService ;
+
+    @Resource
     private MemberService memberService ;
 
     @Resource
@@ -66,6 +65,12 @@ public class AppLiveController {
      */
     @Value("${system.applyAnchorMaxCount}")
     private int applyAnchorMaxCount ;
+
+    /**
+     * 申请主播的时间跨度
+     */
+    @Value("${system.applyAnchorTimeSpan}")
+    private int applyAnchorTimeSpan ;
 
     @Resource
     private UploadFilePathConfig pathConfig ;
@@ -255,6 +260,25 @@ public class AppLiveController {
                 model.setMessage("您已申请过了，并超过系统规定的申请限制数！") ;
                 return model ;
             }
+            //最后申请时间
+            Date lastApplyDate = applyAnchorService.getLastApplyAnchorDate(applyAnchorVo.getUserId()) ;
+            //时间跨度
+            if(lastApplyDate != null) {
+                double timeSpan = DateUtil.differenceDay(new Date(), lastApplyDate);
+                int timeSpanInt = (int) timeSpan;
+                if(timeSpanInt <= applyAnchorTimeSpan) {
+                    model.error() ;
+                    model.setMessage("您已申请过了，请"+(applyAnchorTimeSpan-timeSpanInt)+"天后再申请！") ;
+                    return model ;
+                }
+            }
+            LiveCategory liveCategory = categoryService.get(applyAnchorVo.getCategoryId()) ;
+            if(liveCategory == null) {
+                model.error() ;
+                model.setMessage("请选择您想直播的分类！") ;
+                return model ;
+            }
+
             if(file == null) {
                 model.error() ;
                 model.setMessage("申请失败，请上传身份证照！") ;
@@ -275,6 +299,7 @@ public class AppLiveController {
             applyAnchor.setUser(mobileUser) ;
             applyAnchor.setRealName(applyAnchorVo.getRealName()) ;
             applyAnchor.setIdCard(applyAnchorVo.getIdCard()) ;
+            applyAnchor.setCreateTime(new Date()) ;
             applyAnchor.setIdImgUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName) ;
             applyAnchorService.save(applyAnchor) ;
             model.success() ;
@@ -324,5 +349,35 @@ public class AppLiveController {
         }
         return model ;
     }
+
+    /**
+     * 关注
+     * @param userId 移动端用户id
+     * @param roomNum 主播间号
+     * @return
+     */
+    @RequestMapping(value="/attention/{userId}", method = RequestMethod.POST)
+    public ResponseModel<Object> attentionLiveRoom(@PathVariable String userId, String roomNum) {
+
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            MobileUser mobileUser = mobileUserService.get(userId) ;
+            LiveRoom liveRoom = liveRoomService.getLiveRoomByRoomNum(roomNum);
+            if(mobileUser == null || liveRoom == null) {
+                model.error() ;
+                model.setMessage("服务器繁忙！") ;
+                return model ;
+            }
+            mobileUserService.attentionLiveRoom(mobileUser, liveRoom) ;
+            model.success() ;
+            model.setMessage("关注成功！") ;
+        } catch (Exception e) {
+            LOGGER.error("关注直播间异常", e) ;
+            model.error() ;
+            model.setMessage("服务器繁忙！") ;
+        }
+        return model ;
+    }
+
 
 }

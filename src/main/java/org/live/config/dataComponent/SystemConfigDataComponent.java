@@ -46,10 +46,6 @@ public class SystemConfigDataComponent {
      */
     private String uploadFilePathPrefix  ;
 
-    /**
-     *  申请成为主播的最大申请数
-     */
-    private int applyAnchorMaxCount ;
 
     public String getTitle() {
         return title;
@@ -99,11 +95,4 @@ public class SystemConfigDataComponent {
         this.uploadFilePathPrefix = uploadFilePathPrefix;
     }
 
-    public int getApplyAnchorMaxCount() {
-        return applyAnchorMaxCount;
-    }
-
-    public void setApplyAnchorMaxCount(int applyAnchorMaxCount) {
-        this.applyAnchorMaxCount = applyAnchorMaxCount;
-    }
 }

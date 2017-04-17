@@ -4,7 +4,10 @@ import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
 import org.live.common.response.DataTableModel;
 import org.live.common.utils.DataTableUtils;
+import org.live.live.entity.Attention;
+import org.live.live.entity.LiveRoom;
 import org.live.live.entity.MobileUser;
+import org.live.live.repository.AttentionRepository;
 import org.live.live.repository.MobileUserRepository;
 import org.live.live.service.MobileUserService;
 import org.live.live.vo.MobileUserVo;
@@ -13,7 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +28,11 @@ import java.util.Map;
  */
 @Service(value = "mobileUserService")
 public class MobileUserServiceImpl extends BaseServiceImpl<MobileUser, String> implements MobileUserService {
-    @Autowired
+    @Resource
     private MobileUserRepository mobileUserRepository;
+
+    @Resource
+    private AttentionRepository attentionRepository ;
 
     @Override
     protected BaseRepository<MobileUser, String> getRepository() {
@@ -61,5 +69,15 @@ public class MobileUserServiceImpl extends BaseServiceImpl<MobileUser, String> i
     @Override
     public MobileUser findMobileUserByAccount(String account) {
         return mobileUserRepository.findMobileUserByAccount(account) ;
+    }
+
+    @Override
+    public void attentionLiveRoom(MobileUser user, LiveRoom liveRoom) {
+        Attention attention = new Attention() ;
+        attention.setUser(user) ;
+        attention.setLiveRoom(liveRoom) ;
+        attention.setCreateTime(new Date()) ;
+        attentionRepository.save(attention) ;
+
     }
 }

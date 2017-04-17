@@ -48,4 +48,9 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
     public LiveRoomInfoVo getLiveRoomInfo(String liveRoomId) {
         return repository.getLiveRoomInfo(liveRoomId) ;
     }
+
+    @Override
+    public LiveRoom getLiveRoomByRoomNum(String roomNum) {
+        return repository.getLiveRoomByRoomNum(roomNum) ;
+    }
 }
