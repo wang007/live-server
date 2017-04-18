@@ -84,17 +84,42 @@ public class ChatHallImpl implements ChatHall {
                 break ;
             }
 
+            //先发消息给这个用户，设置他不能发言。 然后再把这件事广播给直播间的所有用户
             case MessageType.SHUTUP_USER_MESSAGE_TYPE: {    //主播禁言用户
+                String userAccount = message.getContent() ;
+                WebSocketSession session = chatRoom.getSessionByAccount(userAccount);
+                if(session != null) {
+                    Message specialMessage = new Message() ;    //先禁言该用户，
+                    specialMessage.setAccount(ChatConstants.SYSTEM_NUM) ;  //代表系统账号
+                    specialMessage.setMessageType(MessageType.SHUTUP_USER_MESSAGE_TYPE) ;
+                    specialMessage.setDestination(userAccount) ;
+                    chatRoom.sendMessageToUser(specialMessage) ;
 
+                    //再把禁言这事，广播到这个直播间。
+                    //获取昵称
+                    String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY) ;
+                    Message broadcastMessage = new Message() ;
+                    broadcastMessage.setFromChatRoomNum(chatRoomNum) ;
+                    broadcastMessage.setDestination(chatRoomNum) ;
+                    broadcastMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
+                    broadcastMessage.setNickname(nickname) ;
+                    broadcastMessage.setContent(nickname+"被禁言了") ;
+                    broadcastMessage.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
+                    chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;   //广播到直播间，
+                }
+                break ;
             }
 
+            //解除禁言，如果用户在线就告诉他。 不用广播到直播间中
             case MessageType.RELIEVE_SHUTUP_USER_MESSAGE_TYPE: {    //主播解除禁言
-                WebSocketSession session = chatRoom.getSessionByAccount(message.getContent());
+                String userAccount = message.getContent() ;
+                WebSocketSession session = chatRoom.getSessionByAccount(userAccount) ;
                 if(session != null) {
                     //获取昵称
                     String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY);
+                    message.setDestination(userAccount) ;
                     message.setContent(nickname) ;
-                    chatRoom.sendMessageToCurrentChatRoom(message) ;
+                    chatRoom.sendMessageToUser(message) ;
                 }
                 break ;
             }
@@ -118,55 +143,52 @@ public class ChatHallImpl implements ChatHall {
                 chatRoom.sendMessageToCurrentChatRoom(message) ;
                 break ;
             }
+
+            //先踢出这个用户，再把这事广播到直播间中
+            case MessageType.KICKOUT_USER_MESSAGE_TYPE: {   //主播踢出用户
+                String userAccount = message.getContent() ;
+                WebSocketSession session = chatRoom.getSessionByAccount(userAccount) ;
+                //踢出用户
+                if(session != null) {
+                    Message specialMessage = new Message() ;
+                    specialMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
+                    specialMessage.setDestination(userAccount) ;
+                    specialMessage.setMessageType(MessageType.KICKOUT_USER_MESSAGE_TYPE) ;
+                    chatRoom.sendMessageToUser(message) ;   //发消息给这个用户
+                    //把这个session从chatRoom中移除， 先存标记，afterConnectionClosed方法中判断要不要做处理。
+                    session.getAttributes().put(ChatConstants.USER_PASSIVE_EXIT_FLAG_WEBSOCKET_SESSION_KEY, new Object()) ;
+                    removeWebSocketSessionToChatRoom(session) ;
+
+                    //广播踢出用户消息
+                    //获取昵称
+                    String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY);
+                    Message broadcastMessage = new Message() ;
+                    broadcastMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
+                    broadcastMessage.setNickname(nickname) ;
+                    broadcastMessage.setContent(nickname+ "被踢出直播间")  ;
+                    broadcastMessage.setDestination(chatRoomNum) ;
+                    broadcastMessage.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
+                    chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;
+                }
+                break ;
+            }
+
+            //解除踢出时，此时用户并不在直播间， 所以不用做任何处理
+            case MessageType.RELIEVE_KICKOUT_USER_MESSAGE_TYPE: {   //主播解除用户踢出
+                /*String userAccount = message.getContent() ;
+                WebSocketSession session = chatRoom.getSessionByAccount(userAccount);
+                if(session != null) {
+                    //获取昵称
+                    String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY);
+                    message.setContent(nickname) ;
+                    chatRoom.sendMessageToCurrentChatRoom(message) ;
+                }*/
+                break ;
+            }
         }
 
     }
 
-  /*  @Override
-    public void dispatchMessageToChatRoom(String chatRoomNum, int messageType) {
-
-        Message message = new Message() ;
-        message.setFromChatRoomNum(chatRoomNum) ;
-        message.setDestination(chatRoomNum) ;
-        message.setNickname(ChatConstants.SYSTEM_NAME) ;
-        message.setAccount(ChatConstants.SYSTEM_NUM) ;
-
-        ChatRoom chatRoom = getChatRoom(chatRoomNum) ;  //获取直播间
-        //TODO 考虑是否要判断chatRoom为空
-        switch (messageType) {
-            case MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE: {   //主播离开，直播结束
-                message.setMessageType(MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE) ;
-                dissolveChatRoom(chatRoom, message) ;
-                break ;
-            }
-
-            case MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE: {    //有用户进入直播间
-                message.setMessageType(MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE) ;
-                message.setContent(chatRoom.getOnlineCount()+"") ;  //用户数量
-                chatRoom.sendMessageToCurrentChatRoom(message) ;
-                break ;
-            }
-
-            case MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE: {     //有用户离开直播间
-                message.setMessageType(MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE) ;
-                message.setContent(chatRoom.getOnlineCount()+"") ;  //用户数量
-                chatRoom.sendMessageToCurrentChatRoom(message) ;
-                break ;
-            }
-
-            case MessageType.SHUTUP_USER_MESSAGE_TYPE: {    //主播禁言用户
-                message.setMessageType(MessageType.SHUTUP_USER_MESSAGE_TYPE) ;
-                chatRoom.sendMessageToUser(message) ;
-                break ;
-            }
-
-            case MessageType.RELIEVE_SHUTUP_USER_MESSAGE_TYPE: {    //主播解除禁言
-                message.setMessageType(MessageType.RELIEVE_SHUTUP_USER_MESSAGE_TYPE) ;
-                chatRoom.sendMessageToUser(message) ;
-                break ;
-            }
-        }
-    }*/
 
     @Override
     public int getChatRoomOnLineCount(String chatroomNum) {
@@ -224,28 +246,31 @@ public class ChatHallImpl implements ChatHall {
         String chatroomNum = (String) map.get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
         //用户账号
         String userAccount = (String) map.get(ChatConstants.USER_ACCOUNT_IN_WEBSOCKET_SESSION_KEY);
+        //
+        String nickname = (String) map.get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY);
+
         //主播标记
         Object anchorFlag = map.get(ChatConstants.ANCHOR_FLAG_IN_WEBSOCKET_SESSION_KEY) ;
+
         ChatRoom chatRoom = this.getChatRoom(chatroomNum) ;
 
         Message message = new Message() ;
         message.setFromChatRoomNum(chatroomNum) ;
         message.setDestination(chatroomNum) ;
-        message.setNickname(ChatConstants.SYSTEM_NAME) ;
+        message.setNickname(nickname) ;
         message.setAccount(ChatConstants.SYSTEM_NUM) ;
 
         String anchorInChatroom = chatRoom.getanchorAccount() ; //直播间的主播账号
         if(anchorFlag != null || userAccount.equals(anchorInChatroom)) {
-
             message.setMessageType(MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE) ;
             dispatchMessageToChatRoom(chatroomNum, message) ;
             return true ;
         }
 
         message.setMessageType(MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE) ;
-        message.setContent((chatRoom.getOnlineCount() -1) +"") ;
+        chatRoom.removeUserSession(session) ;   //先移除这个websocketSession
+        message.setContent(chatRoom.getOnlineCount() +"") ; //再统计人数
         dispatchMessageToChatRoom(chatroomNum, message) ;
-        chatRoom.removeUserSession(session) ;
         return false ;
 
     }
@@ -253,7 +278,7 @@ public class ChatHallImpl implements ChatHall {
     /**
      *  缓冲大小，尽可能的防止map扩容
      */
-    private static final int BUFFER_SIZE = 8 ;
+    private static final int BUFFER_SIZE = 4 ;
     @Override
     public Map<String, Integer> listChatRoomOnlineCount() {
 
@@ -266,7 +291,6 @@ public class ChatHallImpl implements ChatHall {
             if(chatRoom == null) continue ;
             map.put(chatRoom.getChatRoomNum(), chatRoom.getOnlineCount()) ;
         }
-
         return map;
     }
 

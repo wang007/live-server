@@ -7,6 +7,13 @@ package org.live.websocket.chat;
  */
 public interface OnChatListener {
 
+
+    /**
+     * 主播进入直播间
+     * @param chatRoomNum
+     */
+    void onAnchorOpenChatRoom(String chatRoomNum) ;
+
     /**
      * 直播解散了直播间，（停止了直播）
      *
@@ -28,4 +35,18 @@ public interface OnChatListener {
      * @param userAccount
      */
     public void onRelieveShutupUserOnChatRoom(String chatRoomNum, String userAccount) ;
+
+    /**
+     * 主播把用户踢出直播间
+     * @param chatRoomNum 直播间
+     * @param userAccount 用户账号
+     */
+    void onKickoutUserOnChatRoom(String chatRoomNum, String userAccount) ;
+
+    /**
+     *  主播解除用户进入直播间
+     * @param chatRoomNum
+     * @param userAccount
+     */
+    void onRelieveKickoutUserOnChatRoom(String chatRoomNum, String userAccount) ;
 }

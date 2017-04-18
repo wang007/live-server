@@ -63,7 +63,7 @@ public class ChatConstants {
     public static final String USER_ENTER_FAIL_WEBSOCKET_SESSION_KEY = "enterFlagKey" ;
 
     /**
-     *  用户被动的离开， 例如：当主播关闭聊天室时，用户就要被动的离开。
+     *  用户被动的离开， 例如：1.当主播关闭聊天室时，用户就要被动的离开。 2.被主播踢出房间
      */
     public static final String USER_PASSIVE_EXIT_FLAG_WEBSOCKET_SESSION_KEY = "passiveExitKey" ;
 

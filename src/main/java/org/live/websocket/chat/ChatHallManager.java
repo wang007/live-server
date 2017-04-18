@@ -25,23 +25,6 @@ public class ChatHallManager {
 
     static {
         chatHall = new ChatHallImpl() ;
-        //TODO 集成到项目中的时候，去掉。并调用实际的监听器
-        setupListener(new OnChatListener() {
-            @Override
-            public void onAnchorDissolveChatRoom(String chatRoomNum) {
-                System.out.println("通知调用者，主播解散");
-            }
-
-            @Override
-            public void onShutupUserOnChatRoom(String chatRoomNum, String userAccount) {
-                System.out.println("通知调用者，主播禁言用户");
-            }
-            @Override
-            public void onRelieveShutupUserOnChatRoom(String chatRoomNum, String userAccount) {
-                System.out.println("通知调用者，主播解除禁言") ;
-
-            }
-        });
     }
 
     private ChatHallManager(){}
@@ -56,6 +39,9 @@ public class ChatHallManager {
 
     /**
      * 消息处理中心
+     * 这里的消息派发都是用户发过来的消息， 1.发消息到直播间。 2.发消息给用户（私聊）。 3. 主播禁言（解除禁言）。 4.主播踢出用户。（解除踢出）
+     *
+     * 其他消息是由系统派发的，不经过dispatchMessage。 用户进入（离开）直播间。 主播进入（离开）直播间。
      *
      * @param session 当前的发送者的session
      * @param textMessage 发送的信息
@@ -64,67 +50,51 @@ public class ChatHallManager {
 
         Message message  = JsonUtils.fromJson(textMessage.getPayload(), Message.class) ;
 
+        String destination = message.getDestination() ;     //消息发往的目的地
+
         switch (message.getMessageType()) {
-            case MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE: {   //发消息给直播间
-                chatHall.dispatchMessageToChatRoom(message.getDestination(), message) ;
-                break ;
-            }
-
-            case MessageType.SHUTUP_USER_MESSAGE_TYPE: {    //禁言用户
-                String destination = message.getDestination() ;  //消息的目的地，格式："主播间号-用户账号"
-                if(destination == null || "".equals(destination)) return ;
-                String[] destinations = destination.split("-") ;
-                message.setDestination(destinations[0]) ;   //设置发往的直播间
-                if(listener != null) listener.onShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
-                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的conteent
-                chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
-                break ;
-            }
-
-            case MessageType.RELIEVE_SHUTUP_USER_MESSAGE_TYPE: {    //解除禁言
-
-                String destination = message.getDestination() ;  //消息的目的地，格式："主播间号-用户账号"
-                if(destination == null || "".equals(destination)) return ;
-                String[] destinations = destination.split("-") ;
-                message.setDestination(destinations[0]) ;   //
-                if(listener != null) listener.onRelieveShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。
-                message.setContent(destinations[1]) ;   //用户账号暂存到content中
-                chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
-                break ;
-            }
-
-            case MessageType.SEND_TO_USER_MESSAGE_TYPE: {   //发消息给用户
-                String destination = message.getDestination() ;  //消息的目的地，格式："主播间号-用户账号"
-                if(destination == null || "".equals(destination)) return ;
-                String[] destinations = destination.split("-") ;
+            case MessageType.SEND_TO_USER_MESSAGE_TYPE: {   //发消息给某个用户
+                String[] destinations = resolveDestination(destination);
                 message.setDestination(destinations[1]) ;   //消息目的地是用户，
                 chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
                 break ;
             }
 
-            case MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE: {   //主播离开
-
-                //直播间号
-                String chatroomNum = (String) session.getAttributes().get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
-
-                chatHall.dispatchMessageToChatRoom(chatroomNum, message) ;
+            case MessageType.SHUTUP_USER_MESSAGE_TYPE: {   //禁言用户
+                String[] destinations = resolveDestination(destination);
+                message.setDestination(destinations[0]) ;   //设置发往的直播间
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
+                if(listener != null) listener.onShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
+                chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
                 break ;
             }
 
-            case MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE: {    //观众进入直播间
-                //直播间号
-                String chatRoomNum = (String) session.getAttributes().get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
-                chatHall.dispatchMessageToChatRoom(chatRoomNum, message) ;
-                break ;
-
-            }
-
-            case MessageType.USER_EXIT_CHATROOM_MESSAGE_TYPE: {     //用户离开直播间
-                //直播间号
-                String chatRoomNum = (String) session.getAttributes().get(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY);
-                chatHall.dispatchMessageToChatRoom(chatRoomNum, message) ;
+            case MessageType.RELIEVE_SHUTUP_USER_MESSAGE_TYPE: {    //解除禁言
+                String[] destinations = resolveDestination(destination);
+                message.setDestination(destinations[0]) ;   //设置发往的直播间
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
+                if(listener != null) listener.onRelieveShutupUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
+                chatHall.dispatchMessageToChatRoom(destinations[0], message);
                 break ;
             }
+
+            case MessageType.KICKOUT_USER_MESSAGE_TYPE: {   //踢出用户
+                String[] destinations = resolveDestination(destination);
+                message.setDestination(destinations[0]) ;   //设置发往的直播间
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
+                if(listener != null) listener.onKickoutUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
+                chatHall.dispatchMessageToChatRoom(destinations[0], message);
+                break ;
+            }
+
+            case MessageType.RELIEVE_KICKOUT_USER_MESSAGE_TYPE: {   //解除踢出
+                String[] destinations = resolveDestination(destination);
+                message.setDestination(destinations[0]) ;   //设置发往的直播间
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
+                if(listener != null) listener.onRelieveKickoutUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
+                chatHall.dispatchMessageToChatRoom(destinations[0], message);
+            }
+            default: chatHall.dispatchMessageToChatRoom(destination, message) ; //其他消息
         }
     }
 
@@ -143,6 +113,7 @@ public class ChatHallManager {
         //chatHall.getChatRoom(chatRoomNum) ;
         if(map.get(ChatConstants.ANCHOR_FLAG_IN_WEBSOCKET_SESSION_KEY) != null) {   //主播开启直播间
             chatHall.generateChatRoom(chatRoomNum, userAccount, session) ;
+            if(listener != null) listener.onAnchorOpenChatRoom(chatRoomNum) ;   //通知调用者，主播开启直播间。
         } else {    //观众进入直播间
             chatHall.addWebSocketSessionToChatRoom(session);
         }
@@ -166,6 +137,20 @@ public class ChatHallManager {
      */
     public static Map<String, Integer> listChatroomOnlineCount() {
         return chatHall.listChatRoomOnlineCount() ;
+    }
+
+
+    /**
+     *  解析消息目的地
+     * @param destination 特定目的地 ， 格式： 格式："主播间号-用户账号"
+     * @return String[]  0. 主播间号，1.用户账号
+     */
+    private static String[] resolveDestination(String destination) {
+        if(destination == null || "".equals(destination)) {
+            return new String[]{"", ""} ;
+        }
+        String[] destinations = destination.split("-") ;
+        return destinations ;
     }
 
 
