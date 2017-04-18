@@ -8,6 +8,7 @@ import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -63,5 +64,14 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
      * @return
      */
     LiveRoom getLiveRoomByRoomNum(String roomNum) ;
+
+    /**
+     * 设置直播间的在线人数
+     * @param roomNum
+     * @param onlineCount
+     */
+    @Query("update LiveRoom lr set lr.onlineCount=:onlineCount where lr.roomNum=:roomNum")
+    @Modifying
+    void setOnlineCountByLiveRoomNum(@Param("roomNum") String roomNum, @Param("roomNum") int onlineCount) ;
 
 }

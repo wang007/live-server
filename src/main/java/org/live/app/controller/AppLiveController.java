@@ -380,5 +380,41 @@ public class AppLiveController {
         return model ;
     }
 
+    /**
+     * 修改用户的信息
+     * @param nickname
+     * @param email
+     * @param mobileNumber
+     * @return
+     */
+    @RequestMapping(value ="/user/{userId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseModel<Object> updateMoberUserInfo(@PathVariable String userId, String nickname, String email, String mobileNumber) {
+
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            MobileUser mobileUser = mobileUserService.get(userId) ;
+            if(mobileUser == null) {
+                model.error("修改失败！") ;
+                return model ;
+            }
+            if(nickname != null && !"".equals(nickname)) {
+                mobileUser.setNickname(nickname) ;
+            }
+            if(email != null && !"".equals(email)) {
+                mobileUser.setEmail(email) ;
+            }
+            if(mobileNumber != null && !"".equals(mobileNumber)) {
+                mobileUser.setMobileNumber(mobileNumber) ;
+            }
+            mobileUserService.save(mobileUser) ;
+            model.success("修改成功！") ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error("服务器繁忙！") ;
+        }
+        return model ;
+    }
+
 
 }

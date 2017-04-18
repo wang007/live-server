@@ -135,7 +135,6 @@ public class ChatRoom {
      */
     public void sendMessageToCurrentChatRoom(Message message) {
         TextMessage springTextMessage = new TextMessage(JsonUtils.toJson(message)) ;
-        //Collection<WebSocketSession> sessions = onlineUserSessions.values() ;
         Set<Map.Entry<String, WebSocketSession>> entryWebSessions = onlineUserSessions.entrySet() ;
         Iterator<Map.Entry<String, WebSocketSession>> iterator = entryWebSessions.iterator() ;
         try {
@@ -198,7 +197,6 @@ public class ChatRoom {
                     session.sendMessage(springTextMessage);    //websocketSession还打开的就发送信息，关闭的就不用管了。
                     session.close();
                 }
-
             }
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e) ;
