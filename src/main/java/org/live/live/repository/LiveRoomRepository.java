@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by Mr.wang on 2017/4/3.
@@ -70,8 +71,9 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
      * @param roomNum
      * @param onlineCount
      */
-    @Query("update LiveRoom lr set lr.onlineCount=:onlineCount where lr.roomNum=:roomNum")
+    @Transactional
+    @Query("update LiveRoom lr set lr.onlineCount=:onlineCount where lr.roomNum=:roomNum and lr.liveFlag=true")
     @Modifying
-    void setOnlineCountByLiveRoomNum(@Param("roomNum") String roomNum, @Param("roomNum") int onlineCount) ;
+    void setOnlineCountByLiveRoomNum(@Param("roomNum") String roomNum, @Param("onlineCount") int onlineCount) ;
 
 }

@@ -94,7 +94,7 @@ public class LiveRoomController {
         try {
            LiveRoom liveRoom =  service.get(liveRoomId) ;
            if(liveRoomBanFlag) {    //禁播
-               // TODO 这里完善解散在线直播间的功能
+               // TODO 这里完善解散在线直播间的功能, 推送到app
            }
 
            liveRoom.setBanLiveFlag(liveRoomBanFlag) ;

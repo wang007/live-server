@@ -7,6 +7,11 @@ package org.live.websocket.chat;
 public class ChatConstants {
 
     /**
+     * 标记的代表， 仅作为是否存在的判断
+     */
+    public static final Object FLAG_DELEGATE_VALUE = new Object() ;
+
+    /**
      *  用户账号在websocketSession的key
      */
     public static final String USER_ACCOUNT_IN_WEBSOCKET_SESSION_KEY = "accountKey" ;

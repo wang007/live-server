@@ -154,9 +154,9 @@ public class ChatHallImpl implements ChatHall {
                     specialMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
                     specialMessage.setDestination(userAccount) ;
                     specialMessage.setMessageType(MessageType.KICKOUT_USER_MESSAGE_TYPE) ;
-                    chatRoom.sendMessageToUser(message) ;   //发消息给这个用户
+                    chatRoom.sendMessageToUser(specialMessage) ;   //发消息给这个用户
                     //把这个session从chatRoom中移除， 先存标记，afterConnectionClosed方法中判断要不要做处理。
-                    session.getAttributes().put(ChatConstants.USER_PASSIVE_EXIT_FLAG_WEBSOCKET_SESSION_KEY, new Object()) ;
+                    session.getAttributes().put(ChatConstants.USER_PASSIVE_EXIT_FLAG_WEBSOCKET_SESSION_KEY, ChatConstants.FLAG_DELEGATE_VALUE) ;
                     removeWebSocketSessionToChatRoom(session) ;
 
                     //广播踢出用户消息
@@ -217,9 +217,10 @@ public class ChatHallImpl implements ChatHall {
             message.setMessageType(MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE) ; //信息事件
             TextMessage springTextMessage = new TextMessage(JsonUtils.toJson(message)) ;
             //用户进入直播间失败，存入标志，用于移除websocketSession的时候判断
-            session.getAttributes().put(ChatConstants.USER_ENTER_FAIL_WEBSOCKET_SESSION_KEY, new Object()) ;
+            session.getAttributes().put(ChatConstants.USER_ENTER_FAIL_WEBSOCKET_SESSION_KEY, ChatConstants.FLAG_DELEGATE_VALUE) ;
             try {
                 session.sendMessage(springTextMessage) ;
+                session.close() ;   //关闭连接
             } catch (IOException e) {
                 LOGGER.error(e.getMessage(), e) ;
             }

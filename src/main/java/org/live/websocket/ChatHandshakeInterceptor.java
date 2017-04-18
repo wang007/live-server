@@ -47,7 +47,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             attributes.put(ChatConstants.CHATROOM_NUMBER_IN_WEBSOCKET_SESSION_KEY, chatRoomNum) ;
             attributes.put(ChatConstants.USER_ACCOUNT_IN_WEBSOCKET_SESSION_KEY, account) ;
             attributes.put(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY, nickname) ;
-            if(anchorFlag != null) attributes.put(ChatConstants.ANCHOR_FLAG_IN_WEBSOCKET_SESSION_KEY, new Object()) ;
+            if(anchorFlag != null) attributes.put(ChatConstants.ANCHOR_FLAG_IN_WEBSOCKET_SESSION_KEY, ChatConstants.FLAG_DELEGATE_VALUE) ;
         }
 
         return true ;

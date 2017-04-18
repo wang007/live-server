@@ -32,7 +32,7 @@ public class LogServiceImpl extends BaseServiceImpl<Log, String> implements LogS
      */
 	@Override
 	public Page<Log> findLogs(Pageable pageable, LogVo logVo) {
-		// TODO Auto-generated method stub
+
 		return this.logRepo.findLogInfoAll(pageable, logVo);
 	}
 
@@ -41,7 +41,6 @@ public class LogServiceImpl extends BaseServiceImpl<Log, String> implements LogS
 	 */
 	@Override
 	public void deleteLogInfo(String[] ids) {
-		// TODO Auto-generated method stub
 		for(String id : ids){
 			Log log=this.findOne(id);
 			if(log !=null){

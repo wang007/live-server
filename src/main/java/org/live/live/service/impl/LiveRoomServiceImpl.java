@@ -16,6 +16,7 @@ import org.live.websocket.chat.OnChatListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -115,6 +116,7 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      * @param chatRoomNum
      * @param userAccount
      */
+    @Transactional
     @Override
     public void onRelieveShutupUserOnChatRoom(String chatRoomNum, String userAccount) {
 
@@ -129,7 +131,14 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      */
     @Override
     public void onKickoutUserOnChatRoom(String chatRoomNum, String userAccount) {
-
+        LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;  //主播间
+        MobileUser mobileUser = mobileUserRepository.findMobileUserByAccount(userAccount);
+        AnchorLimitation limitation = new AnchorLimitation() ;
+        limitation.setCreateTime(new Date()) ;
+        limitation.setUser(mobileUser) ;
+        limitation.setLiveRoom(liveRoom);
+        limitation.setLimitType(AnchorLimitation.LIMIT_TYPE_KICKOUT) ;
+        anchorLimitationRepository.save(limitation) ;
     }
 
     /**
@@ -137,8 +146,10 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      * @param chatRoomNum
      * @param userAccount
      */
+    @Transactional
     @Override
     public void onRelieveKickoutUserOnChatRoom(String chatRoomNum, String userAccount) {
-
+        anchorLimitationRepository
+                .removeAnchorLimitationByUser_AccountAndLiveRoom_RoomNumAndLimitType(userAccount, chatRoomNum, AnchorLimitation.LIMIT_TYPE_KICKOUT) ;
     }
 }

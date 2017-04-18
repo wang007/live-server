@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -95,6 +96,7 @@ public class ApplyAnchorServiceImpl extends BaseServiceImpl<ApplyAnchor, String>
         return repository.getApplyInfo(applyId) ;
     }
 
+    @Transactional
     @Override
     public void saveApplyPassFlag(String applyId, int passFlag, String reason) {
         //TODO 写下推送到手机端，
