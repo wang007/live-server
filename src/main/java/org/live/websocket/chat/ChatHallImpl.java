@@ -201,9 +201,16 @@ public class ChatHallImpl implements ChatHall {
                 break;
             }
 
-            //
+            //用户取消关注，消息只推送给本人
             case MessageType.RELIEVE_USER_ATTENTION_CHATROOM: { //用户解除关注直播间
-
+                String userAccount = message.getContent() ;
+                Message specialMessage = new Message() ;
+                specialMessage.setDestination(userAccount) ;    //消息目的地是本人
+                specialMessage.setAccount(userAccount) ;
+                specialMessage.setNickname(message.getNickname()) ;
+                specialMessage.setContent(message.getNickname() + " 取消关注") ;
+                specialMessage.setMessageType(MessageType.RELIEVE_USER_ATTENTION_CHATROOM) ;
+                chatRoom.sendMessageToUser(message) ;   //把消息推送给本人。
                 break;
             }
         }
