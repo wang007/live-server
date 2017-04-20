@@ -34,7 +34,6 @@ public class KickoutSessionControlFilter extends AccessControlFilter {
 	 */
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

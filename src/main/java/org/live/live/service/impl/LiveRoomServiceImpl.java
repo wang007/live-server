@@ -2,14 +2,13 @@ package org.live.live.service.impl;
 
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
+import org.live.common.utils.CreateOrderNoUtils;
 import org.live.live.entity.*;
-import org.live.live.repository.AnchorLimitationRepository;
-import org.live.live.repository.AttentionRepository;
-import org.live.live.repository.LiveRoomRepository;
-import org.live.live.repository.MobileUserRepository;
+import org.live.live.repository.*;
 import org.live.live.service.LiveRoomService;
 import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
+import org.live.websocket.chat.ChatHallManager;
 import org.live.websocket.chat.OnChatListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +36,9 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
 
     @Resource
     private AttentionRepository attentionRepository ;
+
+    @Resource
+    private LiveRecordRepository liveRecordRepository ;
 
     @Override
     protected BaseRepository<LiveRoom, String> getRepository() {
@@ -68,23 +70,57 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
         return repository.getLiveRoomByRoomNum(roomNum) ;
     }
 
+    @Transactional
+    @Override
+    public void changeLiveRoomBanFlag(String liveRoomId, boolean liveRoomBanFlag) {
+
+        LiveRoom liveRoom =  repository.findOne(liveRoomId) ;
+        String account = liveRoom.getAnchor().getUser().getAccount() ;
+        //禁播，当系统禁播主播时，websocket的关闭由系统完成，所以不会调用ChatListener相关方法。
+        if(liveRoomBanFlag) {
+            if(liveRoom.isLiveFlag()) {  //正在直播, 解散直播间
+                ChatHallManager.dissolveChatRoom(liveRoom.getRoomNum()) ;
+                liveRoom.setLiveFlag(false) ;    //修改直播间状态
+                liveRoom.setOnlineCount(0) ;
+                //更新直播记录的结束时间。
+                LiveRecord liveRecord = liveRecordRepository.getCurrentLiveRecordByLiveRoom(liveRoom) ;
+                if(liveRecord != null) {
+                    liveRecord.setEndTime(new Date()) ;
+                    liveRecordRepository.save(liveRecord) ;
+                }
+            }
+        }
+        liveRoom.setBanLiveFlag(liveRoomBanFlag) ;
+        repository.save(liveRoom) ;
+
+    }
+
 
     /**
      * 主播上线了
      * @param chatRoomNum
      */
+    @Transactional
     @Override
     public void onAnchorOpenChatRoom(String chatRoomNum) {
 
         LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;
         liveRoom.setLiveFlag(true)  ;   //设置上线
         repository.save(liveRoom) ;
+
+        //保存直播记录
+        LiveRecord record = new LiveRecord() ;
+        record.setStartTime(new Date()) ;
+        record.setLiveRoom(liveRoom) ;
+        record.setRecordNum(CreateOrderNoUtils.getCreateOrderNo()) ;
+        liveRecordRepository.save(record) ;
     }
 
     /**
      * 主播下线
      * @param chatRoomNum 直播间号
      */
+    @Transactional
     @Override
     public void onAnchorDissolveChatRoom(String chatRoomNum) {
         LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;
@@ -92,7 +128,15 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
             liveRoom.setLiveFlag(false) ;   //主播下线
             liveRoom.setOnlineCount(0) ;    //设置在线人数为0
             repository.save(liveRoom) ;
+
+            //修改直播记录的结束时间
+            LiveRecord liveRecord = liveRecordRepository.getCurrentLiveRecordByLiveRoom(liveRoom);
+            if(liveRecord != null) {
+                liveRecord.setEndTime(new Date()) ;
+                liveRecordRepository.save(liveRecord) ;
+            }
         }
+
     }
 
     /**

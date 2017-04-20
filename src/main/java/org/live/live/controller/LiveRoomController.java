@@ -1,5 +1,6 @@
 package org.live.live.controller;
 
+import org.live.common.getui.PushInterface;
 import org.live.common.page.JqGridModel;
 import org.live.common.page.PageUtils;
 import org.live.common.response.ResponseModel;
@@ -90,20 +91,16 @@ public class LiveRoomController {
     @RequestMapping(value="/liveroom/{liveRoomId}", method = RequestMethod.PATCH)
     @ResponseBody
     public ResponseModel<Object> changeLiveRoomBanFlag(@PathVariable("liveRoomId") String liveRoomId, boolean liveRoomBanFlag) {
-        // TODO 这里完善解散在线直播间的功能, 推送到app
         ResponseModel<Object> model = new SimpleResponseModel<>() ;
         try {
            LiveRoom liveRoom =  service.get(liveRoomId) ;
+           String account = liveRoom.getAnchor().getUser().getAccount() ;
+           service.changeLiveRoomBanFlag(liveRoomId, liveRoomBanFlag) ;
            if(liveRoomBanFlag) {    //禁播
-               if(liveRoom.isLiveFlag()) {  //正在直播, 解散直播间
-                   ChatHallManager.dissolveChatRoom(liveRoom.getRoomNum()) ;
-                   liveRoom.setLiveFlag(false) ;    //修改直播间状态
-                   liveRoom.setOnlineCount(0) ;
-               }
-           }
-
-           liveRoom.setBanLiveFlag(liveRoomBanFlag) ;
-           service.save(liveRoom) ;
+                PushInterface.getInstance().pushToSingle(account, "高校直播", "您被禁播了！") ;
+            } else {
+                PushInterface.getInstance().pushToSingle(account, "高校直播", "您被解除禁播，可以进行直播了！") ;
+            }
             model.success() ;
         } catch (Exception e) {
             LOGGER.error("更新直播间的禁播状态发生异常", e) ;

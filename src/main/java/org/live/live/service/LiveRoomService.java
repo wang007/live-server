@@ -51,4 +51,11 @@ public interface LiveRoomService extends BaseService<LiveRoom, String> {
      * @return
      */
     LiveRoom getLiveRoomByRoomNum(String roomNum) ;
+
+    /**
+     * 更改直播间的禁播状态
+     * @param liveRoomId
+     * @param liveRoomBanFlag
+     */
+    void changeLiveRoomBanFlag(String liveRoomId, boolean liveRoomBanFlag) ;
 }

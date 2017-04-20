@@ -53,10 +53,24 @@ public class CreateOrderNoUtils {
 	}
 	
 	/**
-	 * 返回当前系统时间+随机数
+	 * 返回当前系统日期+随机数
 	 * @return
 	 */
 	public static String getCreateOrderNo(){
 		return CreateOrderNoUtils.getDate()+CreateOrderNoUtils.getFixLenthString(6);//数字代表几位随机数
 	}
+
+	/**
+	 *  返回当前系统时间+ 随机数
+	 * @return
+	 */
+	public static String getCreateOrderNoByTime() {
+		return CreateOrderNoUtils.getTime()+CreateOrderNoUtils.getFixLenthString(3);//数字代表几位随机数
+	}
+
+	public static void main(String[] args) {
+		// 20170421014800020 20170421014829586
+		System.out.println(getCreateOrderNoByTime());
+	}
+
 }

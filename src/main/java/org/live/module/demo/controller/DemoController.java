@@ -96,6 +96,8 @@ public class DemoController {
         request.setAttribute("nickname", nickname) ;
         if(anchor != null) request.setAttribute("anchor", 1) ;
 
+
+
         return "websocket_test" ;
     }
 

@@ -20,17 +20,13 @@ public class LiveRecord extends BaseEntity {
     @Column
     private String recordNum ;
 
-    /**
-     *  主播账号
-     */
-    @Column
-    private String account ;
 
     /**
-     * 主播昵称
+     * 直播间
      */
-    @Column
-    private String nickname ;
+    @ManyToOne
+    @JoinColumn(name = "live_room_id")
+    private LiveRoom liveRoom ;
 
     /**
      *  最高在线人数
@@ -61,28 +57,20 @@ public class LiveRecord extends BaseEntity {
         this.recordNum = recordNum;
     }
 
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public int getMaxOnlineCount() {
         return maxOnlineCount;
     }
 
     public void setMaxOnlineCount(int maxOnlineCount) {
         this.maxOnlineCount = maxOnlineCount;
+    }
+
+    public LiveRoom getLiveRoom() {
+        return liveRoom;
+    }
+
+    public void setLiveRoom(LiveRoom liveRoom) {
+        this.liveRoom = liveRoom;
     }
 
     public Date getStartTime() {

@@ -3,6 +3,7 @@ package org.live.live.service.impl;
 import org.live.app.vo.ApplyAnchorVo;
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
+import org.live.common.getui.PushInterface;
 import org.live.common.response.DataTableModel;
 import org.live.common.utils.DataTableUtils;
 import org.live.live.entity.Anchor;
@@ -99,18 +100,17 @@ public class ApplyAnchorServiceImpl extends BaseServiceImpl<ApplyAnchor, String>
     @Transactional
     @Override
     public void saveApplyPassFlag(String applyId, int passFlag, String reason) {
-        //TODO 写下推送到手机端，
         ApplyAnchor applyAnchor = repository.getOne(applyId) ;  //当前申请表
         if(passFlag == 2) { //审核未通过
             applyAnchor.setPassFlag(ApplyAnchor.ADUIT_NOT_PASS) ;
             applyAnchor.setNoPassReason(reason) ;
             repository.save(applyAnchor) ;
+            PushInterface.getInstance().pushToSingle(applyAnchor.getUser().getAccount(), "高校直播", "您的主播申请审核未通过！") ;
             return ;
         } else if(passFlag == 1) {  //审核通过
             applyAnchor.setPassFlag(ApplyAnchor.ADUIT_PASS) ;
             MobileUser mobileUser = applyAnchor.getUser();
             mobileUser.setAnchorFlag(true)  ;   //设置移动端用户的主播标志
-
             Anchor anchorInDB = anchorRepository.findAnchorByUser(mobileUser) ;
             if(anchorInDB != null) {    //此时该申请表的用户已经是主播
                 List<ApplyAnchor> applyAnchors = repository.findApplyAnchorsByUser(mobileUser) ;
@@ -140,6 +140,7 @@ public class ApplyAnchorServiceImpl extends BaseServiceImpl<ApplyAnchor, String>
             mobileUserRepository.save(mobileUser) ;
             anchorRepository.save(anchor) ;
             liveRoomRepository.save(liveRoom) ;
+            PushInterface.getInstance().pushToSingle(mobileUser.getAccount(), "高校直播", "您的主播申请审核通过，可以进行直播了！");
         }
 
     }
