@@ -103,8 +103,9 @@ public class ChatHallImpl implements ChatHall {
                     broadcastMessage.setDestination(chatRoomNum) ;
                     broadcastMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
                     broadcastMessage.setNickname(nickname) ;
-                    broadcastMessage.setContent(nickname+"被禁言了") ;
+                    broadcastMessage.setContent(nickname+" 被禁言了") ;
                     broadcastMessage.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
+                    broadcastMessage.setExtra(userAccount) ;   //用户账号 存在extra中，方便移动端获取账号
                     chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;   //广播到直播间，
                 }
                 break ;
@@ -165,9 +166,10 @@ public class ChatHallImpl implements ChatHall {
                     Message broadcastMessage = new Message() ;
                     broadcastMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
                     broadcastMessage.setNickname(nickname) ;
-                    broadcastMessage.setContent(nickname+ "被踢出直播间")  ;
+                    broadcastMessage.setContent(nickname+ " 被踢出直播间")  ;
                     broadcastMessage.setDestination(chatRoomNum) ;
                     broadcastMessage.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
+                    broadcastMessage.setExtra(userAccount) ;   //用户账号 存在extra中，方便移动端获取账号
                     chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;
                 }
                 break ;
@@ -184,6 +186,25 @@ public class ChatHallImpl implements ChatHall {
                     chatRoom.sendMessageToCurrentChatRoom(message) ;
                 }*/
                 break ;
+            }
+
+            case MessageType.USER_ATTENTION_CHATROOM: {     //用户关注直播间
+                String userAccount = message.getContent() ;
+                Message broadcastMessage = new Message() ;
+                broadcastMessage.setDestination(chatRoomNum) ;
+                broadcastMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
+                broadcastMessage.setExtra(userAccount) ;   //用户账号 存在extra中，方便移动端获取账号
+                broadcastMessage.setContent(message.getNickname() + " 关注了直播间") ;
+                broadcastMessage.setNickname(message.getNickname()) ;
+                broadcastMessage.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
+                chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;
+                break;
+            }
+
+            //
+            case MessageType.RELIEVE_USER_ATTENTION_CHATROOM: { //用户解除关注直播间
+
+                break;
             }
         }
 
@@ -231,8 +252,8 @@ public class ChatHallImpl implements ChatHall {
         String nickname = (String) attributes.get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY); //昵称
         chatRoom.addUserSession(session) ;
         int onlineCount = chatRoom.getOnlineCount() ;   //在线用户数
-        message.setContent(onlineCount+"") ;
-        message.setMessageType(MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE) ;
+        message.setContent(onlineCount+"") ;    //在线人数用户放到消息的内容上
+        message.setMessageType(MessageType.USER_ENTER_CHATROOM_MESSAGE_TYPE) ;  //消息类型
         message.setAccount(account) ;
         message.setNickname(nickname);
         chatRoom.sendMessageToCurrentChatRoom(message) ;
@@ -259,7 +280,7 @@ public class ChatHallImpl implements ChatHall {
         message.setFromChatRoomNum(chatroomNum) ;
         message.setDestination(chatroomNum) ;
         message.setNickname(nickname) ;
-        message.setAccount(ChatConstants.SYSTEM_NUM) ;
+        message.setAccount(userAccount) ;
 
         String anchorInChatroom = chatRoom.getanchorAccount() ; //直播间的主播账号
         if(anchorFlag != null || userAccount.equals(anchorInChatroom)) {

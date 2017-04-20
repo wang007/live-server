@@ -42,6 +42,11 @@ public class Message {
      */
     private int messageType ;
 
+    /**
+     * 额外的参数。
+     */
+    private String extra ;
+
 
     public String getFromChatRoomNum() {
         return fromChatRoomNum;
@@ -89,5 +94,13 @@ public class Message {
 
     public void setMessageType(int messageType) {
         this.messageType = messageType;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
     }
 }

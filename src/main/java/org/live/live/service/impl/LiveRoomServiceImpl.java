@@ -2,11 +2,9 @@ package org.live.live.service.impl;
 
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
-import org.live.live.entity.Anchor;
-import org.live.live.entity.AnchorLimitation;
-import org.live.live.entity.LiveRoom;
-import org.live.live.entity.MobileUser;
+import org.live.live.entity.*;
 import org.live.live.repository.AnchorLimitationRepository;
+import org.live.live.repository.AttentionRepository;
 import org.live.live.repository.LiveRoomRepository;
 import org.live.live.repository.MobileUserRepository;
 import org.live.live.service.LiveRoomService;
@@ -36,6 +34,9 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
 
     @Resource
     private AnchorLimitationRepository anchorLimitationRepository ;
+
+    @Resource
+    private AttentionRepository attentionRepository ;
 
     @Override
     protected BaseRepository<LiveRoom, String> getRepository() {
@@ -151,5 +152,33 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
     public void onRelieveKickoutUserOnChatRoom(String chatRoomNum, String userAccount) {
         anchorLimitationRepository
                 .removeAnchorLimitationByUser_AccountAndLiveRoom_RoomNumAndLimitType(userAccount, chatRoomNum, AnchorLimitation.LIMIT_TYPE_KICKOUT) ;
+    }
+
+    /**
+     * 用户关注直播间
+     * @param userAccount
+     * @param chatRoomNum
+     */
+    @Override
+    public void onUserAttentionChatRoom(String userAccount, String chatRoomNum) {
+        LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;  //主播间
+        MobileUser mobileUser = mobileUserRepository.findMobileUserByAccount(userAccount);
+        Attention attention = new Attention() ;
+        attention.setLiveRoom(liveRoom) ;
+        attention.setUser(mobileUser) ;
+        attention.setCreateTime(new Date()) ;
+        attentionRepository.save(attention) ;
+    }
+
+    /**
+     * 用户解除关注
+     * @param userAccount
+     * @param chatRoomNum
+     */
+    @Transactional
+    @Override
+    public void onRelieveUserAttentionChatRoom(String userAccount, String chatRoomNum) {
+
+        attentionRepository.removeAttentionByUser_AccountAndLiveRoom_RoomNum(userAccount, chatRoomNum) ;
     }
 }

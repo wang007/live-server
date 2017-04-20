@@ -9,6 +9,7 @@ import org.live.live.entity.LiveRoom;
 import org.live.live.service.LiveRoomService;
 import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
+import org.live.websocket.chat.ChatHallManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -89,12 +90,16 @@ public class LiveRoomController {
     @RequestMapping(value="/liveroom/{liveRoomId}", method = RequestMethod.PATCH)
     @ResponseBody
     public ResponseModel<Object> changeLiveRoomBanFlag(@PathVariable("liveRoomId") String liveRoomId, boolean liveRoomBanFlag) {
-
+        // TODO 这里完善解散在线直播间的功能, 推送到app
         ResponseModel<Object> model = new SimpleResponseModel<>() ;
         try {
            LiveRoom liveRoom =  service.get(liveRoomId) ;
            if(liveRoomBanFlag) {    //禁播
-               // TODO 这里完善解散在线直播间的功能, 推送到app
+               if(liveRoom.isLiveFlag()) {  //正在直播, 解散直播间
+                   ChatHallManager.dissolveChatRoom(liveRoom.getRoomNum()) ;
+                   liveRoom.setLiveFlag(false) ;    //修改直播间状态
+                   liveRoom.setOnlineCount(0) ;
+               }
            }
 
            liveRoom.setBanLiveFlag(liveRoomBanFlag) ;

@@ -94,6 +94,23 @@ public class ChatHallManager {
                 if(listener != null) listener.onRelieveKickoutUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
                 chatHall.dispatchMessageToChatRoom(destinations[0], message);
             }
+
+            case MessageType.USER_ATTENTION_CHATROOM: {      //用户关注直播间
+                String[] destinations = resolveDestination(destination);
+                message.setDestination(destinations[0]) ;   //设置发往的直播间
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
+                if(listener != null) listener.onUserAttentionChatRoom(destinations[0], destinations[1]) ;
+                chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
+            }
+
+            case MessageType.RELIEVE_USER_ATTENTION_CHATROOM: {     //用户解除关注直播间
+                String[] destinations = resolveDestination(destination);
+                message.setDestination(destinations[0]) ;   //设置发往的直播间
+                message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
+                if(listener != null) listener.onRelieveUserAttentionChatRoom(destinations[0], destinations[1]) ;
+                chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
+            }
+
             default: chatHall.dispatchMessageToChatRoom(destination, message) ; //其他消息
         }
     }
@@ -139,6 +156,15 @@ public class ChatHallManager {
         return chatHall.listChatRoomOnlineCount() ;
     }
 
+
+    /**
+     * 解散直播间
+     * @param chatRoomNum 直播间号
+     */
+    public static void dissolveChatRoom(String chatRoomNum) {
+        ChatRoom chatRoom = chatHall.getChatRoom(chatRoomNum) ;
+        if(chatRoom != null) chatHall.dissolveChatRoom(chatRoom) ;
+    }
 
     /**
      *  解析消息目的地
