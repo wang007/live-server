@@ -300,6 +300,7 @@ public class AppLiveController {
             applyAnchor.setRealName(applyAnchorVo.getRealName()) ;
             applyAnchor.setIdCard(applyAnchorVo.getIdCard()) ;
             applyAnchor.setCreateTime(new Date()) ;
+            applyAnchor.setCategory(liveCategory) ;
             applyAnchor.setIdImgUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName) ;
             applyAnchorService.save(applyAnchor) ;
             model.success() ;

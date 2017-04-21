@@ -57,6 +57,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         } catch (Throwable e) {
             LOGGER.error("websocket->afterConnectionClosed,异常 ", e) ;
         }
-
     }
+
+
+
+
 }

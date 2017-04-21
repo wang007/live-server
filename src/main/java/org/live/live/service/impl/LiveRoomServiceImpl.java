@@ -1,5 +1,6 @@
 package org.live.live.service.impl;
 
+import org.live.app.vo.AppLiveRoomVo;
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
 import org.live.common.utils.CreateOrderNoUtils;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 实现websocket中的onChatListener接口
@@ -93,6 +95,19 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
         liveRoom.setBanLiveFlag(liveRoomBanFlag) ;
         repository.save(liveRoom) ;
 
+    }
+
+    @Override
+    public List<AppLiveRoomVo> findLiveRoomsForApp(String categoryId) {
+        if(categoryId != null && !"".equals(categoryId)) {
+            return repository.findLiveRoomsForAppByCategory(categoryId) ;
+        }
+        return repository.findLiveRoomsForApp() ;
+    }
+
+    @Override
+    public List<AppLiveRoomVo> findAttentionLiveRoomsForUser(String userId) {
+        return attentionRepository.findAttentionLiveRoomsForUser(userId) ;
     }
 
 

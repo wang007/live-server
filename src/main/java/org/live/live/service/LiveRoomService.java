@@ -1,5 +1,6 @@
 package org.live.live.service;
 
+import org.live.app.vo.AppLiveRoomVo;
 import org.live.common.base.BaseService;
 import org.live.live.entity.Anchor;
 import org.live.live.entity.LiveRoom;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  * Created by wang on 2017/4/12.
@@ -58,4 +61,19 @@ public interface LiveRoomService extends BaseService<LiveRoom, String> {
      * @param liveRoomBanFlag
      */
     void changeLiveRoomBanFlag(String liveRoomId, boolean liveRoomBanFlag) ;
+
+    /**
+     * 查询未禁播的直播间，给移动端
+     * @return
+     */
+    List<AppLiveRoomVo> findLiveRoomsForApp(String categoryId) ;
+
+    /**
+     * 查询用户关注的直播间。
+     * 1.直播间是未禁播的。
+     * 2.直播间所属的分类是未关闭的。
+     * @param userId
+     * @return
+     */
+    List<AppLiveRoomVo> findAttentionLiveRoomsForUser(String userId) ;
 }
