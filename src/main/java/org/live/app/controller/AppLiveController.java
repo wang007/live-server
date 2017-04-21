@@ -316,7 +316,7 @@ public class AppLiveController {
      * 更换头像
      * @return
      */
-    @RequestMapping(value="/headImg/{userId}", method = RequestMethod.POST)
+    @RequestMapping(value="/headImg/{userId}", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseModel<Object> changeUserHeadImg(MultipartFile file, @PathVariable String userId) {
 
@@ -341,6 +341,7 @@ public class AppLiveController {
 
             mobileUser.setHeadImgUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName);
             mobileUserService.save(mobileUser) ;
+            model.setData(mobileUser.getHeadImgUrl());
             model.setMessage("设置成功！") ;
             model.success();
         } catch (Exception e) {

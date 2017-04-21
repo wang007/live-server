@@ -409,6 +409,9 @@
                                 for (var key in spanName) {
                                     $div.append('<div class="profile-info-row">');
                                     var val = data[key];
+                                    if(val == null){
+                                        val = "无";
+                                    }
                                     switch (key) {
                                         case 'className':
                                             if (val == null) {
@@ -442,7 +445,6 @@
                                             $div.append('<div class="profile-info-value"><span>' + val + '</span></div>');
                                             break;
                                         case 'email':
-
                                             $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
                                             $div.append('<div class="profile-info-value"><i class="fa fa-envelope blue"></i> <span>' + val + '</span></div>');
                                             break;
@@ -471,9 +473,6 @@
                                             }
                                             break;
                                         default:
-                                            if (val == null) {
-                                                val = "无";
-                                            }
                                             $div.append('<div class="profile-info-name">' + spanName[key] + '</div>');
                                             $div.append('<div class="profile-info-value"><span>' + val + '</span></div>');
                                             break;

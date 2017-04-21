@@ -272,9 +272,7 @@ var DataTablePlus = function (option) {
             '<"row"<"col-sm-4" i><"col-sm-2 datatable-length-row" l><"col-sm-6" p>>' +
             '> ',
             "initComplete": function () {
-                $("#datatable_btn_group").append('操作：' +
-                    '<button type="button" id="btn_datatable_info" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="详情"> &nbsp;<i class="fa fa-info"></i>&nbsp; </button>' +
-                    '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-defalut datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
+                $("#datatable_btn_group").append('操作：');
                 var hasCreateFeature = true;
                 var hasEditFeature = true;
                 var hasDeleteFeature = true;
@@ -289,7 +287,6 @@ var DataTablePlus = function (option) {
                         hasDeleteFeature = featureDef.delete;
                     }
                 }
-
                 if (hasCreateFeature) {
                     $("#datatable_btn_group").append('<button type="button" id="btn_datatable_create" name="datatable_btn_group" class="btn btn-success datatable-btn"  data-placement="top" title="添加"><i class="fa fa-plus"></i></button>');
 
@@ -300,6 +297,9 @@ var DataTablePlus = function (option) {
                 if (hasDeleteFeature) {
                     $("#datatable_btn_group").append('<button type="button" id="btn_datatable_del" name="datatable_btn_group" class="btn btn-danger datatable-btn" data-placement="top" title="删除"><i class="fa fa-trash"></i></button>');
                 }
+                $("#datatable_btn_group").append(
+                    '<button type="button" id="btn_datatable_info" name="datatable_btn_group" class="btn btn-info datatable-btn" data-placement="top" title="详情"> &nbsp;<i class="fa fa-info"></i>&nbsp; </button>' +
+                    '<button type="button" id="btn_datatable_refresh" name="datatable_btn_group" class="btn btn-defalut datatable-btn" data-placement="top" title="刷新"><i class="fa fa-refresh"></i></button>');
 
                 if (appendBtn != null && typeof appendBtn == "function") {
                     appendBtn($("#datatable_btn_group"), "datatable_btn_group");
