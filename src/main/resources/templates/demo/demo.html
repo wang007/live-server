@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <meta charset="UTF-8"></meta>
 <title>demo</title>
-<link rel="stylesheet" href="static/ace/assets/css/font-awesome.css" />
+<link rel="stylesheet" href="static/ace/assets/css/font-awesome.css"/>
 <style>
 </style>
 </head>
@@ -51,6 +51,28 @@
         </div>
     </div>
 </div>
+<div class="page-header">
+    <h1>
+        文件上传
+        <!--<small> 》 dataTableDemo</small>-->
+    </h1>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div>
+            <div class="form-group">
+                <div class="col-xs-2">
+                    <!-- #section:custom/file-input -->
+                    <form id="uploadForm">
+                        <input type="file" id="id-input-file-2" name="file"/>
+                    </form>
+                    <button type="button" class="btn btn-primary" id="btn_upload">上传文件</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" tabindex="-1" role="dialog" id="edit_modal">
     <div class="modal-dialog" role="document">
@@ -251,294 +273,6 @@
     $.ace_ajax_finish(function () {
         jQuery(function ($) {
 
-            /*function buildFormElement(columns, modalBodyId) {
-             var buffer = new StringBuffer();
-             var specialEls = [];
-             var el = {
-             'form': '<form class="form-horizontal" role="form" id="datatable_edit_form">',
-             '/form': '</form>',
-             'group': '<div class="form-group">',
-             '/group': '</div>',
-             'label': '<label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right">',
-             '/label': '</label>',
-             'span': '<div class="help-block col-xs-12 col-sm-reset inline"><span class="middle red">',
-             '/span': '</span></div>',
-             'col5': '<div class="col-xs-12 col-sm-5">',
-             '/col5': '</div>',
-             'col6': '<div class="col-sm-6">',
-             '/col6': '</div>'
-             };
-             buffer.append(el['form']);
-             for (var i = 0; i < columns.length; i++) {
-             var column = columns[i];
-             var inputType = column['inputType'];
-             var title = column['title'];
-             var name = column['name'];
-             buffer.append(el['group']);
-             buffer.append(el['label']);
-             buffer.append(title);
-             buffer.append(el['/label']);
-             switch (inputType) {
-             case 'text' :
-             buffer.append(el['col5']);
-             buffer.append('<input type="text" class="width-100" name="' + name + '">');
-             buffer.append(el['/col5']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-             break;
-             case 'password' :
-             buffer.append(el['col5']);
-             buffer.append('<input type="password" class="width-100" name="' + name + '">');
-             buffer.append(el['/col5']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-             break;
-             case 'url' :
-             buffer.append(el['col5']);
-             buffer.append('<input type="url" class="width-100" name="' + name + '">');
-             buffer.append(el['/col5']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-             break;
-             case 'email' :
-             buffer.append(el['col5']);
-             buffer.append('<input type="email" class="width-100" name="' + name + '">');
-             buffer.append(el['/col5']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-             break;
-             case 'textarea' :
-             buffer.append(el['col6']);
-             buffer.append('<textarea class="form-control limited" id="form-field-3" maxlength="' + column['maxLength'] + '" name="' + name + '"></textarea>');
-             buffer.append(el['/col6']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-             break;
-             case 'select' :
-             var data = column['data'];
-             buffer.append(el['col6']);
-             buffer.append('<select class="chosen-select form-control" name="' + name + '"data-placeholder="请选择...">');
-             buffer.append('<option value=""></option>');
-             for (var j = 0; j < data.length; j++) {
-             buffer.append('<option value="' + data[j]['value'] + '">' + data[j]['name'] + '</option>');
-             }
-             buffer.append('</select>');
-             buffer.append(el['/col6']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-
-             break;
-             case 'checkbox' :
-             var data = column['data'];
-             buffer.append(el['col6']);
-             for (var j = 0; j < data.length; j++) {
-             var isChecked = data[j]['checked'] || false;
-             var $checked = '';
-             if (isChecked) {
-             $checked = 'checked="checked"';
-             }
-             buffer.append('<div class="checkbox"><label>');
-             buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="checkbox"/>');
-             buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
-             buffer.append('</label></div>');
-             }
-             buffer.append(el['/col6']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-
-             specialEls.push(column);
-             break;
-             case 'radio' :
-             var data = column['data'];
-             buffer.append(el['col6']);
-             for (var j = 0; j < data.length; j++) {
-             var isChecked = data[j]['checked'] || false;
-             var $checked = '';
-             if (isChecked) {
-             $checked = 'checked="checked"';
-             }
-             buffer.append('<div class="radio"><label>');
-             buffer.append('<input name="' + name + '" ' + $checked + ' value="' + data[j]['value'] + '" type="radio"/>');
-             buffer.append('<span class="lbl"> ' + data[j]['label'] + '</span>');
-             buffer.append('</label></div>');
-             }
-             buffer.append(el['/col6']);
-             buffer.append(el['span']);
-             buffer.append(el['/span']);
-
-             specialEls.push(column);
-             break;
-             case 'switch' :
-             var isChecked = column['checked'] || false;
-             var $checked = '';
-             if (isChecked) {
-             $checked = 'checked="checked"';
-             }
-             buffer.append(el['col6']);
-             buffer.append('<div class="switch"><label>');
-             buffer.append('<input name="' + name + '" ' + $checked + ' class="ace ace-switch ace-switch-4 btn-rotate" type="checkbox">');
-             buffer.append('<span class="lbl"></span>');
-             buffer.append('</label></div>');
-             buffer.append(el['/col6']);
-             break;
-             case 'spinner' :
-             buffer.append(el['col6']);
-             buffer.append('<div class="spinner">');
-             buffer.append('<input type="text" name="' + name + '" class="input-mini" id="spinner"/>');
-             buffer.append('</div>');
-             buffer.append(el['/col6']);
-
-             specialEls.push(column);
-             break;
-             case 'datepicker':
-             buffer.append(el['col6']);
-             buffer.append('<div class="input-group">');
-             buffer.append('<input class="form-control date-picker" name="' + name + '" type="text" data-date-format="yyyy-mm-dd"/>');
-             buffer.append('<span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>');
-             buffer.append('</div>');
-             buffer.append(el['/col6']);
-             break;
-             }
-             buffer.append(el['/group']);
-             }
-             buffer.append(el['/form']);
-             $("#" + modalBodyId).empty(); // 清空元素，若有的话
-             $("#" + modalBodyId).append(buffer.toString()); // 构建表单
-
-             for (var k = 0; k < specialEls.length; k++) {
-             var column = specialEls[k];
-             var inputType = column['inputType'];
-             var name = column['name'];
-             switch (inputType) {
-             case 'checkbox' :
-             $("input[name='" + name + "']").iCheck({
-             checkboxClass: 'icheckbox_flat-blue'
-             }); // 为选择框添加样式
-             break;
-             case 'radio' :
-             $("input[name='" + name + "']").iCheck({
-             radioClass: 'iradio_flat-blue'
-             }); // 为单选框添加样式
-             break;
-             case 'spinner' :
-             $("input[name='" + name + "']").ace_spinner({
-             value: column['value'],
-             min: column['min'],
-             max: column['max'],
-             step: column['step'],
-             btn_up_class: 'btn-info',
-             btn_down_class: 'btn-info'
-             })
-             .closest('.ace-spinner')
-
-             .on('changed.fu.spinbox', function () {
-             //alert($('#spinner1').val())
-             });
-             break;
-             }
-             }
-
-             /!*$("#datatable_edit_form")*!/
-             }*/
-
-            /*      buildFormElement([
-             {'name': 'text', 'title': 'TextInput：', 'inputType': 'text'},
-             {'name': 'textarea', 'title': 'TextArea', 'inputType': 'textarea', 'maxLength': 50},
-             {
-             'name': 'select', 'title': 'Select', 'inputType': 'select', 'data': [
-             {'name': 'option1', 'value': 'option1'},
-             {'name': 'option2', 'value': 'option1'},
-             {'name': 'option3', 'value': 'option3'},
-             {'name': 'option4', 'value': 'option4'},
-             {'name': 'option5', 'value': 'option5'},
-             {'name': 'option6', 'value': 'option6'}
-             ]
-             },
-             {
-             'name': 'checkbox-group', 'title': 'CheckBox', 'inputType': 'checkbox', 'data': [
-             {'label': 'chice1', 'value': 'checkbox1', 'checked': true},
-             {'label': 'chice2', 'value': 'checkbox2'},
-             {'label': 'chice3', 'value': 'checkbox3'},
-             {'label': 'chice4', 'value': 'checkbox4'}
-             ]
-             },
-             {
-             'name': 'radio-group', 'title': 'Radio', 'inputType': 'radio', 'data': [
-             {'label': 'chice1', 'value': 'radio1', 'checked': true},
-             {'label': 'chice2', 'value': 'radio2'}
-             ]
-             }, {
-             'name': 'switch',
-             'title': 'Switch',
-             'inputType': 'switch',
-             'checked': true
-             },
-             {
-             'name': 'spinner',
-             'title': 'Spinner',
-             'inputType': 'spinner',
-             'value': 0,
-             'min': 0,
-             'max': 10,
-             'step': 1
-             },{
-             'name':'datepicker',
-             'title':'DatePicker',
-             'inputType': 'datepicker'
-             }
-             ], "datatable_edit_modal_body");*/
-
-            /* $("#create_form").validate();
-
-             $("input[name='form-field-checkbox']").iCheck({
-             checkboxClass: 'icheckbox_flat-blue'
-             }); // 为选择框添加样式
-
-             $("input[name='form-field-radio']").iCheck({
-             radioClass: 'iradio_flat-blue'
-             }); // 为单选框添加样式*/
-
-            /*           $('.date-picker').datepicker({
-             autoclose: true,
-             todayHighlight: true
-             });
-
-             $('#spinner').ace_spinner({
-             value: 0,
-             min: 0,
-             max: 100,
-             step: 1,
-             btn_up_class: 'btn-info',
-             btn_down_class: 'btn-info'
-             })
-             .closest('.ace-spinner')
-
-             .on('changed.fu.spinbox', function () {
-             //alert($('#spinner1').val())
-             });
-
-             if (!ace.vars['touch']) {
-             $('.chosen-select').chosen({allow_single_deselect: true});
-             //resize the chosen on window resize
-
-             $(window)
-             .off('resize.chosen')
-             .on('resize.chosen', function () {
-             $('.chosen-select').each(function () {
-             var $this = $(this);
-             $this.next().css({'width': '100%'});
-             })
-             }).trigger('resize.chosen');
-             //resize chosen on sidebar collapse/expand
-             $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
-             if (event_name != 'sidebar_collapsed') return;
-             $('.chosen-select').each(function () {
-             var $this = $(this);
-             $this.next().css({'width': '100%'});
-             })
-             });
-             }*/
-
             $("input[name='form-field-checkbox']").iCheck({
                 checkboxClass: 'icheckbox_flat-blue'
             }); // 为选择框添加样式
@@ -626,7 +360,7 @@
                      }*/ // 定义回调方法
                 }, 'rules': {
                     'name': {
-                        required:true
+                        required: true
                     }
                 }
             }); // 设置参数
@@ -668,8 +402,39 @@
 
 
             // 导入xlsx
+            $('#id-input-file-2').ace_file_input({
+                no_file: 'No File ...',
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false //| true | large
+                //whitelist:'gif|png|jpg|jpeg'
+                //blacklist:'exe|php'
+                //onchange:''
+                //
+            });
 
-
+            $("#btn_upload").click(function () {
+                doUpload();
+            });
+            function doUpload() {
+                var formData = new FormData($("#uploadForm")[0]);
+                $.ajax({
+                    url: 'demo/upload',
+                    type: 'POST',
+                    data: formData,
+       /*             async: false,
+                    cache: false,*/
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        alert(data);
+                    },
+                    error: function (e) {
+                    }
+                });
+            } // 上传文件
         })
     });
 </script>

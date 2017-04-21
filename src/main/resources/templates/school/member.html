@@ -63,7 +63,15 @@
                         }, {
                             'text': '女',
                             'value': '0'
-                        }]
+                        }],
+                        'detailRender': function (data) {
+                            if (data == "1") {
+                                data = "男";
+                            } else {
+                                data = "女";
+                            }
+                            return data;
+                        }
                     }, {
                         'name': 'age',
                         'title': '年龄',
@@ -82,7 +90,7 @@
                         'show': false,
                         'detail': true,
                         'edit': true,
-                        'inputType':'datepicker'
+                        'inputType': 'datepicker'
                     }, {
                         'name': 'memberType',
                         'title': '成员类型',
@@ -123,7 +131,7 @@
                                 return data;
                             }
                         },
-                        'editName':'grade.id'
+                        'editName': 'grade.id'
                     },
                     {
                         'name': 'outDate',
@@ -132,7 +140,7 @@
                         'detail': true,
                         'edit': true,
                         'inputType': 'switch',
-                        'value':"0",
+                        'value': "0",
                         'detailRender': function (data) {
                             var str = '';
                             if (data) {

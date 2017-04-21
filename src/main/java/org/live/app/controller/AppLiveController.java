@@ -342,6 +342,7 @@ public class AppLiveController {
 
             mobileUser.setHeadImgUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr+ "/" + fileName);
             mobileUserService.save(mobileUser) ;
+            model.setData(mobileUser.getHeadImgUrl());
             model.setMessage("设置成功！") ;
             model.success();
         } catch (Exception e) {

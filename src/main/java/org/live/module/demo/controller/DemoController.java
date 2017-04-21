@@ -6,7 +6,6 @@ import org.live.module.demo.entity.Demo;
 import org.live.module.demo.service.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Created by KAM on 2017/3/28.
  */
-@Controller
+@RestController
 @RequestMapping("/demo")
 public class DemoController {
 
@@ -82,23 +81,6 @@ public class DemoController {
         System.out.println("localServerIp ---> "+ localServerIp) ;
         System.out.println("rtmpAddrPrefix --->"+ rtmpAddrPrefix) ;
         return null ;
-    }
-
-    /**
-     * webcosket 测试
-     * @return
-     */
-    @RequestMapping("/websocket")
-    public String toWebSocketTest(HttpServletRequest request, String chatroom, String account, String nickname, String anchor) {
-
-        request.setAttribute("chatroom", chatroom) ;
-        request.setAttribute("account", account) ;
-        request.setAttribute("nickname", nickname) ;
-        if(anchor != null) request.setAttribute("anchor", 1) ;
-
-
-
-        return "websocket_test" ;
     }
 
 }

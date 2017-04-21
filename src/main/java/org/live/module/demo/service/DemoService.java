@@ -3,6 +3,8 @@ package org.live.module.demo.service;
 import org.live.common.response.DataTableModel;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -11,4 +13,6 @@ import java.util.List;
 public interface DemoService {
     DataTableModel findPage(HttpServletRequest request);
     boolean del(List<String> ids);
+
+    void handleEXCELData(InputStream inputStream) throws IOException;
 }
