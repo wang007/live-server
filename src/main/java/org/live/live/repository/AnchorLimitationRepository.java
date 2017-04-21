@@ -14,6 +14,6 @@ public interface AnchorLimitationRepository extends BaseRepository<AnchorLimitat
      * @param roomNum
      * @return
      */
-    AnchorLimitation removeAnchorLimitationByUser_AccountAndLiveRoom_RoomNumAndLimitType(String account, String roomNum, int limitType) ;
+    void removeAnchorLimitationByUser_AccountAndLiveRoom_RoomNumAndLimitType(String account, String roomNum, int limitType) ;
 
 }

@@ -55,7 +55,6 @@ public class GroupServiceImpl extends BaseServiceImpl<Group,String> implements G
      */
     @Override
 	public List<Group> findGroupBySerialNo(int serialNo) {
-		// TODO Auto-generated method stub
     	List<Group> groupinfos = null;
 		try {
 			groupinfos = this.groupRepo.findGroupByGroupSerialNo(serialNo);

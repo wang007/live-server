@@ -51,4 +51,14 @@ public class MessageType {
      */
     public static final int RELIEVE_KICKOUT_USER_MESSAGE_TYPE = 8 ;
 
+    /**
+     *  用户关注直播间。
+     */
+    public static final int USER_ATTENTION_CHATROOM = 9 ;
+
+    /**
+     * 用户解散关注直播间
+     */
+    public static final int RELIEVE_USER_ATTENTION_CHATROOM = 10 ;
+
 }

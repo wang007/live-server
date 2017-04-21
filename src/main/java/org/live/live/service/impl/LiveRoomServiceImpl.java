@@ -2,20 +2,18 @@ package org.live.live.service.impl;
 
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
-import org.live.live.entity.Anchor;
-import org.live.live.entity.AnchorLimitation;
-import org.live.live.entity.LiveRoom;
-import org.live.live.entity.MobileUser;
-import org.live.live.repository.AnchorLimitationRepository;
-import org.live.live.repository.LiveRoomRepository;
-import org.live.live.repository.MobileUserRepository;
+import org.live.common.utils.CreateOrderNoUtils;
+import org.live.live.entity.*;
+import org.live.live.repository.*;
 import org.live.live.service.LiveRoomService;
 import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
+import org.live.websocket.chat.ChatHallManager;
 import org.live.websocket.chat.OnChatListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -35,6 +33,12 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
 
     @Resource
     private AnchorLimitationRepository anchorLimitationRepository ;
+
+    @Resource
+    private AttentionRepository attentionRepository ;
+
+    @Resource
+    private LiveRecordRepository liveRecordRepository ;
 
     @Override
     protected BaseRepository<LiveRoom, String> getRepository() {
@@ -66,23 +70,57 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
         return repository.getLiveRoomByRoomNum(roomNum) ;
     }
 
+    @Transactional
+    @Override
+    public void changeLiveRoomBanFlag(String liveRoomId, boolean liveRoomBanFlag) {
+
+        LiveRoom liveRoom =  repository.findOne(liveRoomId) ;
+        String account = liveRoom.getAnchor().getUser().getAccount() ;
+        //禁播，当系统禁播主播时，websocket的关闭由系统完成，所以不会调用ChatListener相关方法。
+        if(liveRoomBanFlag) {
+            if(liveRoom.isLiveFlag()) {  //正在直播, 解散直播间
+                ChatHallManager.dissolveChatRoom(liveRoom.getRoomNum()) ;
+                liveRoom.setLiveFlag(false) ;    //修改直播间状态
+                liveRoom.setOnlineCount(0) ;
+                //更新直播记录的结束时间。
+                LiveRecord liveRecord = liveRecordRepository.getCurrentLiveRecordByLiveRoom(liveRoom) ;
+                if(liveRecord != null) {
+                    liveRecord.setEndTime(new Date()) ;
+                    liveRecordRepository.save(liveRecord) ;
+                }
+            }
+        }
+        liveRoom.setBanLiveFlag(liveRoomBanFlag) ;
+        repository.save(liveRoom) ;
+
+    }
+
 
     /**
      * 主播上线了
      * @param chatRoomNum
      */
+    @Transactional
     @Override
     public void onAnchorOpenChatRoom(String chatRoomNum) {
 
         LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;
         liveRoom.setLiveFlag(true)  ;   //设置上线
         repository.save(liveRoom) ;
+
+        //保存直播记录
+        LiveRecord record = new LiveRecord() ;
+        record.setStartTime(new Date()) ;
+        record.setLiveRoom(liveRoom) ;
+        record.setRecordNum(CreateOrderNoUtils.getCreateOrderNo()) ;
+        liveRecordRepository.save(record) ;
     }
 
     /**
      * 主播下线
      * @param chatRoomNum 直播间号
      */
+    @Transactional
     @Override
     public void onAnchorDissolveChatRoom(String chatRoomNum) {
         LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;
@@ -90,7 +128,15 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
             liveRoom.setLiveFlag(false) ;   //主播下线
             liveRoom.setOnlineCount(0) ;    //设置在线人数为0
             repository.save(liveRoom) ;
+
+            //修改直播记录的结束时间
+            LiveRecord liveRecord = liveRecordRepository.getCurrentLiveRecordByLiveRoom(liveRoom);
+            if(liveRecord != null) {
+                liveRecord.setEndTime(new Date()) ;
+                liveRecordRepository.save(liveRecord) ;
+            }
         }
+
     }
 
     /**
@@ -115,6 +161,7 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      * @param chatRoomNum
      * @param userAccount
      */
+    @Transactional
     @Override
     public void onRelieveShutupUserOnChatRoom(String chatRoomNum, String userAccount) {
 
@@ -129,7 +176,14 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      */
     @Override
     public void onKickoutUserOnChatRoom(String chatRoomNum, String userAccount) {
-
+        LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;  //主播间
+        MobileUser mobileUser = mobileUserRepository.findMobileUserByAccount(userAccount);
+        AnchorLimitation limitation = new AnchorLimitation() ;
+        limitation.setCreateTime(new Date()) ;
+        limitation.setUser(mobileUser) ;
+        limitation.setLiveRoom(liveRoom);
+        limitation.setLimitType(AnchorLimitation.LIMIT_TYPE_KICKOUT) ;
+        anchorLimitationRepository.save(limitation) ;
     }
 
     /**
@@ -137,8 +191,38 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      * @param chatRoomNum
      * @param userAccount
      */
+    @Transactional
     @Override
     public void onRelieveKickoutUserOnChatRoom(String chatRoomNum, String userAccount) {
+        anchorLimitationRepository
+                .removeAnchorLimitationByUser_AccountAndLiveRoom_RoomNumAndLimitType(userAccount, chatRoomNum, AnchorLimitation.LIMIT_TYPE_KICKOUT) ;
+    }
 
+    /**
+     * 用户关注直播间
+     * @param userAccount
+     * @param chatRoomNum
+     */
+    @Override
+    public void onUserAttentionChatRoom(String userAccount, String chatRoomNum) {
+        LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;  //主播间
+        MobileUser mobileUser = mobileUserRepository.findMobileUserByAccount(userAccount);
+        Attention attention = new Attention() ;
+        attention.setLiveRoom(liveRoom) ;
+        attention.setUser(mobileUser) ;
+        attention.setCreateTime(new Date()) ;
+        attentionRepository.save(attention) ;
+    }
+
+    /**
+     * 用户解除关注
+     * @param userAccount
+     * @param chatRoomNum
+     */
+    @Transactional
+    @Override
+    public void onRelieveUserAttentionChatRoom(String userAccount, String chatRoomNum) {
+
+        attentionRepository.removeAttentionByUser_AccountAndLiveRoom_RoomNum(userAccount, chatRoomNum) ;
     }
 }

@@ -193,7 +193,7 @@ public class ChatRoom {
             for (WebSocketSession session : sessions) {
                 if(session.isOpen()) {
                     //此时用户被动的离开，存一个标志，用于在关闭session的时候（afterConnectionClosed方法），就不用在进入直播间进行处理
-                    session.getAttributes().put(ChatConstants.USER_PASSIVE_EXIT_FLAG_WEBSOCKET_SESSION_KEY, new Object()) ; //
+                    session.getAttributes().put(ChatConstants.USER_PASSIVE_EXIT_FLAG_WEBSOCKET_SESSION_KEY, ChatConstants.FLAG_DELEGATE_VALUE) ; //
                     session.sendMessage(springTextMessage);    //websocketSession还打开的就发送信息，关闭的就不用管了。
                     session.close();
                 }

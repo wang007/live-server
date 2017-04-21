@@ -49,4 +49,18 @@ public interface OnChatListener {
      * @param userAccount
      */
     void onRelieveKickoutUserOnChatRoom(String chatRoomNum, String userAccount) ;
+
+    /**
+     * 用户关注直播间
+     * @param userAccount
+     * @param chatRoomNum
+     */
+    void onUserAttentionChatRoom(String userAccount, String chatRoomNum) ;
+
+    /**
+     * 用户取消关注直播间
+     * @param userAccount
+     * @param chatRoomNum
+     */
+    void onRelieveUserAttentionChatRoom(String userAccount, String chatRoomNum) ;
 }

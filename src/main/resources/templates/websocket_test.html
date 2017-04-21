@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Testing websockets</title>
+</head>
+<body>
+<div>
+    <span>消息内容</span> <input id="content" type="text" /> <br/>
+    <span>消息类型</span> <input id="messageType" type="text" /> <br/>
+    <span>消息目的地</span> <input id="mudi" type="text" /><br/>
+    <span>fromChatRoom</span> <input id="chatRoom" type="text" /><br/>
+    <span>Account</span> <input id="account" type="text" /> <br/>
+    <span>nickname</span> <input id="nickname" type="text" /><br/>
+    <button type="button" id="btn" onclick="sendMessage()">发送</button>   &nbsp; &nbsp; <button type="button" id="closeBtn" onclick="close()">关闭</button>
+</div>
+<br/>
+<div id="messages"></div>
+<script type="text/javascript" th:inline="javascript">
+
+    /*<![CDATA[*/
+    var account= /*[[${account}]]*/ "" ;
+    var chatroom = /*[[${chatroom}]]*/ "" ;
+    var nickname =  /*[[${nickname}]]*/ "" ;
+    var anchor = /*[[${anchor}]]*/ "" ;
+    /*]]>*/
+    if(anchor == "" || anchor == null) {
+        var webSocket =
+            new WebSocket("ws://localhost:8080/chat?account="+account+"&chatroom="+chatroom+"&nickname="+nickname) ;
+    } else {
+
+        var webSocket =
+            new WebSocket("ws://localhost:8080/chat?account="+account+"&chatroom="+chatroom+"&nickname="+nickname+"&anchor=1") ;
+    }
+
+    webSocket.onerror = function(event) {
+        onError(event)
+    };
+
+    webSocket.onclose = function (event) {
+        webSocket.close() ;
+        document.getElementById('messages').innerHTML
+            += '<br />' + "已关闭连接";
+    }
+
+    webSocket.onopen = function(event) {
+        onOpen(event)
+    };
+
+    webSocket.onmessage = function(event) {
+        onMessage(event)
+    };
+
+    function onMessage(event) {
+        document.getElementById('messages').innerHTML
+            += '<br />' + event.data;
+    }
+
+    function onOpen(event) {
+        document.getElementById('messages').innerHTML
+            = 'Connection established';
+    }
+
+    function onError(event) {
+        alert(event.data);
+    }
+
+    function  sendMessage() {
+        var json = {
+            fromChatRoomNum: document.getElementById('chatRoom').value,
+            destination: document.getElementById('mudi').value,
+            account: document.getElementById('account').value,
+            nickname: document.getElementById('nickname').value,
+            content: document.getElementById('content').value,
+            messageType: document.getElementById('messageType').value,
+        }
+        webSocket.send(JSON.stringify(json)) ;
+    }
+
+    function close() {
+        webSocket.close() ;
+        document.getElementById('messages').innerHTML
+            += '<br />' + "已关闭连接";
+    }
+</script>
+</body>
+</html>
