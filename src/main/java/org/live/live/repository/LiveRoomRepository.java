@@ -99,5 +99,15 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
             +"lr.liveFlag) from LiveRoom lr where lr.banLiveFlag=false and lr.liveCategory.enabled=true and lr.liveCategory.id=:categoryId order by lr.liveFlag desc, lr.onlineCount desc")
     List<AppLiveRoomVo> findLiveRoomsForAppByCategory(@Param("categoryId") String categoryId) ;
 
+    /**
+     * 移动端搜索直播间
+     * @param searchStr
+     * @return
+     */
+    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.onlineCount, "
+            +"lr.liveFlag) from LiveRoom lr where lr.banLiveFlag=false and lr.liveCategory.enabled=true and "
+            +"(lr.roomNum like %:searchStr% or lr.roomName like %:searchStr% or lr.anchor.user.account like %:searchStr% or lr.anchor.user.nickname like %:searchStr%) order by lr.liveFlag desc, lr.onlineCount desc")
+    List<AppLiveRoomVo> findLiveRoomsForAppSearch(@Param("searchStr")String searchStr) ;
+
 
 }

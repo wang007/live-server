@@ -97,7 +97,7 @@ public class LiveRoomController {
            String account = liveRoom.getAnchor().getUser().getAccount() ;
            service.changeLiveRoomBanFlag(liveRoomId, liveRoomBanFlag) ;
            if(liveRoomBanFlag) {    //禁播
-                PushInterface.getInstance().pushToSingle(account, "高校直播", "您被禁播了！") ;
+                PushInterface.getInstance().pushToSingle(account, "高校直播", "您被禁播了,暂时不能直播了！") ;
             } else {
                 PushInterface.getInstance().pushToSingle(account, "高校直播", "您被解除禁播，可以进行直播了！") ;
             }

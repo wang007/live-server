@@ -110,6 +110,11 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
         return attentionRepository.findAttentionLiveRoomsForUser(userId) ;
     }
 
+    @Override
+    public List<AppLiveRoomVo> findLiveRoomsForAppSearch(String searchStr) {
+        return repository.findLiveRoomsForAppSearch(searchStr) ;
+    }
+
 
     /**
      * 主播上线了
