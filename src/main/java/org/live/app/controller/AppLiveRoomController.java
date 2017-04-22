@@ -95,5 +95,28 @@ public class AppLiveRoomController {
         return model ;
     }
 
+    /**
+     * 搜索直播间
+     * @param searchStr 搜索条件
+     * @return
+     */
+    @RequestMapping(value="/liveroom/search", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> searchLiveRooms(String searchStr) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            if(searchStr == null) {
+                searchStr = "" ;
+            }
+            List<AppLiveRoomVo> liveRoomVos = liveRoomService.findLiveRoomsForAppSearch(searchStr);
+            model.setData(liveRoomVos) ;
+            model.success() ;
+        } catch (Exception e) {
+           LOGGER.error(e.getMessage(), e) ;
+           model.error("服务器繁忙！") ;
+        }
+        return model ;
+    }
+
 
 }

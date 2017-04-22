@@ -9,7 +9,6 @@ import org.live.live.vo.LiveRoomInfoVo;
 import org.live.live.vo.LiveRoomVo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -76,4 +75,11 @@ public interface LiveRoomService extends BaseService<LiveRoom, String> {
      * @return
      */
     List<AppLiveRoomVo> findAttentionLiveRoomsForUser(String userId) ;
+
+    /**
+     * 移动端搜索直播间
+     * @param searchStr
+     * @return
+     */
+    List<AppLiveRoomVo> findLiveRoomsForAppSearch(String searchStr) ;
 }
