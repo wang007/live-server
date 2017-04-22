@@ -2,18 +2,28 @@ package org.live.app.controller;
 
 import org.live.app.vo.AppLiveRoomVo;
 import org.live.app.vo.LiveCategoryVo;
+import org.live.common.constants.Constants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
+import org.live.common.support.UploadFilePathConfig;
+import org.live.common.utils.CreateOrderNoUtils;
+import org.live.common.utils.UploadUtils;
+import org.live.live.entity.Anchor;
+import org.live.live.entity.LiveRoom;
+import org.live.live.service.AnchorService;
 import org.live.live.service.LiveCategoryService;
 import org.live.live.service.LiveRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -26,12 +36,17 @@ public class AppLiveRoomController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppLiveRoomController.class) ;
 
-
     @Resource
     private LiveCategoryService categoryService ;
 
     @Resource
     private LiveRoomService liveRoomService ;
+
+    @Resource
+    private AnchorService anchorService ;
+
+    @Resource
+    private UploadFilePathConfig pathConfig;
 
     /**
      * 获取直播分类
@@ -114,6 +129,79 @@ public class AppLiveRoomController {
         } catch (Exception e) {
            LOGGER.error(e.getMessage(), e) ;
            model.error("服务器繁忙！") ;
+        }
+        return model ;
+    }
+
+    /**
+     * 更改直播间的封面
+     * @param file
+     * @param liveRoomId 直播间id
+     * @return
+     */
+    @RequestMapping(value="/liveroom/cover/{liveRoomId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseModel<Object> updateLiveRoomCover(MultipartFile file, @PathVariable String liveRoomId) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            if(file == null) return model.error() ;
+            LiveRoom liveRoom = liveRoomService.get(liveRoomId);
+            if(liveRoom == null) return model.error() ;
+            String coverUrl = liveRoom.getCoverUrl();
+            if(!Constants.DEFAULT_HEAD_IMG_URL.equals(coverUrl)) { //不等于默认封面
+                File oldFile = new File(pathConfig.getUploadFileRootPath() , coverUrl) ;
+                if(oldFile.exists()) oldFile.delete() ; //删除之前的封面
+            }
+            String fileSuffix = UploadUtils.getFileSuffix(file.getOriginalFilename()); //文件后缀
+
+            //路径： 相对于项目的 /projectDir/upload/系统日期/系统时间+6位随机数.xxx
+            String dateStr = CreateOrderNoUtils.getDate();
+            String fileName = CreateOrderNoUtils.getCreateOrderNo() + fileSuffix;
+
+            String targetPathSuffix = dateStr + File.separator + fileName;
+
+            File targetFile = UploadUtils.createFile(pathConfig.getUploadFilePath(), targetPathSuffix);
+            file.transferTo(targetFile);
+            liveRoom.setCoverUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr + "/" + fileName) ;
+            liveRoomService.save(liveRoom) ;
+            model.success() ;
+        } catch (Exception e) {
+           LOGGER.error(e.getMessage(), e) ;
+           model.error() ;
+        }
+        return model ;
+    }
+
+    /**
+     * 修改直播间的信息
+     * @param liveRoomId 直播间id
+     * @param roomName 直播间名
+     * @param description 个性签名
+     * @return
+     */
+    @RequestMapping(value = "/liveroom/{liveRoomId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseModel<Object> updateLiveRooms(@PathVariable String liveRoomId, String roomName, String description) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            LiveRoom liveRoom = liveRoomService.get(liveRoomId) ;
+            if(liveRoom == null) return model.error() ;
+            if(roomName != null) {  //修改房间名
+                liveRoom.setRoomName(roomName) ;
+                liveRoomService.save(liveRoom) ;
+                return model.success() ;
+            }
+            if(description != null) {
+                Anchor anchor = liveRoom.getAnchor() ;
+                if(anchor == null) return model.error() ;
+                anchor.setDescription(description) ;
+                anchorService.save(anchor) ;
+                return model.success() ;
+            }
+            model.error() ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error() ;
         }
         return model ;
     }

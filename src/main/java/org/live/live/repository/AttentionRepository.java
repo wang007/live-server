@@ -28,7 +28,7 @@ public interface AttentionRepository extends BaseRepository<Attention, String> {
      * @return
      */
     @Query("select new org.live.app.vo.AppLiveRoomVo(a.liveRoom.id, a.liveRoom.roomNum, a.liveRoom.coverUrl, a.liveRoom.liveRoomUrl, " +
-            "a.liveRoom.roomName, a.liveRoom.anchor.user.nickname, a.liveRoom.onlineCount, a.liveRoom.liveFlag) from Attention a " +
+            "a.liveRoom.roomName, a.liveRoom.anchor.user.nickname, a.liveRoom.anchor.user.headImgUrl, a.liveRoom.onlineCount, a.liveRoom.liveFlag) from Attention a " +
             "where a.liveRoom.banLiveFlag=false and a.liveRoom.liveCategory.enabled=true and a.user.id=:userId order by a.liveRoom.liveFlag desc, a.liveRoom.onlineCount desc")
     List<AppLiveRoomVo> findAttentionLiveRoomsForUser(@Param("userId")String userId) ;
 

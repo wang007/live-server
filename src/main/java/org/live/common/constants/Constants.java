@@ -58,7 +58,10 @@ public interface Constants {
 	 * 默认头像地址
 	 */
 	public static final String DEFAULT_HEAD_IMG_URL = "/static/images/common/user.png" ;
-	
 
+	/**
+	 * 默认房间封面
+	 */
+	public static final String DEFAULT_LIVE_ROOM_COVER_URL = "/static/images/common/liveRoomCover.png" ;
 
 }

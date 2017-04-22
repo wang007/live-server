@@ -3,6 +3,7 @@ package org.live.live.service.impl;
 import org.live.app.vo.ApplyAnchorVo;
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
+import org.live.common.constants.Constants;
 import org.live.common.getui.PushInterface;
 import org.live.common.response.DataTableModel;
 import org.live.common.utils.DataTableUtils;
@@ -105,7 +106,7 @@ public class ApplyAnchorServiceImpl extends BaseServiceImpl<ApplyAnchor, String>
             applyAnchor.setPassFlag(ApplyAnchor.ADUIT_NOT_PASS) ;
             applyAnchor.setNoPassReason(reason) ;
             repository.save(applyAnchor) ;
-            PushInterface.getInstance().pushToSingle(applyAnchor.getUser().getAccount(), "高校直播", "您的主播申请审核未通过！") ;
+            PushInterface.getInstance().pushToSingle(applyAnchor.getUser().getAccount(), "高校直播", "您的主播申请审核未通过，"+reason) ;
             return ;
         } else if(passFlag == 1) {  //审核通过
             applyAnchor.setPassFlag(ApplyAnchor.ADUIT_PASS) ;
@@ -133,8 +134,9 @@ public class ApplyAnchorServiceImpl extends BaseServiceImpl<ApplyAnchor, String>
             liveRoom.setAnchor(anchor) ;    //主播
             liveRoom.setLiveCategory(applyAnchor.getCategory()) ;   //直播分类
             liveRoom.setRoomNum(mobileUser.getAccount()) ;  //直播间号等于账号，没毛病
-            //TODO 这里直播间封面跟直播间名怎么处理
             liveRoom.setLiveRoomUrl(rtmpAddrPrefix + mobileUser.getAccount()) ;
+            liveRoom.setCoverUrl(Constants.DEFAULT_LIVE_ROOM_COVER_URL) ;
+            liveRoom.setRoomName(mobileUser.getNickname() + "的房间") ;
 
             repository.save(applyAnchor) ;
             mobileUserRepository.save(mobileUser) ;
