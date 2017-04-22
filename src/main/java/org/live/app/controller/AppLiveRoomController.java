@@ -10,6 +10,8 @@ import org.live.common.utils.CreateOrderNoUtils;
 import org.live.common.utils.UploadUtils;
 import org.live.live.entity.Anchor;
 import org.live.live.entity.LiveRoom;
+import org.live.live.repository.AnchorLimitationRepository;
+import org.live.live.service.AnchorLimitationService;
 import org.live.live.service.AnchorService;
 import org.live.live.service.LiveCategoryService;
 import org.live.live.service.LiveRoomService;
@@ -44,6 +46,9 @@ public class AppLiveRoomController {
 
     @Resource
     private AnchorService anchorService ;
+
+    @Resource
+    private AnchorLimitationService anchorLimitationService ;
 
     @Resource
     private UploadFilePathConfig pathConfig;
@@ -199,6 +204,27 @@ public class AppLiveRoomController {
                 return model.success() ;
             }
             model.error() ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error() ;
+        }
+        return model ;
+    }
+
+    /**
+     *  查询直播间的限制
+     * @param userId
+     * @param liveRoomId
+     * @return
+     */
+    @RequestMapping(value = "/liveroom/limit", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> findLiveRomLimited(String userId, String liveRoomId) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            List<Integer> limitations = anchorLimitationService.findLimitations(userId, liveRoomId);
+            model.setData(limitations) ;
+            model.success() ;
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e) ;
             model.error() ;
