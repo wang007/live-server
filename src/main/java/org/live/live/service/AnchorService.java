@@ -1,5 +1,6 @@
 package org.live.live.service;
 
+import org.live.app.vo.AppAnchorInfo;
 import org.live.common.base.BaseService;
 import org.live.live.entity.Anchor;
 import org.live.live.entity.MobileUser;
@@ -36,5 +37,15 @@ public interface AnchorService extends BaseService<Anchor, String> {
      * @return
      */
     Anchor findAnchorByUser(MobileUser user) ;
+
+    /**
+     * 查询一些主播信息，for 移动端用户
+     * @param userId
+     * @param liveRoomId
+     * @return
+     */
+    AppAnchorInfo findAnchorForAppUser(String userId, String liveRoomId) ;
+
+
 
 }

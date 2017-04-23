@@ -32,4 +32,19 @@ public interface AttentionRepository extends BaseRepository<Attention, String> {
             "where a.liveRoom.banLiveFlag=false and a.liveRoom.liveCategory.enabled=true and a.user.id=:userId order by a.liveRoom.liveFlag desc, a.liveRoom.onlineCount desc")
     List<AppLiveRoomVo> findAttentionLiveRoomsForUser(@Param("userId")String userId) ;
 
+    /**
+     * 统计直播间的关注数
+     * @param liveRoomId
+     * @return
+     */
+    long countAttentionsByLiveRoom_Id(String liveRoomId) ;
+
+    /**
+     * 查看用户与主播的关注
+     * @param userId
+     * @param liveRoomId
+     * @return
+     */
+    List<Attention> findAttentionsByUser_IdAndLiveRoom_Id(String userId, String liveRoomId) ;
+
 }

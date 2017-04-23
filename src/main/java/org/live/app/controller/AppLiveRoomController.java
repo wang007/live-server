@@ -1,5 +1,6 @@
 package org.live.app.controller;
 
+import org.live.app.vo.AppAnchorInfo;
 import org.live.app.vo.AppLiveRoomVo;
 import org.live.app.vo.LiveCategoryVo;
 import org.live.common.constants.Constants;
@@ -232,6 +233,8 @@ public class AppLiveRoomController {
         }
         return model ;
     }
+
+
 
 
 }

@@ -3,6 +3,7 @@ package org.live.app.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.tomcat.util.bcel.Const;
+import org.live.app.vo.AppAnchorInfo;
 import org.live.app.vo.ApplyAnchorVo;
 import org.live.app.vo.LiveCategoryVo;
 import org.live.app.vo.MobileUserVo;
@@ -109,32 +110,10 @@ public class AppLiveController {
             if (mobileUser.isAnchorFlag()) {  //当前用户是主播, 封装主播的信息
                 LiveRoom liveRoom = liveRoomService.findLiveRoomByMobileUser(mobileUser);
                 if (liveRoom != null) {
-                    MobileUserVo.LiveRoomInUserVo liveRoomVo = userVo.newInstantLiveRoomVo();
-                    liveRoomVo.setCategoryId(liveRoom.getLiveCategory().getId());
-                    liveRoomVo.setCategoryName(liveRoom.getLiveCategory().getCategoryName());
-                    liveRoomVo.setDescription(liveRoom.getAnchor().getDescription());
-                    liveRoomVo.setRoomCoverUrl(liveRoom.getCoverUrl());
-                    liveRoomVo.setRoomId(liveRoom.getId());
-                    liveRoomVo.setRoomLabel(liveRoom.getRoomLabel());
-                    liveRoomVo.setRoomName(liveRoom.getRoomName());
-
-                    liveRoomVo.setRoomNum(liveRoom.getRoomNum());
-                    liveRoomVo.setBanLiveFlag(liveRoom.isBanLiveFlag());
-                    liveRoomVo.setLiveRoomUrl(liveRoom.getLiveRoomUrl());
-                    userVo.setLiveRoomVo(liveRoomVo);
+                    copyLiveRoomInfoToUserVo(liveRoom, userVo) ;
                 }
             }
-            userVo.setUserId(mobileUser.getId());
-            userVo.setAccount(account);
-            userVo.setPassword(password);
-            userVo.setAnchorFlag(mobileUser.isAnchorFlag());    //主播标记
-            userVo.setBirthday(mobileUser.getMember().getBirthday());
-            userVo.setEmail(mobileUser.getEmail());
-            userVo.setHeadImgUrl(mobileUser.getHeadImgUrl());
-            userVo.setMobileNumber(mobileUser.getMobileNumber());
-            userVo.setNickname(mobileUser.getNickname());
-            userVo.setRealName(mobileUser.getMember().getRealName());
-            userVo.setSex(mobileUser.getMember().getSex());
+            copyUserInfoToUserVo(mobileUser, userVo) ;
 
             mobileUser.setLastLoginTime(new Date());
             mobileUser.setLastLoginIp(HttpServletUtils.getIpAddr(request));
@@ -434,33 +413,10 @@ public class AppLiveController {
             if (mobileUser.isAnchorFlag()) {  //当前用户是主播, 封装主播的信息
                 LiveRoom liveRoom = liveRoomService.findLiveRoomByMobileUser(mobileUser);
                 if (liveRoom != null) {
-                    MobileUserVo.LiveRoomInUserVo liveRoomVo = userVo.newInstantLiveRoomVo();
-                    liveRoomVo.setCategoryId(liveRoom.getLiveCategory().getId());
-                    liveRoomVo.setCategoryName(liveRoom.getLiveCategory().getCategoryName());
-                    liveRoomVo.setDescription(liveRoom.getAnchor().getDescription());
-                    liveRoomVo.setRoomCoverUrl(liveRoom.getCoverUrl());
-                    liveRoomVo.setRoomId(liveRoom.getId());
-                    liveRoomVo.setRoomLabel(liveRoom.getRoomLabel());
-                    liveRoomVo.setRoomName(liveRoom.getRoomName());
-
-                    liveRoomVo.setRoomNum(liveRoom.getRoomNum());
-                    liveRoomVo.setBanLiveFlag(liveRoom.isBanLiveFlag());
-                    liveRoomVo.setLiveRoomUrl(liveRoom.getLiveRoomUrl());
-                    userVo.setLiveRoomVo(liveRoomVo);
+                    copyLiveRoomInfoToUserVo(liveRoom, userVo) ;
                 }
             }
-            userVo.setUserId(mobileUser.getId());
-            userVo.setAccount(mobileUser.getAccount());
-            userVo.setPassword(mobileUser.getPassword());
-            userVo.setAnchorFlag(mobileUser.isAnchorFlag());    //主播标记
-            userVo.setBirthday(mobileUser.getMember().getBirthday());
-            userVo.setEmail(mobileUser.getEmail());
-            userVo.setHeadImgUrl(mobileUser.getHeadImgUrl());
-            userVo.setMobileNumber(mobileUser.getMobileNumber());
-            userVo.setNickname(mobileUser.getNickname());
-            userVo.setRealName(mobileUser.getMember().getRealName());
-            userVo.setSex(mobileUser.getMember().getSex());
-
+            copyUserInfoToUserVo(mobileUser, userVo) ;
             model.success();
             model.setData(userVo);
         } catch (Exception e) {
@@ -468,6 +424,69 @@ public class AppLiveController {
             model.setMessage(e.getMessage());
         }
         return model;
+    }
+
+    /**
+     *  用户查看主播直播间的信息
+     * @param userId 用户id
+     * @param liveRoomId 直播间id
+     * @return
+     */
+    @RequestMapping(value = "/anchorInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> userLookupAnchor(String userId, String liveRoomId) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            AppAnchorInfo info = anchorService.findAnchorForAppUser(userId, liveRoomId) ;
+            model.setData(info) ;
+            model.success() ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error("查询失败！") ;
+        }
+        return model ;
+    }
+
+
+
+    /**
+     * 直播间的信息复制到MobileUserVo中
+     * @param liveRoom
+     * @param userVo
+     */
+    private void copyLiveRoomInfoToUserVo(LiveRoom liveRoom, MobileUserVo userVo) {
+        MobileUserVo.LiveRoomInUserVo liveRoomVo = userVo.newInstantLiveRoomVo();
+        liveRoomVo.setCategoryId(liveRoom.getLiveCategory().getId());
+        liveRoomVo.setCategoryName(liveRoom.getLiveCategory().getCategoryName());
+        liveRoomVo.setDescription(liveRoom.getAnchor().getDescription());
+        liveRoomVo.setRoomCoverUrl(liveRoom.getCoverUrl());
+        liveRoomVo.setRoomId(liveRoom.getId());
+        liveRoomVo.setRoomLabel(liveRoom.getRoomLabel());
+        liveRoomVo.setRoomName(liveRoom.getRoomName());
+
+        liveRoomVo.setRoomNum(liveRoom.getRoomNum());
+        liveRoomVo.setBanLiveFlag(liveRoom.isBanLiveFlag());
+        liveRoomVo.setLiveRoomUrl(liveRoom.getLiveRoomUrl());
+        userVo.setLiveRoomVo(liveRoomVo);
+    }
+
+    /**
+     * 将移动端用户的信息copy到mobileUserVo中
+     * @param mobileUser
+     * @param userVo
+     */
+    private void copyUserInfoToUserVo(MobileUser mobileUser, MobileUserVo userVo) {
+        userVo.setUserId(mobileUser.getId());
+        userVo.setAccount(mobileUser.getAccount());
+        userVo.setPassword(mobileUser.getPassword());
+        userVo.setAnchorFlag(mobileUser.isAnchorFlag());    //主播标记
+        userVo.setBirthday(mobileUser.getMember().getBirthday());
+        userVo.setEmail(mobileUser.getEmail());
+        userVo.setHeadImgUrl(mobileUser.getHeadImgUrl());
+        userVo.setMobileNumber(mobileUser.getMobileNumber());
+        userVo.setNickname(mobileUser.getNickname());
+        userVo.setRealName(mobileUser.getMember().getRealName());
+        userVo.setSex(mobileUser.getMember().getSex());
     }
 
 }
