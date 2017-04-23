@@ -120,7 +120,7 @@ public class AppLiveRoomController {
      * @param searchStr 搜索条件
      * @return
      */
-    @RequestMapping(value="/liveroom/search", method = RequestMethod.GET)
+    @RequestMapping(value="/liveroom/search", method = RequestMethod.POST)
     @ResponseBody
     public ResponseModel<Object> searchLiveRooms(String searchStr) {
         ResponseModel<Object> model = new SimpleResponseModel<>() ;
@@ -169,7 +169,8 @@ public class AppLiveRoomController {
             file.transferTo(targetFile);
             liveRoom.setCoverUrl(pathConfig.getUploadFilePathPrefix() + "/" + dateStr + "/" + fileName) ;
             liveRoomService.save(liveRoom) ;
-            model.success() ;
+            model.setData(liveRoom.getCoverUrl()) ;
+            model.success("设置成功！") ;
         } catch (Exception e) {
            LOGGER.error(e.getMessage(), e) ;
            model.error() ;
