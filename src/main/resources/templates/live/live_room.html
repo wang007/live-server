@@ -304,6 +304,7 @@
             return ;
         }
         $("#id_test_video").empty() ;    //先清除之前的播放器
+        console.log("直播地址：--->"+ liveRoomUrl) ;
         //播放器
         var  player = new TcPlayer('id_test_video', {
             "rtmp": liveRoomUrl ,
@@ -431,7 +432,7 @@
                         }
                         $(".liveroomInfo-hold").empty();    //先清空直播间信息
                         $.each(data.rows, function(index, row){
-                            var playFlag = row.liveFlag && row.banLiveFlag ;    //能否播放的标志
+                            var playFlag = row.liveFlag && !row.banLiveFlag ;    //能否播放的标志
                             var liveStatusTemplate ;    //显示直播状态的模板
                             var banLiveTemplate ;   //更改播放状态的模板
                             if(row.banLiveFlag) {   //禁播
