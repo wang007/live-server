@@ -129,11 +129,13 @@ public class ApplyAnchorServiceImpl extends BaseServiceImpl<ApplyAnchor, String>
             anchor.setCreateTime(new Date()) ;
             anchor.setRealName(applyAnchor.getRealName()) ;
             anchor.setIdCard(applyAnchor.getIdCard()) ;
+            anchor.setDescription("") ;
 
             LiveRoom liveRoom = new LiveRoom() ;    //直播间
             liveRoom.setAnchor(anchor) ;    //主播
             liveRoom.setLiveCategory(applyAnchor.getCategory()) ;   //直播分类
             liveRoom.setRoomNum(mobileUser.getAccount()) ;  //直播间号等于账号，没毛病
+            liveRoom.setRoomLabel("") ;
             liveRoom.setLiveRoomUrl(rtmpAddrPrefix + mobileUser.getAccount()) ;
             liveRoom.setCoverUrl(Constants.DEFAULT_LIVE_ROOM_COVER_URL) ;
             liveRoom.setRoomName(mobileUser.getNickname() + "的房间") ;
