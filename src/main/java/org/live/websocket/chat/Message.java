@@ -5,6 +5,9 @@ package org.live.websocket.chat;
  *
  *  消息事件类型参考 {@link MessageType}
  *
+ *  消息的理解：禁言，踢出，解除禁言，解除踢出等，发这些类型的消息时，理解为用户被动的发这些消息。
+ *  即account，nickname字段是用户的， 而不是主播的
+ *
  * Created by Mr.wang on 2017/3/17.
  */
 public class Message {

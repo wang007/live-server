@@ -94,10 +94,12 @@ public class ChatHallImpl implements ChatHall {
                     specialMessage.setMessageType(MessageType.SHUTUP_USER_MESSAGE_TYPE) ;
                     specialMessage.setDestination(userAccount) ;
                     chatRoom.sendMessageToUser(specialMessage) ;
+                }
 
                     //再把禁言这事，广播到这个直播间。
                     //获取昵称
-                    String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY) ;
+                    //String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY) ;
+                    String nickname = message.getNickname() ;
                     Message broadcastMessage = new Message() ;
                     broadcastMessage.setFromChatRoomNum(chatRoomNum) ;
                     broadcastMessage.setDestination(chatRoomNum) ;
@@ -107,13 +109,13 @@ public class ChatHallImpl implements ChatHall {
                     broadcastMessage.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
                     broadcastMessage.setExtra(userAccount) ;   //用户账号 存在extra中，方便移动端获取账号
                     chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;   //广播到直播间，
-                }
+
                 break ;
             }
 
             //解除禁言，如果用户在线就告诉他。 不用广播到直播间中
             case MessageType.RELIEVE_SHUTUP_USER_MESSAGE_TYPE: {    //主播解除禁言
-                String userAccount = message.getContent() ;
+                String userAccount = message.getContent() ; //用户的账号
                 WebSocketSession session = chatRoom.getSessionByAccount(userAccount) ;
                 if(session != null) {
                     //获取昵称
@@ -122,6 +124,21 @@ public class ChatHallImpl implements ChatHall {
                     message.setContent(nickname) ;
                     chatRoom.sendMessageToUser(message) ;
                 }
+                String anchorAccount = chatRoom.getanchorAccount();//获取主播的账号
+                WebSocketSession anchorSession = chatRoom.getSessionByAccount(anchorAccount);
+                if(anchorSession != null) {
+                    //发消息给主播
+                    Message anchorMessage = new Message() ;
+                    message.setFromChatRoomNum(chatRoomNum) ;
+                    message.setAccount(ChatConstants.SYSTEM_NUM) ;      //系统消息的标记
+                    message.setNickname(message.getNickname()) ;    //被解除用户的昵称
+                    message.setContent(message.getNickname() + " 被解除禁言") ;
+                    message.setExtra(userAccount) ; //被解除用户的账号
+                    message.setDestination(anchorAccount) ;     //消息目的地是主播一人
+                    message.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
+                    chatRoom.sendMessageToUser(anchorMessage) ;
+                }
+
                 break ;
             }
 
@@ -159,10 +176,11 @@ public class ChatHallImpl implements ChatHall {
                     //把这个session从chatRoom中移除， 先存标记，afterConnectionClosed方法中判断要不要做处理。
                     session.getAttributes().put(ChatConstants.USER_PASSIVE_EXIT_FLAG_WEBSOCKET_SESSION_KEY, ChatConstants.FLAG_DELEGATE_VALUE) ;
                     removeWebSocketSessionToChatRoom(session) ;
-
+                }
                     //广播踢出用户消息
                     //获取昵称
-                    String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY);
+                    //String nickname  = (String) session.getAttributes().get(ChatConstants.NICKNAME_IN_WEBSOCKET_SESSION_KEY);
+                    String nickname = message.getNickname() ;
                     Message broadcastMessage = new Message() ;
                     broadcastMessage.setAccount(ChatConstants.SYSTEM_NUM) ;
                     broadcastMessage.setNickname(nickname) ;
@@ -171,7 +189,7 @@ public class ChatHallImpl implements ChatHall {
                     broadcastMessage.setMessageType(MessageType.SEND_TO_CHATROOM_MESSAGE_TYPE) ;
                     broadcastMessage.setExtra(userAccount) ;   //用户账号 存在extra中，方便移动端获取账号
                     chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;
-                }
+
                 break ;
             }
 
@@ -185,6 +203,14 @@ public class ChatHallImpl implements ChatHall {
                     message.setContent(nickname) ;
                     chatRoom.sendMessageToCurrentChatRoom(message) ;
                 }*/
+                String userAccount = message.getContent() ;     //解除踢出的用户
+                String anchorAccount = chatRoom.getanchorAccount()  ;   //主播的账号
+                WebSocketSession anchorSession = chatRoom.getSessionByAccount(anchorAccount) ;
+                if(anchorSession != null) {
+                    Message anchorMessage = new Message() ;
+                    anchorMessage.setAccount(ChatConstants.SYSTEM_NUM) ;    //消息
+                }
+
                 break ;
             }
 
