@@ -28,4 +28,9 @@ public class AnchorLimitationServiceImpl extends BaseServiceImpl<AnchorLimitatio
     public List<Integer> findLimitations(String userId, String liveRoomId) {
         return repository.findAnchorLimitations(userId, liveRoomId) ;
     }
+
+    @Override
+    public List<AnchorLimitation> findLimitationsForLiveRoom(String liveRoomId) {
+        return repository.findLimitationsForLiveRoom(liveRoomId) ;
+    }
 }

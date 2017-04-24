@@ -10,6 +10,7 @@ import org.live.common.support.UploadFilePathConfig;
 import org.live.common.utils.CreateOrderNoUtils;
 import org.live.common.utils.UploadUtils;
 import org.live.live.entity.Anchor;
+import org.live.live.entity.AnchorLimitation;
 import org.live.live.entity.LiveRoom;
 import org.live.live.repository.AnchorLimitationRepository;
 import org.live.live.service.AnchorLimitationService;
@@ -221,7 +222,7 @@ public class AppLiveRoomController {
      */
     @RequestMapping(value = "/liveroom/limit", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseModel<Object> findLiveRomLimited(String userId, String liveRoomId) {
+    public ResponseModel<Object> findLiveRoomLimited(String userId, String liveRoomId) {
         ResponseModel<Object> model = new SimpleResponseModel<>() ;
         try {
             List<Integer> limitations = anchorLimitationService.findLimitations(userId, liveRoomId);
@@ -230,6 +231,26 @@ public class AppLiveRoomController {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e) ;
             model.error() ;
+        }
+        return model ;
+    }
+
+    /**
+     * 查询某个直播间的所有限制用户
+     * @param liveRoomId
+     * @return
+     */
+    @RequestMapping(value = "/liveroom/limits", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> findLimitatioinForLiveRoom(String liveRoomId) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            List<AnchorLimitation> limitationList = anchorLimitationService.findLimitationsForLiveRoom(liveRoomId);
+            model.setData(limitationList) ;
+            model.success() ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error("查询失败！") ;
         }
         return model ;
     }

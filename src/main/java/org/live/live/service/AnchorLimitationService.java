@@ -19,4 +19,11 @@ public interface AnchorLimitationService extends BaseService<AnchorLimitation, S
      */
     List<Integer> findLimitations(String userId, String liveRoomId) ;
 
+    /**
+     * 查询被直播间限制的所有用户
+     * @param liveRoomId
+     * @return
+     */
+    List<AnchorLimitation> findLimitationsForLiveRoom(String liveRoomId) ;
+
 }

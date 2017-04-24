@@ -29,4 +29,15 @@ public interface AnchorLimitationRepository extends BaseRepository<AnchorLimitat
     @Query("select distinct al.limitType from AnchorLimitation al where al.user.id=:userId and al.liveRoom.id=:liveRoomId")
     List<Integer> findAnchorLimitations(@Param("userId") String userId, @Param("liveRoomId") String liveRoomId) ;
 
+    /**
+     * 查询被直播间限制的所有用户
+     * @param liveRoomId
+     * @return
+     */
+    @Query("select distinct new org.live.app.vo.LimitationVo(al.user.id, al.user.account, al.user.nickname, al.liveRoom.id, "
+            + "al.liveRoom.roomNum, al.liveRoom.roomName, al.limitType) from AnchorLimitation al where al.liveRoom.id=:liveRoomId "
+            + "order by al.createTime DESC")
+    List<AnchorLimitation> findLimitationsForLiveRoom(@Param("liveRoomId") String liveRoomId) ;
+
+
 }
