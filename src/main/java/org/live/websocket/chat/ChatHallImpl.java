@@ -105,7 +105,7 @@ public class ChatHallImpl implements ChatHall {
                     broadcastMessage.setDestination(chatRoomNum) ;
                     broadcastMessage.setAccount(userAccount) ;  //用户账号
                     broadcastMessage.setNickname(nickname) ;
-                    broadcastMessage.setContent(nickname+" 被禁言了") ;
+                    broadcastMessage.setContent(nickname+" 被禁言") ;
                     broadcastMessage.setMessageType(MessageType.SYSTEM_MESSAGE_TYPE) ;
                     chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;   //广播到直播间，
 
@@ -123,6 +123,7 @@ public class ChatHallImpl implements ChatHall {
                     message.setContent(message.getNickname() + "被解除禁言") ;
                     chatRoom.sendMessageToUser(message) ;
                 }
+
                 String anchorAccount = chatRoom.getanchorAccount();//获取主播的账号
                 WebSocketSession anchorSession = chatRoom.getSessionByAccount(anchorAccount);
                 if(anchorSession != null) {
