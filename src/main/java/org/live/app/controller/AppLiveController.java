@@ -3,10 +3,7 @@ package org.live.app.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.tomcat.util.bcel.Const;
-import org.live.app.vo.AppAnchorInfo;
-import org.live.app.vo.ApplyAnchorVo;
-import org.live.app.vo.LiveCategoryVo;
-import org.live.app.vo.MobileUserVo;
+import org.live.app.vo.*;
 import org.live.common.constants.Constants;
 import org.live.common.response.ResponseModel;
 import org.live.common.response.SimpleResponseModel;
@@ -443,6 +440,46 @@ public class AppLiveController {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e) ;
             model.error("查询失败！") ;
+        }
+        return model ;
+    }
+
+    /**
+     * 查询简易的用户信息
+     * @param account
+     * @return
+     */
+    @RequestMapping(value = "/simpleUser", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> getSimpleUser(String account) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            SimpleUserVo simpleUserVo = mobileUserService.findMobileUserByAccountWithSimple(account);
+            model.setData(simpleUserVo) ;
+            model.success() ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error() ;
+        }
+        return model ;
+    }
+
+    /**
+     * 用户举报直播间
+     * @param userId
+     * @param liveRoomId
+     * @return
+     */
+    @RequestMapping(value = "/report", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseModel<Object> reportLiveRoom(String userId, String liveRoomId) {
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            liveRoomService.reportLiveRoom(userId, liveRoomId) ;
+            model.success() ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error() ;
         }
         return model ;
     }

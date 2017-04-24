@@ -1,5 +1,6 @@
 package org.live.live.service;
 
+import org.live.app.vo.SimpleUserVo;
 import org.live.common.base.BaseService;
 import org.live.common.response.DataTableModel;
 import org.live.live.entity.LiveRoom;
@@ -31,5 +32,12 @@ public interface MobileUserService extends BaseService<MobileUser, String> {
      * @param liveRoom
      */
     void attentionLiveRoom(MobileUser user, LiveRoom liveRoom) ;
+
+    /**
+     * 根据用户信息，简易的
+     * @param account
+     * @return
+     */
+    SimpleUserVo findMobileUserByAccountWithSimple(String account) ;
 
 }

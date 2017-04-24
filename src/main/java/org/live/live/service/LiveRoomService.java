@@ -82,4 +82,12 @@ public interface LiveRoomService extends BaseService<LiveRoom, String> {
      * @return
      */
     List<AppLiveRoomVo> findLiveRoomsForAppSearch(String searchStr) ;
+
+    /**
+     * 用户举报直播间
+     * @param userId
+     * @param liveRoomId
+     */
+    void reportLiveRoom(String userId, String liveRoomId) ;
+
 }

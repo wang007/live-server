@@ -4,6 +4,7 @@ import org.live.app.vo.AppLiveRoomVo;
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
 import org.live.common.utils.CreateOrderNoUtils;
+import org.live.common.utils.DateUtil;
 import org.live.live.entity.*;
 import org.live.live.repository.*;
 import org.live.live.service.LiveRoomService;
@@ -41,6 +42,9 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
 
     @Resource
     private LiveRecordRepository liveRecordRepository ;
+
+    @Resource
+    private ReportRepository reportRepository ;
 
     @Override
     protected BaseRepository<LiveRoom, String> getRepository() {
@@ -113,6 +117,32 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
     @Override
     public List<AppLiveRoomVo> findLiveRoomsForAppSearch(String searchStr) {
         return repository.findLiveRoomsForAppSearch(searchStr) ;
+    }
+
+    //举报默认的时间差值， 半天
+    private static final double DEFAULT_REPORT_SPAN = 0.5 ;
+    @Override
+    public void reportLiveRoom(String userId, String liveRoomId) {
+
+        Date date = new Date() ;
+        Report reportInDb = reportRepository.getRecentlyReport(userId, liveRoomId) ;    //获取最近的举报。
+        if(reportInDb != null) {
+            double timeSpan = DateUtil.differenceDay(date, reportInDb.getCreateTime()).doubleValue() ;
+            if(timeSpan < DEFAULT_REPORT_SPAN) {    //举报时间未超过默认举报时间差值。
+                return ;
+            }
+        }
+        MobileUser mobileUser = mobileUserRepository.findOne(userId) ;
+        LiveRoom liveRoom = repository.findOne(liveRoomId) ;
+        if(mobileUser != null && liveRoom != null) {
+            Report report = new Report() ;
+            report.setMobileUser(mobileUser) ;
+            report.setLiveRoom(liveRoom) ;
+            report.setReportNum(CreateOrderNoUtils.getCreateOrderNoByTime()) ;
+            report.setCreateTime(date) ;
+            reportRepository.save(report) ;
+        }
+
     }
 
 

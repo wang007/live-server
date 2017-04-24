@@ -1,5 +1,6 @@
 package org.live.live.service.impl;
 
+import org.live.app.vo.SimpleUserVo;
 import org.live.common.base.BaseRepository;
 import org.live.common.base.BaseServiceImpl;
 import org.live.common.response.DataTableModel;
@@ -79,5 +80,10 @@ public class MobileUserServiceImpl extends BaseServiceImpl<MobileUser, String> i
         attention.setCreateTime(new Date()) ;
         attentionRepository.save(attention) ;
 
+    }
+
+    @Override
+    public SimpleUserVo findMobileUserByAccountWithSimple(String account) {
+        return mobileUserRepository.findMobileUserByAccountWithSimple(account) ;
     }
 }
