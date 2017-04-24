@@ -3,6 +3,9 @@ package org.live.module.demo.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by KAM on 2017/3/28.
@@ -31,6 +34,18 @@ public class DemoController {
         System.out.println("localServerIp ---> "+ localServerIp) ;
         System.out.println("rtmpAddrPrefix --->"+ rtmpAddrPrefix) ;
         return null ;
+    }
+
+    @RequestMapping("/websocketTest")
+    public ModelAndView websocketTest(String account, String chatroom, String nickname, String anchor) {
+
+        ModelAndView mv = new ModelAndView() ;
+        mv.addObject("account", account) ;
+        mv.addObject("chatroom", chatroom) ;
+        mv.addObject("nickname", nickname) ;
+        if(anchor != null) mv.addObject("anchor", anchor) ;
+        mv.setViewName("websocket_test") ;
+        return mv ;
     }
 
 }

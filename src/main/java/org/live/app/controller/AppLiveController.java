@@ -110,7 +110,8 @@ public class AppLiveController {
                     copyLiveRoomInfoToUserVo(liveRoom, userVo) ;
                 }
             }
-            copyUserInfoToUserVo(mobileUser, userVo) ;
+            copyUserInfoToUserVo(mobileUser, userVo) ;         //copy属性时，把加密过的密码也copy进去了。
+            userVo.setPassword(password) ;
 
             mobileUser.setLastLoginTime(new Date());
             mobileUser.setLastLoginIp(HttpServletUtils.getIpAddr(request));
