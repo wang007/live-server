@@ -93,6 +93,7 @@ public class ChatHallManager {
                 message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
                 if(listener != null) listener.onRelieveKickoutUserOnChatRoom(destinations[0], destinations[1]) ;//通知调用者。 存库
                 chatHall.dispatchMessageToChatRoom(destinations[0], message);
+                break ;
             }
 
             case MessageType.USER_ATTENTION_CHATROOM: {      //用户关注直播间
@@ -101,6 +102,7 @@ public class ChatHallManager {
                 message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
                 if(listener != null) listener.onUserAttentionChatRoom(destinations[0], destinations[1]) ;
                 chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
+                break ;
             }
 
             case MessageType.RELIEVE_USER_ATTENTION_CHATROOM: {     //用户解除关注直播间
@@ -109,6 +111,7 @@ public class ChatHallManager {
                 message.setContent(destinations[1]) ;   //用户账号暂存到content中， 在chatHall获取用户账号，并重新设置message的content
                 if(listener != null) listener.onRelieveUserAttentionChatRoom(destinations[0], destinations[1]) ;
                 chatHall.dispatchMessageToChatRoom(destinations[0], message) ;
+                break ;
             }
 
             default: chatHall.dispatchMessageToChatRoom(destination, message) ; //其他消息

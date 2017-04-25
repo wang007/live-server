@@ -401,6 +401,11 @@ public class AppLiveController {
     }
 
 
+    /**
+     * 检查用户主播身份
+     * @param userId
+     * @return
+     */
     @RequestMapping(value = "/anchor", method = RequestMethod.GET)
     @ResponseBody
     public ResponseModel checkIsAnchor(@RequestParam("userId") String userId) {
