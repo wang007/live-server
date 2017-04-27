@@ -57,7 +57,7 @@ public class MessageType {
     public static final int USER_ATTENTION_CHATROOM = 9 ;
 
     /**
-     * 用户解散关注直播间
+     * 用户解除关注直播间
      */
     public static final int RELIEVE_USER_ATTENTION_CHATROOM = 10 ;
 
@@ -65,5 +65,10 @@ public class MessageType {
      * 系统消息
      */
     public static final int SYSTEM_MESSAGE_TYPE = 11 ;
+
+    /**
+     * 主播被禁播。
+     */
+    public static final int ANCHOR_BAN_LIVE_MESSAGE_TYPE = 12 ;
 
 }

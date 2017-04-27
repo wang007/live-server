@@ -15,5 +15,9 @@ public interface SystemConfigConstants {
      */
     public static final String SYSTEM_TITLE_KEY = "systemTitle" ;
 
+    /**
+     * 系统的ip地址
+     */
+    public static final String SYSTEM_IP_KEY = "systemIp" ;
 
 }

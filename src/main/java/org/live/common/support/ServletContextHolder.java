@@ -12,6 +12,8 @@ import org.springframework.web.context.ServletContextAware;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  *  获取serlvet容器
@@ -89,6 +91,14 @@ public class ServletContextHolder implements ServletContextAware {
 
         //系统标题
         servletContext.setAttribute(SystemConfigConstants.SYSTEM_TITLE_KEY, systemConfig.getTitle()) ;
+
+        try {
+            InetAddress localHost = InetAddress.getLocalHost() ;
+            servletContext.setAttribute(SystemConfigConstants.SYSTEM_IP_KEY, localHost.getHostAddress()) ;
+            LOGGER.info("本地ip地址---> "+localHost.getHostAddress()) ;
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("获取本地的ip地址异常", e) ;
+        }
 
         servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_ROOT_PATH_KEY, uploadFileRootPath) ;
         servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_PATH_PREFIX_KEY, uploadFilePrefix) ;

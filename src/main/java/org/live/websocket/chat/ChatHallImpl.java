@@ -226,7 +226,7 @@ public class ChatHallImpl implements ChatHall {
                 broadcastMessage.setAccount(userAccount) ;
                 broadcastMessage.setContent(message.getNickname() + " 关注了直播间") ;
                 broadcastMessage.setNickname(message.getNickname()) ;
-                broadcastMessage.setMessageType(MessageType.SYSTEM_MESSAGE_TYPE) ;
+                broadcastMessage.setMessageType(MessageType.USER_ATTENTION_CHATROOM) ;  //移动端接收消息是某用户关注了直播间
                 chatRoom.sendMessageToCurrentChatRoom(broadcastMessage) ;
                 break;
             }
