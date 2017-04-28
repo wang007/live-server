@@ -95,7 +95,7 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
      * @param categoryId
      * @return
      */
-    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
+    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.anchor.user.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
             +"lr.liveFlag) from LiveRoom lr where lr.banLiveFlag=false and lr.liveCategory.enabled=true and lr.liveCategory.id=:categoryId order by lr.liveFlag desc, lr.onlineCount desc")
     List<AppLiveRoomVo> findLiveRoomsForAppByCategory(@Param("categoryId") String categoryId) ;
 
