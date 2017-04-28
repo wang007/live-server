@@ -40,6 +40,12 @@ public class Report extends BaseEntity{
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime ;
 
+    /**
+     * 处理状态：true: 已处理，false：未处理
+     */
+    @Column
+    private boolean handleType ;
+
     public String getReportNum() {
         return reportNum;
     }
@@ -70,5 +76,13 @@ public class Report extends BaseEntity{
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public boolean isHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(boolean handleType) {
+        this.handleType = handleType;
     }
 }

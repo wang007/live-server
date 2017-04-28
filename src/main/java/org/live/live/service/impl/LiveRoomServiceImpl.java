@@ -140,6 +140,7 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
             report.setLiveRoom(liveRoom) ;
             report.setReportNum(CreateOrderNoUtils.getCreateOrderNoByTime()) ;
             report.setCreateTime(date) ;
+            report.setHandleType(false) ;   //未处理状态
             reportRepository.save(report) ;
         }
 
