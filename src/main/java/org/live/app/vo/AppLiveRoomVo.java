@@ -60,9 +60,9 @@ public class AppLiveRoomVo {
     public AppLiveRoomVo() {
     }
 
-    public AppLiveRoomVo(String liveRoomId, String anchroId, String roomNum, String liveRoomCoverUrl, String liveRoomUrl, String liveRoomName, String anchorName, String headImgUrl, int onlineCount, boolean liveFlag) {
+    public AppLiveRoomVo(String liveRoomId, String anchorId, String roomNum, String liveRoomCoverUrl, String liveRoomUrl, String liveRoomName, String anchorName, String headImgUrl, int onlineCount, boolean liveFlag) {
         this.liveRoomId = liveRoomId;
-        this.anchorId = anchroId;
+        this.anchorId = anchorId;
         this.roomNum = roomNum;
         this.liveRoomCoverUrl = liveRoomCoverUrl;
         this.liveRoomUrl = liveRoomUrl;

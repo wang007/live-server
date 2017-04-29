@@ -85,7 +85,7 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
      * 1.分类未关闭
      * @return
      */
-    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
+    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.anchor.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
             +"lr.liveFlag) from LiveRoom lr where lr.banLiveFlag=false and lr.liveCategory.enabled=true order by lr.liveFlag desc, lr.onlineCount desc")
     List<AppLiveRoomVo> findLiveRoomsForApp() ;
 
@@ -95,7 +95,7 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
      * @param categoryId
      * @return
      */
-    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.anchor.user.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
+    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.anchor.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
             +"lr.liveFlag) from LiveRoom lr where lr.banLiveFlag=false and lr.liveCategory.enabled=true and lr.liveCategory.id=:categoryId order by lr.liveFlag desc, lr.onlineCount desc")
     List<AppLiveRoomVo> findLiveRoomsForAppByCategory(@Param("categoryId") String categoryId) ;
 
@@ -104,7 +104,7 @@ public interface LiveRoomRepository extends BaseRepository<LiveRoom, String> {
      * @param searchStr
      * @return
      */
-    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
+    @Query("select new org.live.app.vo.AppLiveRoomVo(lr.id, lr.anchor.id, lr.roomNum, lr.coverUrl, lr.liveRoomUrl, lr.roomName, lr.anchor.user.nickname, lr.anchor.user.headImgUrl, lr.onlineCount, "
             +"lr.liveFlag) from LiveRoom lr where lr.banLiveFlag=false and lr.liveCategory.enabled=true and "
             +"(lr.roomNum like %:searchStr% or lr.roomName like %:searchStr% or lr.anchor.user.account like %:searchStr% or lr.anchor.user.nickname like %:searchStr%) order by lr.liveFlag desc, lr.onlineCount desc")
     List<AppLiveRoomVo> findLiveRoomsForAppSearch(@Param("searchStr")String searchStr) ;
