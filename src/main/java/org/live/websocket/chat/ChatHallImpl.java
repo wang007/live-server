@@ -240,7 +240,7 @@ public class ChatHallImpl implements ChatHall {
                 specialMessage.setNickname(message.getNickname()) ;
                 specialMessage.setContent(message.getNickname() + " 取消关注") ;
                 specialMessage.setMessageType(MessageType.RELIEVE_USER_ATTENTION_CHATROOM) ;
-                chatRoom.sendMessageToUser(message) ;   //把消息推送给本人。
+                chatRoom.sendMessageToUser(specialMessage) ;   //把消息推送给本人。
                 break;
             }
         }

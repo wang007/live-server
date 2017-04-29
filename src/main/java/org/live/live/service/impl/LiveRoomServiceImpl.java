@@ -255,7 +255,7 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      * @param chatRoomNum
      */
     @Override
-    public void onUserAttentionChatRoom(String userAccount, String chatRoomNum) {
+    public void onUserAttentionChatRoom(String chatRoomNum , String userAccount) {
         LiveRoom liveRoom = repository.getLiveRoomByRoomNum(chatRoomNum) ;  //主播间
         MobileUser mobileUser = mobileUserRepository.findMobileUserByAccount(userAccount);
         Attention attention = new Attention() ;
@@ -272,7 +272,7 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
      */
     @Transactional
     @Override
-    public void onRelieveUserAttentionChatRoom(String userAccount, String chatRoomNum) {
+    public void onRelieveUserAttentionChatRoom(String chatRoomNum, String userAccount) {
 
         attentionRepository.removeAttentionByUser_AccountAndLiveRoom_RoomNum(userAccount, chatRoomNum) ;
     }
