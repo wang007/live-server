@@ -1,6 +1,6 @@
 package org.live.live.vo;
 
-import javax.persistence.Column;
+
 import java.util.Date;
 
 /**
@@ -8,45 +8,47 @@ import java.util.Date;
  */
 public class ReportVo {
 
+    private String id;
     /**
      * 记录号
      */
-    private String reportNum ;
+    private String reportNum;
 
     /**
      * 举报人的账号
      */
-    private String reporterNum ;
+    private String reporterNum;
 
     /**
      * 举报人的昵称
      */
-    private String reportName ;
+    private String reportName;
 
     /**
      * 被举报的直播间号
      */
-    private String liveRoomNum ;
+    private String liveRoomNum;
 
     /**
      * 被举报的房间名
      */
-    private String liveRoomName ;
+    private String liveRoomName;
 
     /**
-     *  举报时间
+     * 举报时间
      */
-    private Date createTime ;
+    private Date createTime;
 
     /**
      * 处理状态：true: 已处理，false：未处理
      */
-    private boolean handleType ;
+    private boolean handleType;
 
     public ReportVo() {
     }
 
-    public ReportVo(String reportNum, String reporterNum, String reportName, String liveRoomNum, String liveRoomName, Date createTime, boolean handleType) {
+    public ReportVo(String id, String reportNum, String reporterNum, String reportName, String liveRoomNum, String liveRoomName, Date createTime, boolean handleType) {
+        this.id = id;
         this.reportNum = reportNum;
         this.reporterNum = reporterNum;
         this.reportName = reportName;
@@ -54,6 +56,14 @@ public class ReportVo {
         this.liveRoomName = liveRoomName;
         this.createTime = createTime;
         this.handleType = handleType;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getReportNum() {

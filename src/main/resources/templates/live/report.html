@@ -28,9 +28,143 @@
 
 <script type="text/javascript">
 
-    //1.js代码放里面
-    $.ace_ajax_finish(function() {
+
+    $.ace_ajax_finish(function () {
         jQuery(function ($) {
+            var _table = new DataTablePlus({
+                'targetId': 'report_table',
+                'columns': [
+                    {
+                        'name': 'reportNum',
+                        'title': '举报编号',
+                        'show': true,
+                        'detail': true
+                    }, {
+                        'name': 'reporterNum',
+                        'title': '举报人账号',
+                        'show': true,
+                        'detail': true
+                    }, {
+                        'name': 'reportName',
+                        'title': '举报人昵称',
+                        'show': true,
+                        'detail': true
+                    }, {
+                        'name': 'liveRoomNum',
+                        'title': '被举报直播间号',
+                        'show': true,
+                        'detail': true
+                    }, {
+                        'name': 'liveRoomName',
+                        'title': '被举报直播间名称',
+                        'show': true,
+                        'detail': true
+                    }, {
+                        'name': 'createTime',
+                        'title': '举报时间',
+                        'show': true,
+                        'detail': true
+                    }, {
+                        'name': 'handlerType',
+                        'title': '处理状态',
+                        'show': true,
+                        'detail': true,
+                        'detailRender': function (data) {
+                            if (!data) {
+                                return "未处理";
+                            }
+                        }
+                    }
+                ],
+                'columnsDefs': [
+                    {
+                        "targets": 7,
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, full, meta) {
+                            return "未处理"; // 创建选择框
+                        }
+                    }
+                ],
+                'responseArguments': {
+                    'successMsgCode': 'status',
+                    'successCode': 1,
+                    'errorMsgName': 'message'
+                }, // 服务器响应参数
+                'url': {
+                    'delete': 'live/report', // 删除提交地址
+                    'edit': 'live/report', // 新增与修改提交地址
+                    'data': 'live/report/data' // 数据拉取地址
+                },
+                'modal': {
+                    'auto': true // 启用自动模式
+                },
+                'rules': {
+                    /*   'memberNo': {
+                     required: true
+                     },
+                     'realName': {
+                     required: true
+                     },
+                     'birthday': {
+                     required: true
+                     }*/
+                },
+                'ajax': function (d) {
+                    var columns = d['columns'];
+                    for (var i = 0; i < columns.length; i++) {
+                        var column = columns[i];
+                        var name = column['name'];
+                        switch (name) {
+                            case "reporterNum":
+                                name = "re.user.account";
+                                break;
+                            case "reportName":
+                                name = "re.user.nickname";
+                                break;
+                            case "liveRoomNum":
+                                name = "re.liveRoom.roomNum";
+                                break;
+                            case "liveRoomName":
+                                name = "re.liveRoom.roomName";
+                                break;
+                            default:
+                                name = "re." + name;
+                                break;
+                        }
+                        columns[i]['name'] = name;
+                    }
+                    d['columns'] = columns; // 字段名称加工以满足后台查询语句排序用
+                    /*     var searchVal = d['search']['value'];*/
+                    /*  if (searchVal == "教师" || searchVal == "师" || searchVal == "教") {
+                     d['search']['value'] = "tea";
+                     }
+                     if (searchVal == "学生" || searchVal == "学" || searchVal == "生") {
+                     d['search']['value'] = "stu";
+
+                     } // 替换搜索关键字*/
+                    return d;
+                },
+                'sortBy': {'target': 6, 'dir': 'desc'},
+                'featureDef': {
+                    'edit': false,
+                    'create': false,
+                    'delete': false
+                }, // 关闭相关功能
+                'appendBtn': function (btnGroup, name) {
+                    btnGroup.append('<Button id="mark_handled" class="btn btn-success" name="' + name + '">处理</Button>');
+                },
+                'modal': {
+                    'clickCallBack': function (call) {
+                        if( typeof call.data == "undefined"){
+                            Global.notify("处理提醒：","未选取有效数据或选中多条数据！","warning");
+                        }else{
+                           // 请求服务器标记当前项为已处理
+                        }
+                    }
+                }
+            });
+            _table.build(); // 创建表格
 
         })
     })
