@@ -9,6 +9,7 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
 import java.util.Map;
 
 /**
@@ -35,7 +36,7 @@ public class ChatHandshakeInterceptor implements HandshakeInterceptor {
             //是否是主播的标记
             String anchorFlag = httpRequest.getParameter(ChatConstants.ANCHOR_FLAG_IN_REQUEST) ;
 
-            String nickname = httpRequest.getParameter(ChatConstants.NICKNAME_KEY_IN_REQUEST) ;
+            String nickname = URLDecoder.decode(httpRequest.getParameter(ChatConstants.NICKNAME_KEY_IN_REQUEST),"UTF-8")  ;
 
             //TODO 当握手失败的时候，响应什么内容
             if(chatRoomNum == null || "".equals(chatRoomNum)
