@@ -91,7 +91,7 @@ public class PushInterface {
         style.setTitle(title);
         style.setText(content);
         // 配置通知栏图标
-        style.setLogo("ic_launcher2.png") ;
+        style.setLogo("icon.png") ;
         // 配置通知栏网络图标
         style.setLogoUrl("");
         // 设置通知是否响铃，震动，或者可清除

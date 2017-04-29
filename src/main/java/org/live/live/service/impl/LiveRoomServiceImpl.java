@@ -136,7 +136,7 @@ public class LiveRoomServiceImpl extends BaseServiceImpl<LiveRoom, String> imple
         LiveRoom liveRoom = repository.findOne(liveRoomId) ;
         if(mobileUser != null && liveRoom != null) {
             Report report = new Report() ;
-            report.setMobileUser(mobileUser) ;
+            report.setUser(mobileUser) ;
             report.setLiveRoom(liveRoom) ;
             report.setReportNum(CreateOrderNoUtils.getCreateOrderNoByTime()) ;
             report.setCreateTime(date) ;

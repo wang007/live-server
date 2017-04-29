@@ -2,6 +2,9 @@ package org.live.live.repository;
 
 import org.live.common.base.BaseRepository;
 import org.live.live.entity.Report;
+import org.live.live.vo.ReportVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -16,9 +19,18 @@ public interface ReportRepository extends BaseRepository<Report, String> {
      * @param liveRoomId
      * @return
      */
-    @Query("select re from Report re where re.mobileUser.id=:userId and re.liveRoom.id=:liveRoomId"
+    @Query("select re from Report re where re.user.id=:userId and re.liveRoom.id=:liveRoomId"
             +" and re.createTime in (select max(re0.createTime) "
-            +"from Report re0 where re0.mobileUser.id=:userId and re0.liveRoom.id=:liveRoomId)" )
+            +"from Report re0 where re0.user.id=:userId and re0.liveRoom.id=:liveRoomId)" )
     Report getRecentlyReport(@Param("userId")String userId, @Param("liveRoomId")String liveRoomId) ;
+
+    /**
+     * 获取举报的数据
+     * @param page
+     * @param searchStr 搜索条件
+     * @param handleType 获取是否已处理的举报表
+     * @return
+     */
+    Page<ReportVo> findReports(PageRequest page, String searchStr, boolean handleType) ;
 
 }

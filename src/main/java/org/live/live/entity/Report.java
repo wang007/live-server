@@ -24,7 +24,7 @@ public class Report extends BaseEntity{
      */
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private MobileUser mobileUser ;
+    private MobileUser user ;
 
     /**
      * 直播间
@@ -34,7 +34,7 @@ public class Report extends BaseEntity{
     private LiveRoom liveRoom ;
 
     /**
-     *  开始时间
+     *  举报时间
      */
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -54,12 +54,12 @@ public class Report extends BaseEntity{
         this.reportNum = reportNum;
     }
 
-    public MobileUser getMobileUser() {
-        return mobileUser;
+    public MobileUser getUser() {
+        return user;
     }
 
-    public void setMobileUser(MobileUser mobileUser) {
-        this.mobileUser = mobileUser;
+    public void setUser(MobileUser user) {
+        this.user = user;
     }
 
     public LiveRoom getLiveRoom() {

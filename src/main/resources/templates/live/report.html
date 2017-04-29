@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>New Title</title>
+
+<div class="page-header">
+    <h1>直播管理
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            举报查看、
+            <a href="javascript:;" data-rel="tooltip" data-placement="bottom" title="举报表归档界面"
+               onClick="toMain('/live/report/page2')">
+                <strong>举报表归档界面</strong>
+                <i class="ace-icon fa fa-external-link"></i>
+            </a>
+        </small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="table-header">举报列表</div>
+        <div>
+            <table id="report_table" class="table table-striped table-bordered lTable-font">
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //1.js代码放里面
+    $.ace_ajax_finish(function() {
+        jQuery(function ($) {
+
+        })
+    })
+
+</script>

@@ -35,7 +35,7 @@ public class ApplyAnchorRepositoryImpl extends BaseRepositoryImpl {
             + ")";
     // auditFlag: true: 已审核的申请表， false： 未审核的申请表
     public Page<ApplyVo> findApplys(PageRequest page, String searchStr, boolean auditFlag) {
-        Map<String, Object> filter = new HashMap<>();
+        Map<String, Object> filter = new HashMap<>(4);
         if (StringUtils.isNotEmpty(searchStr)) {
             filter.put("account", searchStr);
             filter.put("nickname", searchStr);
