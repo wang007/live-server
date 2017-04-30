@@ -1,6 +1,8 @@
 package org.live.live.controller;
 
 import org.live.common.response.DataTableModel;
+import org.live.common.response.ResponseModel;
+import org.live.common.response.SimpleResponseModel;
 import org.live.common.utils.DataTableUtils;
 import org.live.live.service.ReportService;
 import org.slf4j.Logger;
@@ -74,5 +76,24 @@ public class ReportController {
         return "/live/report_handled";
     }
 
+    /**
+     * 处理举报
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/report", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseModel handlerReport(String id) {
+        ResponseModel model = new SimpleResponseModel();
+        try {
+            reportService.updateReport(id);
+            model.success();
+        } catch (Exception e) {
+            model.error();
+            model.setMessage(e.getMessage());
+        }
+        return model;
+    }
 
 }

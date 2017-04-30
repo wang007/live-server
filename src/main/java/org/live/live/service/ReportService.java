@@ -16,4 +16,9 @@ public interface ReportService {
      * @return
      */
     DataTableModel findReportByPage(Map<String, Object> params, boolean handleType);
+
+    /**
+     * 更新举报数据
+     */
+    void updateReport(String id);
 }

@@ -2,6 +2,7 @@ package org.live.live.service.impl;
 
 import org.live.common.response.DataTableModel;
 import org.live.common.utils.DataTableUtils;
+import org.live.live.entity.Report;
 import org.live.live.repository.ReportRepository;
 import org.live.live.service.ReportService;
 import org.live.live.vo.MobileUserVo;
@@ -34,5 +35,17 @@ public class ReportServiceImpl implements ReportService {
         Page<ReportVo> page = reportRepository.findReports((PageRequest) params.get("pageRequest"), (Map<String, Object>) params.get("filter"), handleType); // 查询分页数据
         DataTableModel model = DataTableUtils.parseDataTableModel(page, (Integer) params.get("draw"), recordsTotal); // 映射成定制模型
         return model;
+    }
+
+    /**
+     * 更新举报内容
+     *
+     * @param id
+     */
+    @Override
+    public void updateReport(String id) {
+        Report report = reportRepository.findOne(id);
+        report.setHandleType(true); // 设置为已处理
+        reportRepository.save(report); // 更新记录
     }
 }

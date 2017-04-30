@@ -155,16 +155,42 @@
                     btnGroup.append('<Button id="mark_handled" class="btn btn-success" name="' + name + '">处理</Button>');
                 },
                 'modal': {
+                    'auto': true,
                     'clickCallBack': function (call) {
-                        if( typeof call.data == "undefined"){
-                            Global.notify("处理提醒：","未选取有效数据或选中多条数据！","warning");
-                        }else{
-                           // 请求服务器标记当前项为已处理
+                        if (typeof call.data == "undefined") {
+                            Global.notify("处理提醒：", "未选取有效数据或选中多条数据！", "warning");
+                        } else {
+                            // 请求服务器标记当前项为已处理
+                            postPendingRecord(call.data.id);
                         }
                     }
                 }
             });
-            _table.build(); // 创建表格
+            var dataTableApi = _table.build(); // 创建表格
+
+            /**
+             * 提交待处理的数据记录
+             */
+            function postPendingRecord(id) {
+                $.ajax({
+                    type: "POST",
+                    url: "/live/report",
+                    data: {
+                        _method: "PUT",
+                        id: id
+                    },
+                    success: function (model) {
+                        if (model['status'] == 1) {
+                            Global.notify("操作提示", "处理成功", "success");
+                            dataTableApi.ajax.reload(function (json) {
+                                // 请求到的数据做相应的操作，如详情查看等
+                            }, true); // 刷新表格，分页信息重置
+                        } else {
+                            Global.notify("操作提示", "处理失败，" + model['message'], "error");
+                        }
+                    }
+                });
+            }
 
         })
     })
