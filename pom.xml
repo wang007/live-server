@@ -5,7 +5,7 @@
 
 	<groupId>org.live</groupId>
 	<artifactId>live-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>release-2.1</version>
 	<packaging>jar</packaging>
 
 	<name>live-server</name>
