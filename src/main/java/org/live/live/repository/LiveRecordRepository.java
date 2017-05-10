@@ -3,8 +3,13 @@ package org.live.live.repository;
 import org.live.common.base.BaseRepository;
 import org.live.live.entity.LiveRecord;
 import org.live.live.entity.LiveRoom;
+import org.live.live.vo.LiveRecordVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Map;
 
 /**
  * Created by wang on 2017/4/21.
@@ -30,5 +35,5 @@ public interface LiveRecordRepository extends BaseRepository<LiveRecord, String>
     @Query("select lr from LiveRecord lr where lr.liveRoom.roomNum=:roomNum and lr.startTime in " +
             "(select max(lr0.startTime) from LiveRecord lr0 where lr0.liveRoom.roomNum=:roomNum)")
     LiveRecord getCurrentLiveRecordByRoomNum(@Param("roomNum") String roomNum) ;
-
+    Page<LiveRecordVo> find(PageRequest pageRequest, Map<String, Object> filter);
 }
