@@ -21,31 +21,5 @@ public class DemoController {
         return "{'name':'test'}";
     }
 
-    @Value("${system.localServerIp}")
-    private String localServerIp ;
-
-    @Value("${system.rtmpAddrPrefix}")
-    private String rtmpAddrPrefix ;
-
-    @RequestMapping("/demo")
-    @ResponseBody
-    public String demo() {
-
-        System.out.println("localServerIp ---> "+ localServerIp) ;
-        System.out.println("rtmpAddrPrefix --->"+ rtmpAddrPrefix) ;
-        return null ;
-    }
-
-    @RequestMapping("/websocketTest")
-    public ModelAndView websocketTest(String account, String chatroom, String nickname, String anchor) {
-
-        ModelAndView mv = new ModelAndView() ;
-        mv.addObject("account", account) ;
-        mv.addObject("chatroom", chatroom) ;
-        mv.addObject("nickname", nickname) ;
-        if(anchor != null) mv.addObject("anchor", anchor) ;
-        mv.setViewName("websocket_test") ;
-        return mv ;
-    }
 
 }

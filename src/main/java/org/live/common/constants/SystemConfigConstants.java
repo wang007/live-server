@@ -20,4 +20,9 @@ public interface SystemConfigConstants {
      */
     public static final String SYSTEM_IP_KEY = "systemIp" ;
 
+    /**
+     * rtmp地址前缀
+     */
+    public static final String RTMP_ADDR_PREFIX_KEY = "rtmpAddrPrefix" ;
+
 }

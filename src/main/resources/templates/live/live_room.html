@@ -294,8 +294,11 @@
     //当前页变量，刷新的时候用
     /*<![CDATA[*/
     var extCurrentPage = /*[[${page == null? 1: page}]]*/1 ;
+
+    var rtmpAddrPrefix = /*[[${application.rtmpAddrPrefix}]]*/"" ;
     /*]]>*/
 
+    console.log("rtmp --->" +rtmpAddrPrefix)
 
     //播放直播的方法
     function playLiveRoom(liveRoomUrl, roomName, playFlag) {
@@ -304,10 +307,10 @@
             return ;
         }
         $("#id_test_video").empty() ;    //先清除之前的播放器
-        console.log("直播地址：--->"+ liveRoomUrl) ;
+        console.log("直播地址：--->"+ rtmpAddrPrefix + roomName) ;
         //播放器
         var  player = new TcPlayer('id_test_video', {
-            "rtmp": liveRoomUrl ,
+            "rtmp": rtmpAddrPrefix + roomName ,
             "autoplay" : true,      //iOS下safari浏览器，以及大部分移动端浏览器是不开放视频自动播放这个能力的
             "live": true,
             "coverpic" : "/upload/20170409/20170409617176.jpg",
