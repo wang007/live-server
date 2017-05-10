@@ -49,7 +49,7 @@ public class ApplyAnchorController {
     @SystemLog(description = "注入主播申请表的归档界面")
     @RequestMapping("/apply/page2")
     public String toApplyAnchorAuditedPage() {
-        return "/live/apply_anchor_audited" ;
+        return "live/apply_anchor_audited" ;
     }
 
     /**
