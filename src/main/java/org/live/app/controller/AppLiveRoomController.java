@@ -268,7 +268,7 @@ public class AppLiveRoomController {
      * @param liveRoomId
      * @return
      */
-    @RequestMapping(value = "/live", method = RequestMethod.GET)
+    @RequestMapping(value = "/live/{liveRoomId}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseModel<Object> startLiving(@PathVariable String liveRoomId) {
 
