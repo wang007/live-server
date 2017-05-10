@@ -502,6 +502,11 @@
                 toMain("/live/liveroom/refresh", {refresh: $("#search_input").val(), page: 1, rows: $("#pageRows").val()} ) ;
             })
 
+            $("#search_btn").click(function () {
+                console.log("点击搜索") ;
+                loadLiveRoomData(1) ;
+            })
+
         })
     })
 

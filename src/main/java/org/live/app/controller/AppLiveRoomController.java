@@ -263,6 +263,34 @@ public class AppLiveRoomController {
         return model;
     }
 
+    /**
+     * 开始直播，查询直播间是否被禁播，查询直播间所属的直播分类是否未启用
+     * @param liveRoomId
+     * @return
+     */
+    @RequestMapping(value = "/live", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseModel<Object> startLiving(@PathVariable String liveRoomId) {
+
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            LiveRoom liveRoom = liveRoomService.get(liveRoomId);
+            if(liveRoom.isBanLiveFlag()) {
+                model.error("您被禁播了，暂时不能进行直播！") ;
+                return model ;
+            }
+            if(!liveRoom.getLiveCategory().isEnabled()) {
+                model.error("直播间所属直播分类未启用，暂时不能进行直播！") ;
+                return model ;
+            }
+            model.success() ;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e) ;
+            model.error("服务器繁忙！") ;
+        }
+        return model ;
+    }
+
 
     /**
      * 根据主播id查询直播间限制，是否被禁播

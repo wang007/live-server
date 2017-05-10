@@ -17,7 +17,7 @@
 <div class="row">
     <div class="col-xs-12">
         <label for="select-role">选择角色:</label>
-        <select class="select2" id="select-role" name="roleId" data-placeholder="请选择..." style="margin-left: 20px;">
+        <select class="select2 select2-container form-select" id="select-role" name="roleId" data-placeholder="请选择..." style="margin-left: 20px;">
             <option>&nbsp;</option>
             <option th:each="row: ${rows}" th:value="${row.id}" th:text="${row.roleName}" th:checked="${row.id == selectRoleId}"></option>
         </select>
@@ -44,8 +44,10 @@
     var scripts = [null, "/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.core.min.js","/static/plugins/zTree/js/jquery.ztree.excheck.min.js" ,null] ;
     $.ace_ajax_finish(scripts,function() {
         jQuery(function ($) {
-            //美化下拉框
-            $(".select2").css('width', '200px').select2({placeholder:"请选择",allowClear : true}) ;
+
+            var $select2 = $("select.form-select").css('width', "200px") ;
+            $select2.select2("destroy") ;
+            $select2.select2({placeholder:"请选择",allowClear : true});
 
             var zTreeObj;
             var setting = {

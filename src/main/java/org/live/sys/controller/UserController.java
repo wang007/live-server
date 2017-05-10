@@ -2,7 +2,12 @@ package org.live.sys.controller;
 
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.InvalidSessionException;
+import org.apache.shiro.session.Session;
 import org.live.common.constants.Constants;
+import org.live.common.constants.SysConstants;
 import org.live.common.page.JqGridModel;
 import org.live.common.page.PageUtils;
 import org.live.common.response.ResponseModel;
@@ -71,6 +76,48 @@ public class UserController {
         model.addAttribute("rows",groups) ;
         return "sys/delete_user" ;
     }
+
+    /**
+     * 修改用户页面
+     * @return
+     */
+    @RequestMapping(value = "/user/updatePage", method = RequestMethod.GET)
+    @SystemLog(description = "进入修改密码界面")
+    public String toUpdateUserPage() {
+        return "sys/update_user_info" ;
+    }
+
+    /**
+     *  修改用户密码
+     * @param oldPassword
+     * @param newPassword
+     * @return
+     */
+    @RequestMapping(value = "/user/password", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseModel userUpdatePassword(String oldPassword, String newPassword) {
+
+        ResponseModel<Object> model = new SimpleResponseModel<>() ;
+        try {
+            Session session = SecurityUtils.getSubject().getSession();
+            User user = (User) session.getAttribute(Constants.CURRENT_LOGINUSER_KEY) ;
+            if(user == null) return model.error("服务器繁忙！") ;
+            User userInDB = userService.get(user.getId()) ;
+            if(StringUtils.equals(userInDB.getPassword(), EncryptUtils.encryptToBase64(oldPassword))) {
+                userInDB.setPassword(EncryptUtils.encryptToBase64(newPassword)) ;
+                userService.save(userInDB) ;
+                return model.success() ;
+            } else {
+                model.error("旧密码错误！") ;
+            }
+        } catch (Exception e) {
+            model.error("服务器繁忙！") ;
+            LOGGER.error(e.getMessage(), e) ;
+        }
+        return model ;
+    }
+
+
 
     /**
      *  新建一个用户

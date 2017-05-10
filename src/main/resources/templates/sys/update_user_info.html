@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<title>New Title</title>
+
+
+<div class="page-header">
+    <h1>系统管理
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            信息修改
+        </small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+
+        <form class="form-horizontal" role="form" style="margin-top: 10px;">
+            <input type="hidden" name="userId" id="hidden_user_id" th:value="${session.loginUser.id}" />
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="old_password"> 旧密码</label>
+
+                <div class="col-sm-9">
+                    <input type="password" id="old_password" placeholder="" class="col-xs-10 col-sm-5"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="new_password"> 新密码 </label>
+
+                <div class="col-sm-9">
+                    <input type="password" id="new_password" placeholder="" class="col-xs-10 col-sm-5"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="confirm_password"> 确认密码 </label>
+
+                <div class="col-sm-9">
+                    <input type="password" id="confirm_password" placeholder="" class="col-xs-10 col-sm-5"/>
+                </div>
+            </div>
+
+            <div class="clearfix form-actions">
+                <div class="col-md-offset-3 col-md-9">
+                    <button class="btn btn-info" type="button" id="save_btn">
+                        <i class="ace-icon fa fa-check bigger-110"></i>
+                        保存
+                    </button>
+
+                    &nbsp; &nbsp; &nbsp;
+                    <button class="btn" type="reset" id="reset_btn">
+                        <i class="ace-icon fa fa-undo bigger-110"></i>
+                        重置
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //1.js代码放里面
+    $.ace_ajax_finish(function() {
+        jQuery(function ($) {
+
+            $("#save_btn").click(function () {
+                var old_password_str = $.trim($("#old_password").val()) ;
+                var new_password_str = $.trim($("#new_password").val()) ;
+                var confirm_password_str = $.trim($("#confirm_password").val()) ;
+                if(old_password_str == "" || new_password_str == "" || confirm_password_str == "") {
+                    showInfoMsg("请先输入数据！") ;
+                    return  ;
+                }
+                if(new_password_str != confirm_password_str) {
+                    showInfoMsg("新密码与确认密码不一致！") ;
+                    return  ;
+                }
+                $.ajax({
+                    url: "/sys/user/password",
+                    type: "POST",
+                })
+
+                $.ajax({
+                    url: "/sys/user/password",
+                    type : 'POST',
+                    dataType : 'json',
+                    data: {
+                        "_method": "PUT",
+                        "oldPassword": old_password_str,
+                        "newPassword": new_password_str
+                    },
+                    success:function(data) {
+                        if(data.status == 0) {
+                            showErrorMsg(data.message) ;
+                        } else {
+                            showSuccessMsg("修改成功,将跳转到登录页面！") ;
+                            setTimeout('window.location.href = "/logout"',2000) ;
+
+                        }
+                    }
+                })
+
+            })
+
+            $("#reset_btn").click(function () {
+                $("#old_password").val("")
+                $("#new_password").val("")
+                $("#confirm_password").val("")
+            })
+
+
+        })
+    })
+
+
+
+
+
+</script>

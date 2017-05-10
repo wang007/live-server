@@ -319,8 +319,8 @@ public class ChatHallImpl implements ChatHall {
         message.setNickname(nickname) ;
         message.setAccount(userAccount) ;
 
-        String anchorInChatroom = chatRoom.getanchorAccount() ; //直播间的主播账号
-        if(anchorFlag != null || userAccount.equals(anchorInChatroom)) {
+        //String anchorInChatroom = chatRoom.getanchorAccount() ; //直播间的主播账号
+        if(anchorFlag != null) {  // || userAccount.equals(anchorInChatroom)
             message.setMessageType(MessageType.ANCHOR_EXIT_CHATROOM_MESSAGE_TYPE) ;
             dispatchMessageToChatRoom(chatroomNum, message) ;
             return true ;
