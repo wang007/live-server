@@ -183,7 +183,7 @@ public class AppLiveController {
      */
     @RequestMapping(value = "/password/resetting", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseModel<Object> resetPassword(String account, String realName, String newPassword) {
+    public ResponseModel<Object> resetPassword(String account, String realName, String newPassword, String mobileNumber, String email) {
         ResponseModel<Object> model = new SimpleResponseModel<>();
         try {
             MobileUser user = mobileUserService.findMobileUserByAccount(account);
@@ -193,6 +193,16 @@ public class AppLiveController {
                 return model;
             }
             if (!StringUtils.equals(user.getMember().getRealName(), realName)) {
+                model.error();
+                model.setMessage("重置密码失败，信息填写有误!");
+                return model;
+            }
+            if(!StringUtils.equals(user.getMobileNumber(), mobileNumber)){
+                model.error();
+                model.setMessage("重置密码失败，信息填写有误!");
+                return model;
+            }
+            if(!StringUtils.equals(user.getEmail(), email)){
                 model.error();
                 model.setMessage("重置密码失败，信息填写有误!");
                 return model;
