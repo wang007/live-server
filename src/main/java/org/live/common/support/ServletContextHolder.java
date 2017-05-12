@@ -100,6 +100,10 @@ public class ServletContextHolder implements ServletContextAware {
             throw new RuntimeException("获取本地的ip地址异常", e) ;
         }
 
+        String rtmpAddrPrefix = env.getProperty("system.rtmpAddrPrefix") ;
+        servletContext.setAttribute(SystemConfigConstants.RTMP_ADDR_PREFIX_KEY, rtmpAddrPrefix) ;
+        LOGGER.info("rtmp地址前缀——>" + rtmpAddrPrefix) ;
+
         servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_ROOT_PATH_KEY, uploadFileRootPath) ;
         servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_PATH_PREFIX_KEY, uploadFilePrefix) ;
         servletContext.setAttribute(UploadFilePathConfig.UPLOAD_FILE_PATH_KEY, uploadFilePath) ;
